@@ -13,8 +13,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebase-config";
 import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
-// import uuid from 'uuid/package.json';
-// import uuidv4 from 'uuid/v4';
+import { ITEM_CATEGORY, ITEM_TYPE } from "../Constants";
 const { v4: uuidv4 } = require('uuid');
 
 export default function AddForm({ closeEvent }) {
@@ -45,56 +44,6 @@ export default function AddForm({ closeEvent }) {
     const data = await getDocs(empCollectionRef);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
-
-  const mtype = [
-    {
-      value: "Packet",
-      label: "Packet",
-    },
-    {
-      value: "Open",
-      label: "Open",
-    },
-    {
-      value: "Sack",
-      label: "Sack",
-    },
-    {
-      value: "Bottel",
-      label: "Bottel",
-    },
-  ];
-
-  const currencies = [
-    {
-      value: "Dal",
-      label: "Dal",
-    },
-    {
-      value: "Sampoo",
-      label: "Sampoo",
-    },
-    {
-      value: "Rice",
-      label: "Rice",
-    },
-    {
-      value: "Soap",
-      label: "Soap",
-    },
-    {
-      value: "Detergent",
-      label: "Detergent",
-    },
-    {
-      value: "Spices",
-      label: "Spices",
-    },
-    {
-      value: "Dry-Fruits",
-      label: "Dry-Fruits",
-    },
-  ];
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -203,7 +152,7 @@ export default function AddForm({ closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {currencies.map((option) => (
+            {ITEM_CATEGORY.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -221,7 +170,7 @@ export default function AddForm({ closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {mtype.map((option) => (
+            {ITEM_TYPE.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
