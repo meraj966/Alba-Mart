@@ -33,6 +33,8 @@ import EditForm from "./EditForm";
 import Skeleton from "@mui/material/Skeleton";
 import { useAppStore } from "../appStore";
 import BulkAddForm from "./BulkAddForm";
+import Product from "./resuable/Product";
+import { Grid } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -82,29 +84,6 @@ export default function ProductsList() {
     setPage(0);
   };
 
-  const deleteUser = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.value) {
-        deleteApi(id);
-      }
-    });
-  };
-
-  const deleteApi = async (id) => {
-    const userDoc = doc(db, "Menu", id);
-    await deleteDoc(userDoc);
-    Swal.fire("Deleted!", "Your file has been deleted.", "success");
-    getUsers();
-  };
-
   const filterData = (v) => {
     if (v) {
       setRows([v]);
@@ -113,17 +92,7 @@ export default function ProductsList() {
     }
   };
 
-  const editData = (id, name, price, menutype, category) => {
-    const data = {
-      id: id,
-      name: name,
-      price: price,
-      menutype: menutype,
-      category: category,
-    };
-    setFormid(data);
-    handleEditOpen();
-  };
+  
 
   return (
     <>
@@ -140,10 +109,10 @@ export default function ProductsList() {
         </Modal>
         <Modal
           open={bulkOpen}
-          sx={{margin: 'auto'}}
+          sx={{ margin: 'auto' }}
         >
-          <Box sx={{...style, overflow:'scroll', maxHeight: '70%', width: '80%'}}>
-            <BulkAddForm closeEvent={handleBulkClose}/>
+          <Box sx={{ ...style, overflow: 'scroll', maxHeight: '70%', width: '80%' }}>
+            <BulkAddForm closeEvent={handleBulkClose} />
           </Box>
         </Modal>
         <Modal
@@ -203,109 +172,24 @@ export default function ProductsList() {
         </Stack>
         <Box height={10} />
         {rows.length > 0 && (
-          <TableContainer>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Name
-                  </TableCell>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Price
-                  </TableCell>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Category
-                  </TableCell>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Menu Type
-                  </TableCell>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Pic
-                  </TableCell>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Created At
-                  </TableCell>
-                  <TableCell align="left" style={{ minWidth: "100px" }}>
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.code}
-                      >
-                        <TableCell align="left">{row.name}</TableCell>
-                        <TableCell align="left">{String(row.price)}</TableCell>
-                        <TableCell align="left">
-                          {String(row.category)}
-                        </TableCell>
-                        <TableCell align="left">
-                          {String(row.menutype)}
-                        </TableCell>
-                        <TableCell align="left">
-                          <img
-                            src={row.file}
-                            height="70px"
-                            width="70px"
-                            style={{ borderRadius: "15px" }}
-                            loading="lazy"
-                          />
-                        </TableCell>
-                        <TableCell align="left">{String(row.date)}</TableCell>
-                        <TableCell align="left">
-                          <Stack spacing={2} direction="row">
-                            <EditIcon
-                              style={{
-                                fontSize: "20px",
-                                color: "blue",
-                                cursor: "pointer",
-                              }}
-                              className="cursor-pointer"
-                              onClick={() => {
-                                editData(
-                                  row.id,
-                                  row.name,
-                                  row.price,
-                                  row.menutype,
-                                  row.category
-                                );
-                              }}
-                            />
-                            <DeleteIcon
-                              style={{
-                                fontSize: "20px",
-                                color: "darkred",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                deleteUser(row.id);
-                              }}
-                            />
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <>
+            {console.log(rows)}
+            <Grid container spacing={1}>
+              {rows.map((row) => {
+                console.log("in rows")
+                return <Grid item xs={4}>
+                  <Product
+                  data = {row}
+                   {...row}
+                   setFormid={setFormid}
+                   handleEditOpen={handleEditOpen}
+                   deleteProd={getUsers}
+                  />
+                </Grid>
+              })}
+            </Grid>
+          </>
         )}
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
       </Paper>
 
       {rows.length == 0 && (
