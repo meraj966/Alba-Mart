@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CurrencyRupee, FileUpload } from '@mui/icons-material';
 import { Grid, InputAdornment, TextField } from '@mui/material'
 import IconButton from "@mui/material/IconButton";
@@ -6,137 +6,79 @@ import { ITEM_CATEGORY, ITEM_TYPE, MEASURE_UNIT, SALE_TYPE } from '../../Constan
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import Swal from "sweetalert2";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../../firebase-config";
+import { Input } from '@mui/material';
+const { v4: uuidv4 } = require('uuid');
 
-function BulkAddRow() {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [saleType, setSaleType] = useState("");
-    const [onSale, setOnSale] = useState(false);
-    const [file, setFile] = useState("");
-    const [menutype, setMenutype] = useState("");
-    const [price, setPrice] = useState(0);
-    const [category, setCategory] = useState("");
-    const handleSetOnSale = (event) => {
-        setOnSale(event.target.checked)
-
+function BulkAddRow({ products, setProducts, index }) {
+    const [rowData, setRowData] = useState({
+        name: "",
+        description: "",
+        saleType: "",
+        onSale: false,
+        file: null,
+        menuType: "",
+        measureUnit: "",
+        price: 0,
+        category: "",
+        saleValue: ""
+    })
+    const handleChange = (event) => {
+        let data = {}
+        data[event.target.name] = event.target.value
+        console.log(event.target.files)
+        if (event.target.name == "onSale") data[event.target.name] = event.target.checked
+        if (event.target.name == "file") data[event.target.name] = event.target.files[0]
+        setRowData({ ...rowData, ...data })
+        setProducts({ ...products, [index]: rowData })
     }
-    const handleNameChange = (event) => {
-        setName(event.target.value);
+    const handleUpload = () => {
     };
-    const handleDescriptionChange = (event) => {
-        setDescription(event.target.value);
-    };
-    const handlePriceChange = (event) => {
-        setPrice(event.target.value);
-    };
-
-    const handleCategoryChange = (event) => {
-        setCategory(event.target.value);
-    };
-
-    const handleMenuTypeChange = (event) => {
-        setMenutype(event.target.value);
-    };
-
-    const handlePicChange = (event) => {
-        setFile(event.target.files[0]);
-    };
-
-    const handleSaleTypeChange = (event) => {
-        setSaleType(event.target.value)
-    }
+    useEffect(()=>{
+        const event = {target: {name: "name", value: ""}}
+        handleChange(event)
+    }, [])
     return (
-        <Grid container spacing={1}>
-            <Grid item xs={1.5}>
+        <Grid container direction="row" spacing={0.8}>
+            <Grid item xs={3}>
                 <TextField
                     error={false}
                     id="name"
                     name="name"
                     multiline
-                    value={name}
-                    onChange={handleNameChange}
+                    value={rowData["name"]}
+                    onChange={handleChange}
                     label="Name"
                     size="small"
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
+                    sx={{ minWidth: "100%" }}
                 />
             </Grid>
-            <Grid item >
+            <Grid item xs={3.2}>
                 <TextField
                     error={false}
                     multiline
                     id="description"
                     name="description"
-                    value={description}
-                    onChange={handleDescriptionChange}
+                    value={rowData["description"]}
+                    onChange={handleChange}
                     label="Description"
                     size="small"
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
+                    sx={{ minWidth: "100%" }}
                 />
             </Grid>
-            <Grid item xs={1.4}>
-                <TextField
-                    error={false}
-                    id="category"
-                    label="Category"
-                    select
-                    value={category}
-                    onChange={handleCategoryChange}
-                    size="small"
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                    {ITEM_CATEGORY.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-            </Grid>
             <Grid item xs={1.5}>
-                <TextField
-                    error={false}
-                    id="menutype"
-                    label="Menu Type"
-                    select
-                    value={menutype}
-                    onChange={handleMenuTypeChange}
-                    size="small"
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                    {ITEM_TYPE.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-            </Grid>
-            <Grid item xs={1.2}>
-                <TextField
-                    error={false}
-                    id="measureUnit"
-                    label="Unit"
-                    select
-                    value={menutype}
-                    onChange={handleMenuTypeChange}
-                    size="small"
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                    {MEASURE_UNIT.map((option) => (
-                        <MenuItem key={option} value={option}>
-                            {option}
-                        </MenuItem>
-                    ))}
-                </TextField>
-            </Grid>
-            <Grid item xs={1.3}>
                 <TextField
                     error={false}
                     id="price"
                     label="Price"
                     type="number"
-                    value={price}
-                    onChange={handlePriceChange}
+                    name='price'
+                    value={rowData['price']}
+                    onChange={handleChange}
                     size="small"
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
+                    sx={{ minWidth: "100%" }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -148,49 +90,112 @@ function BulkAddRow() {
             </Grid>
             <Grid item xs={0.7}>
                 <FormControlLabel
-                    control={<Checkbox checked={onSale} onChange={handleSetOnSale} />}
-                    name={"onSale"}
-                    sx={{ marginTop: "30px", minWidth: "100%" }}
+                    control={<Checkbox checked={rowData["onSale"]} onChange={handleChange} name="onSale" />}
+                    name="onSale"
+                    sx={{ minWidth: "100%" }}
                     label="Sale" />
-
             </Grid>
-            {onSale && <>
-                <Grid item xs={1}>
+            <Grid item xs={1.6}>
+                {rowData["onSale"] &&
                     <TextField
                         error={false}
                         id="saleType"
                         label="SaleType"
                         select
-                        value={saleType}
-                        onChange={handleSaleTypeChange}
+                        name='saleType'
+                        value={rowData["saleType"]}
+                        onChange={handleChange}
                         size="small"
-                        sx={{ marginTop: "30px", minWidth: "100%" }}
+                        sx={{ minWidth: "100%" }}
                     >
                         {SALE_TYPE.map((option) => (
                             <MenuItem key={option} value={option}>
                                 {option}
                             </MenuItem>
                         ))}
-                    </TextField>
-                </Grid>
-                <Grid item xs={1}>
+                    </TextField>}
+            </Grid>
+            <Grid item xs={2}>
+                {rowData["onSale"] &&
                     <TextField
                         error={false}
-                        id="name"
-                        name="name"
+                        id="SaleValue"
+                        name="saleValue"
                         multiline
-                        value={name}
-                        onChange={handleNameChange}
+                        value={rowData["saleValue"]}
+                        onChange={handleChange}
                         label="Sale Value"
                         size="small"
-                        sx={{ marginTop: "30px", minWidth: "100%" }}
-                    />
-                </Grid>
-            </>}
-            <Grid item sm={0.4}>
-                <IconButton onClick={() => console.log("upload logic")} sx={{ marginTop: "30px", marginLeft: '8px' }}>
-                    <FileUpload />
-                </IconButton>
+                        sx={{ minWidth: "100%" }}
+                    />}
+            </Grid>
+            <Grid item xs={3}>
+                <TextField
+                    error={false}
+                    id="category"
+                    label="Category"
+                    select
+                    name="category"
+                    value={rowData["category"]}
+                    onChange={handleChange}
+                    size="small"
+                    sx={{ minWidth: "100%" }}
+                >
+                    {ITEM_CATEGORY.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </Grid>
+            <Grid item xs={3}>
+                <TextField
+                    error={false}
+                    id="menutype"
+                    label="Menu Type"
+                    select
+                    name='menuType'
+                    value={rowData["menuType"]}
+                    onChange={handleChange}
+                    size="small"
+                    sx={{ minWidth: "100%" }}
+                >
+                    {ITEM_TYPE.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </Grid>
+            <Grid item xs={3}>
+                <TextField
+                    error={false}
+                    id="measureUnit"
+                    label="Unit"
+                    select
+                    name="measureUnit"
+                    value={rowData["measureUnit"]}
+                    onChange={handleChange}
+                    size="small"
+                    sx={{ minWidth: "100%" }}
+                >
+                    {MEASURE_UNIT.map((option) => (
+                        <MenuItem key={option} value={option}>
+                            {option}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </Grid>
+            <Grid item xs={2}>
+                <Input type='file' name="file"
+                    onChange={handleChange}
+                    accept="/image/*"
+                    sx={{
+                        maxWidth: "100%",
+                        marginTop: '8px'
+                    }}
+                    startAdornment={<IconButton />}>
+                </Input>
             </Grid>
         </Grid>
     )

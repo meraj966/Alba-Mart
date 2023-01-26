@@ -140,9 +140,9 @@ export default function ProductsList() {
         </Modal>
         <Modal
           open={bulkOpen}
-          sx={{width: '1000px', margin: 'auto'}}
+          sx={{margin: 'auto'}}
         >
-          <Box sx={style}>
+          <Box sx={{...style, overflow:'scroll', maxHeight: '70%', width: '80%'}}>
             <BulkAddForm closeEvent={handleBulkClose}/>
           </Box>
         </Modal>
