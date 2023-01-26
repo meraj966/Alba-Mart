@@ -32,6 +32,7 @@ import AddForm from "./AddForm";
 import EditForm from "./EditForm";
 import Skeleton from "@mui/material/Skeleton";
 import { useAppStore } from "../appStore";
+import BulkAddForm from "./BulkAddForm";
 
 const style = {
   position: "absolute",
@@ -54,8 +55,11 @@ export default function ProductsList() {
   const empCollectionRef = collection(db, "Menu");
   const [formid, setFormid] = useState("");
   const [open, setOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
   const handleOpen = () => setOpen(true);
+  const handleBulkOpen = () => setBulkOpen(true);
+  const handleBulkClose = () => setBulkOpen(false);
   const handleEditOpen = () => setEditOpen(true);
   const handleClose = () => setOpen(false);
   const handleEditClose = () => setEditOpen(false);
@@ -135,6 +139,14 @@ export default function ProductsList() {
           </Box>
         </Modal>
         <Modal
+          open={bulkOpen}
+          sx={{margin: 'auto'}}
+        >
+          <Box sx={{...style, overflow:'scroll', maxHeight: '70%', width: '80%'}}>
+            <BulkAddForm closeEvent={handleBulkClose}/>
+          </Box>
+        </Modal>
+        <Modal
           open={editopen}
           // onClose={handleEditClose}
           aria-labelledby="modal-modal-title"
@@ -174,6 +186,13 @@ export default function ProductsList() {
             component="div"
             sx={{ flexGrow: 1 }}
           ></Typography>
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={handleBulkOpen}
+          >
+            Bulk Add
+          </Button>
           <Button
             variant="contained"
             endIcon={<AddCircleIcon />}
@@ -235,7 +254,7 @@ export default function ProductsList() {
                             src={row.file}
                             height="70px"
                             width="70px"
-                            style={{borderRadius:"15px"}}
+                            style={{ borderRadius: "15px" }}
                             loading="lazy"
                           />
                         </TableCell>

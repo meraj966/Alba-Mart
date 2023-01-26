@@ -26,3 +26,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.MuiBox-root.css-1wnsr1i {
+  width: max-content;
+}
+.swal2-container.swal2-center.swal2-backdrop-show {
+  z-index: 10000;
+}
