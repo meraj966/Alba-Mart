@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { CurrencyRupee, FileUpload } from '@mui/icons-material';
+import { CurrencyRupee } from '@mui/icons-material';
 import { Grid, InputAdornment, TextField } from '@mui/material'
-import IconButton from "@mui/material/IconButton";
 import { ITEM_CATEGORY, ITEM_TYPE, MEASURE_UNIT, SALE_TYPE } from '../../Constants';
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Swal from "sweetalert2";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase-config";
-import { Input } from '@mui/material';
-const { v4: uuidv4 } = require('uuid');
 
-function BulkAddRow({ products, setProducts, index }) {
+function AddProductRow({ products, setProducts, index }) {
     const [rowData, setRowData] = useState({
         name: "",
         description: "",
@@ -21,25 +15,25 @@ function BulkAddRow({ products, setProducts, index }) {
         file: null,
         menuType: "",
         measureUnit: "",
+        quantity: 0,
         price: 0,
         category: "",
         saleValue: ""
     })
-    const handleChange = (event) => {
+    const handleChange = async (event) => {
         let data = {}
         data[event.target.name] = event.target.value
-        console.log(event.target.files)
         if (event.target.name == "onSale") data[event.target.name] = event.target.checked
-        if (event.target.name == "file") data[event.target.name] = event.target.files[0]
+        if (event.target.name == "file" && event.target.files) data[event.target.name] = event.target.files[0]
         setRowData({ ...rowData, ...data })
-        setProducts({ ...products, [index]: rowData })
     }
-    const handleUpload = () => {
-    };
-    useEffect(()=>{
-        const event = {target: {name: "name", value: ""}}
+    useEffect(() => {
+        const event = { target: { name: "name", value: "" } }
         handleChange(event)
     }, [])
+    useEffect(()=> {
+        setProducts({ ...products, [index]: rowData })
+    },[rowData])
     return (
         <Grid container direction="row" spacing={0.8}>
             <Grid item xs={3}>
@@ -121,7 +115,7 @@ function BulkAddRow({ products, setProducts, index }) {
                         error={false}
                         id="SaleValue"
                         name="saleValue"
-                        multiline
+                        type="number"
                         value={rowData["saleValue"]}
                         onChange={handleChange}
                         label="Sale Value"
@@ -129,7 +123,7 @@ function BulkAddRow({ products, setProducts, index }) {
                         sx={{ minWidth: "100%" }}
                     />}
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2.5}>
                 <TextField
                     error={false}
                     id="category"
@@ -148,10 +142,10 @@ function BulkAddRow({ products, setProducts, index }) {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2.5}>
                 <TextField
                     error={false}
-                    id="menutype"
+                    id="menuType"
                     label="Menu Type"
                     select
                     name='menuType'
@@ -167,7 +161,7 @@ function BulkAddRow({ products, setProducts, index }) {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={1.5}>
                 <TextField
                     error={false}
                     id="measureUnit"
@@ -186,19 +180,24 @@ function BulkAddRow({ products, setProducts, index }) {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={2}>
-                <Input type='file' name="file"
+            <Grid item xs={1.5}>
+                <TextField
+                    error={false}
+                    id="quantity"
+                    label="Quantity"
+                    type="number"
+                    name='quantity'
+                    value={rowData['quantity']}
                     onChange={handleChange}
-                    accept="/image/*"
-                    sx={{
-                        maxWidth: "100%",
-                        marginTop: '8px'
-                    }}
-                    startAdornment={<IconButton />}>
-                </Input>
+                    size="small"
+                    sx={{ minWidth: "100%" }}
+                />
+            </Grid>
+            <Grid item xs={3}>
+                <input type="file"  onChange={handleChange} accept="/image/*" name="file" style={{marginTop: "10px"}}/>
             </Grid>
         </Grid>
     )
 }
 
-export default BulkAddRow
+export default AddProductRow

@@ -4,7 +4,7 @@ import isNull from "lodash/isNull";
 import { Box, IconButton, Typography, Button } from '@mui/material'
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import BulkAddRow from './resuable/BulkAddRow';
+import AddProductRow from './resuable/AddProductRow';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -16,7 +16,7 @@ import { useAppStore } from '../appStore';
 
 const { v4: uuidv4 } = require('uuid');
 
-function BulkAddForm({ closeEvent }) {
+function AddProducts({ closeEvent }) {
     const [products, setProducts] = useState([]);
     const [rows, setRows] = useState([1]);
     const [percent, setPercent] = useState(0)
@@ -28,24 +28,22 @@ function BulkAddForm({ closeEvent }) {
         setData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
-    const addItem = async (url) => {
-        Object.values(products).map(async (prod) => {
-            console.log(prod)
-            await addDoc(dataRef, {
-                name: prod["name"],
-                description: prod["description"],
-                price: Number(prod["price"]),
-                menutype: prod["menuType"],
-                category: prod["category"],
-                file: url,
-                onSale: prod["onSale"],
-                measureUnit: prod["measureUnit"],
-                saleValue: prod["saleValue"],
-                date: String(new Date())
-            });
-            getUsers();
-            closeEvent();
-        })
+    const addItem = async (prod, url) => {
+        await addDoc(dataRef, {
+            id: uuidv4(),
+            name: prod["name"],
+            description: prod["description"],
+            price: Number(prod["price"]),
+            onSale: prod["onSale"],
+            saleType: prod["saleType"],
+            saleValue: prod["saleValue"],
+            category: prod["category"],
+            menuType: prod["menuType"],
+            measureUnit: prod["measureUnit"],
+            quantity: prod["quantity"],
+            file: url,
+            date: String(new Date())
+        });
         getUsers();
         closeEvent();
         Swal.fire("Submitted!", "Your file has been submitted.", "success");
@@ -53,14 +51,14 @@ function BulkAddForm({ closeEvent }) {
 
     const handleUpload = () => {
         const files = map(products, "file")
-        console.log(files)
         if (files.every(isNull)) {
             Swal.fire("Failed!", "Please upload an image first!", "error");
         } else {
             const storageRef = []
-            files.every(file => {
-                const storageRef = ref(storage, `/images/${file.name + uuidv4()}`)
-                const uploadTask = uploadBytesResumable(storageRef, file);
+            const urls = []
+            Object.values(products).map((prod) => {
+                const storageRef = ref(storage, `/images/${uuidv4() + prod.file.name}`)
+                const uploadTask = uploadBytesResumable(storageRef, prod.file);
                 uploadTask.on(
                     "state_changed",
                     (snapshot) => {
@@ -75,16 +73,13 @@ function BulkAddForm({ closeEvent }) {
                     () => {
                         // download url
                         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                            console.log(url);
-                            addItem(url);
+                            addItem(prod, url);
                         });
                     }
                 );
             })
-            console.log(files, storageRef)
         }
     }
-    console.log(products, rows)
     return (
         <>
             <Box sx={{ width: 'auto' }}>
@@ -94,8 +89,9 @@ function BulkAddForm({ closeEvent }) {
                 <IconButton style={{ position: 'absolute', top: '0', right: '0' }} onClick={closeEvent}>
                     <CloseIcon />
                 </IconButton>
+                {percent != 0 && <p>{percent}% completed</p>}
                 {rows.map((index) => (
-                    <Card sx={{ marginTop: "25px", border: "1px solid" }}>
+                    <Card sx={{ marginTop: "25px", border: "1px solid" }} key={`ADDPRODUCT-${index}`}>
                         <CardHeader action={
                             <IconButton aria-label="close" onClick={() => {
                                 const i = rows.indexOf(index)
@@ -112,7 +108,7 @@ function BulkAddForm({ closeEvent }) {
                             </IconButton>
                         } />
                         <CardContent>
-                            <BulkAddRow key={index * 2} index={`${index}-Row`} setProducts={setProducts} products={products} />
+                            <AddProductRow key={index * 2} index={`${index}-Row`} setProducts={setProducts} products={products} />
                         </CardContent>
                     </Card>
                 ))}
@@ -131,4 +127,4 @@ function BulkAddForm({ closeEvent }) {
     )
 }
 
-export default BulkAddForm
+export default AddProducts
