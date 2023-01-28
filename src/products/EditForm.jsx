@@ -13,26 +13,37 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebase-config";
 import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
+import { MEASURE_UNIT, SALE_TYPE } from "../Constants";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 // import uuid from 'uuid/package.json';
 const { v4: uuidv4 } = require('uuid');
 
 export default function EditForm({ fid, closeEvent }) {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("")
   const [file, setFile] = useState("");
-  const [menutype, setMenutype] = useState("");
+  const [menuType, setMenutype] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
   const empCollectionRef = collection(db, "Menu");
   const setRows = useAppStore((state) => state.setRows);
   const rows = useAppStore((state) => state.rows);
   const [percent, setPercent] = useState(0);
-
+  const [measureUnit, setMeasureUnit] = useState("")
+  const [quantity, setQuantity] = useState("")
+  const [onSale, setOnSale] = useState(fid.onSale)
+  const [saleType, setSaleType] = useState(fid.saleType);
+  const [saleValue, setSaleValue] = useState(fid.saleValue);
   useEffect(() => {
     console.log("FID: " + fid.id);
     setName(fid.name);
+    setDescription(fid.description)
     setPrice(fid.price);
-    setMenutype(fid.menutype);
+    setMenutype(fid.menuType);
     setCategory(fid.category);
+    setMeasureUnit(fid.measureUnit);
+    setQuantity(fid.quantity);
   }, []);
 
   const getUsers = async () => {
@@ -45,8 +56,9 @@ export default function EditForm({ fid, closeEvent }) {
     const newFields = {
       id: doc.id,
       name: name,
+      description: description,
       price: Number(price),
-      menutype: menutype,
+      menuType: menuType,
       category: category,
     };
     await updateDoc(userDoc, newFields);
@@ -59,8 +71,9 @@ export default function EditForm({ fid, closeEvent }) {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
       name: name,
+      description: description,
       price: Number(price),
-      menutype: menutype,
+      menuType: menuType,
       category: category,
       file: url,
     };
@@ -152,15 +165,27 @@ export default function EditForm({ fid, closeEvent }) {
       label: "Dry-Fruits",
     },
   ];
-
+  const handleSaleTypeChange = (event) => {
+    setSaleType(event.target.value)
+  }
+  const handleSaleValueChange = (event) => {
+    setSaleValue(event.target.value)
+  }
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
-
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value)
+  }
   const handlePriceChange = (event) => {
     setPrice(event.target.value);
   };
-
+  const handleSetQuantity = (event) => {
+    setQuantity(event.target.value)
+  }
+  const handleChangeUnit = (event) => {
+    setMeasureUnit(event.target.value)
+  }
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
@@ -172,9 +197,11 @@ export default function EditForm({ fid, closeEvent }) {
   const handleMenuTypeChange = (event) => {
     setMenutype(event.target.value);
   };
-
+  const handleChangeOnSale = (event) => {
+    setOnSale(event.target.checked)
+  }
   return (
-    <>
+    <div>
       <Box sx={{ m: 2 }} />
       <Typography variant="h5" align="center">
         Edit Product
@@ -186,7 +213,7 @@ export default function EditForm({ fid, closeEvent }) {
         <CloseIcon />
       </IconButton>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField
             error={false}
             id="name"
@@ -194,6 +221,18 @@ export default function EditForm({ fid, closeEvent }) {
             value={name}
             onChange={handleNameChange}
             label="Name"
+            size="small"
+            sx={{ marginTop: "30px", minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            error={false}
+            id="description"
+            name="description"
+            value={description}
+            onChange={handleDescriptionChange}
+            label="Description"
             size="small"
             sx={{ marginTop: "30px", minWidth: "100%" }}
           />
@@ -217,7 +256,49 @@ export default function EditForm({ fid, closeEvent }) {
             }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={0.8}>
+          <FormControlLabel
+            control={<Checkbox checked={onSale} onChange={handleChangeOnSale} name="onSale" />}
+            name="onSale"
+            sx={{ minWidth: "100%" }}
+            label="Sale" />
+        </Grid>
+        <Grid item xs={2.6}>
+          {onSale &&
+            <TextField
+              error={false}
+              id="saleType"
+              label="SaleType"
+              select
+              name='saleType'
+              value={saleType}
+              onChange={handleSaleTypeChange}
+              size="small"
+              sx={{ minWidth: "100%" }}
+            >
+              {SALE_TYPE.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          }
+        </Grid>
+        <Grid item xs={2.6}>
+          {onSale &&
+            <TextField
+              error={false}
+              id="SaleValue"
+              name="saleValue"
+              type="number"
+              value={saleValue}
+              onChange={handleSaleValueChange}
+              label="Sale Value"
+              size="small"
+              sx={{ minWidth: "100%" }}
+            />}
+        </Grid>
+        <Grid item xs={3}>
           <TextField
             error={false}
             id="category"
@@ -235,13 +316,13 @@ export default function EditForm({ fid, closeEvent }) {
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={3}>
           <TextField
             error={false}
             id="menutype"
             label="Menu Type"
             select
-            value={menutype}
+            value={menuType}
             onChange={handleMenuTypeChange}
             size="small"
             sx={{ minWidth: "100%" }}
@@ -253,8 +334,40 @@ export default function EditForm({ fid, closeEvent }) {
             ))}
           </TextField>
         </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="measureUnit"
+            label="Unit"
+            select
+            name="measureUnit"
+            value={measureUnit}
+            onChange={handleChangeUnit}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          >
+            {MEASURE_UNIT.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="quantity"
+            label="Quantity"
+            type="number"
+            name='quantity'
+            value={quantity}
+            onChange={handleSetQuantity}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
         <Grid item xs={12}>
-          <input type="file" onChange={handlePicChange} accept="/image/*" /> 
+          <input type="file" onChange={handlePicChange} accept="/image/*" />
           <p>{percent}% completed</p>
         </Grid>
         <Grid item xs={12}>
@@ -265,6 +378,6 @@ export default function EditForm({ fid, closeEvent }) {
           </Typography>
         </Grid>
       </Grid>
-    </>
+    </div>
   );
 }

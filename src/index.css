@@ -32,3 +32,6 @@ code {
 .swal2-container.swal2-center.swal2-backdrop-show {
   z-index: 10000;
 }
+.editForm {
+  width: 80% !important;
+}

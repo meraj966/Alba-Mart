@@ -56,12 +56,13 @@ function Product({ id, name, date, file, onSale, price, saleType, saleValue, des
         });
     };
 
-    const editData = (rowData) => {
-        const data = {
-            ...rowData,
+    const editData = () => {
+        const newData = {
+            ...data,
             date: new Date(), 
         };
-        setFormid(data);
+        console.log ("EDIT DATA", data)
+        setFormid(newData);
         handleEditOpen();
     };
 
@@ -71,7 +72,7 @@ function Product({ id, name, date, file, onSale, price, saleType, saleValue, des
             subheader={new Date(date).toLocaleString()}
             action={
                 <>
-                    <IconButton aria-label="edit" onClick={data=>editData(data)}>
+                    <IconButton aria-label="edit" onClick={editData}>
                         <EditIcon />
                     </IconButton>
                     <IconButton onClick={deleteProduct}>

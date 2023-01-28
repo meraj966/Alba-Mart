@@ -4,7 +4,7 @@ import isNull from "lodash/isNull";
 import { Box, IconButton, Typography, Button } from '@mui/material'
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import BulkAddRow from './resuable/BulkAddRow';
+import AddProductRow from './resuable/AddProductRow';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -16,7 +16,7 @@ import { useAppStore } from '../appStore';
 
 const { v4: uuidv4 } = require('uuid');
 
-function BulkAddForm({ closeEvent }) {
+function AddProducts({ closeEvent }) {
     const [products, setProducts] = useState([]);
     const [rows, setRows] = useState([1]);
     const [percent, setPercent] = useState(0)
@@ -91,7 +91,7 @@ function BulkAddForm({ closeEvent }) {
                 </IconButton>
                 {percent != 0 && <p>{percent}% completed</p>}
                 {rows.map((index) => (
-                    <Card sx={{ marginTop: "25px", border: "1px solid" }} key={`BULKADDFORM-${index}`}>
+                    <Card sx={{ marginTop: "25px", border: "1px solid" }} key={`ADDPRODUCT-${index}`}>
                         <CardHeader action={
                             <IconButton aria-label="close" onClick={() => {
                                 const i = rows.indexOf(index)
@@ -108,7 +108,7 @@ function BulkAddForm({ closeEvent }) {
                             </IconButton>
                         } />
                         <CardContent>
-                            <BulkAddRow key={index * 2} index={`${index}-Row`} setProducts={setProducts} products={products} />
+                            <AddProductRow key={index * 2} index={`${index}-Row`} setProducts={setProducts} products={products} />
                         </CardContent>
                     </Card>
                 ))}
@@ -127,4 +127,4 @@ function BulkAddForm({ closeEvent }) {
     )
 }
 
-export default BulkAddForm
+export default AddProducts

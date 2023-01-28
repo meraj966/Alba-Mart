@@ -6,7 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-function BulkAddRow({ products, setProducts, index }) {
+function AddProductRow({ products, setProducts, index }) {
     const [rowData, setRowData] = useState({
         name: "",
         description: "",
@@ -200,4 +200,4 @@ function BulkAddRow({ products, setProducts, index }) {
     )
 }
 
-export default BulkAddRow
+export default AddProductRow
