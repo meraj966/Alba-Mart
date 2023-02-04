@@ -6,9 +6,11 @@ let appStore = (set) => ({
   rows: [],
   username: '',
   password: '',
+  settings: [],
   updateUsername: (username) => set((state) => ({ username: username })),
   updatePassword: (password) => set((state) => ({ password: password })),
   setRows: (rows) => set((state) => ({ rows: rows })),
+  setSettings: (setting) => set((state) => ({setting: setting})),
   updateDopen: (dopen) => set((state) => ({ dopen: dopen })),
 });
 

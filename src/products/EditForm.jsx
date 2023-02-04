@@ -29,6 +29,7 @@ export default function EditForm({ fid, closeEvent }) {
   const empCollectionRef = collection(db, "Menu");
   const setRows = useAppStore((state) => state.setRows);
   const rows = useAppStore((state) => state.rows);
+  console.log(rows)
   const [percent, setPercent] = useState(0);
   const [measureUnit, setMeasureUnit] = useState("")
   const [quantity, setQuantity] = useState("")
