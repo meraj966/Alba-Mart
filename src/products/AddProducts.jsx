@@ -57,7 +57,7 @@ function AddProducts({ closeEvent }) {
             const storageRef = []
             const urls = []
             Object.values(products).map((prod) => {
-                const storageRef = ref(storage, `/images/${uuidv4() + prod.file.name}`)
+                const storageRef = ref(storage, `/images/${ prod.file.name + uuidv4()}`)
                 const uploadTask = uploadBytesResumable(storageRef, prod.file);
                 uploadTask.on(
                     "state_changed",

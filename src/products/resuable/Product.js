@@ -18,10 +18,9 @@ import {
     doc,
 } from "firebase/firestore";
 import { db } from "../../firebase-config";
-function Product({ id, name, date, file, onSale, price, saleType, saleValue, description, category, menuType, quantity, measureUnit, deleteProd, handleEditOpen , setFormid, data}) {
+function Product({ id, name, date, file, onSale, price, saleType, saleValue, description, category, subCategory, quantity, measureUnit, deleteProd, handleEditOpen , setFormid, data}) {
     let salePrice = price
     let discount = 0
-    console.log(menuType)
     if (onSale) {
         if (saleType === "%") {
             let percent = (saleValue / 100).toFixed(2);
@@ -84,7 +83,7 @@ function Product({ id, name, date, file, onSale, price, saleType, saleValue, des
         <CardContent>
             <Typography>{description}</Typography>
             <div style={{ display: "flex" }}>
-                <Typography style={{ width: "70%" }}> {category} | {menuType} |  {quantity} {measureUnit}</Typography>
+                <Typography style={{ width: "70%" }}> {category} | {subCategory} |  {quantity} {measureUnit}</Typography>
                 <Tooltip title={onSale && `Actual Price:  ${price} | Discount: ${discount}`} >
                     <Typography style={{ textAlignLast: "right", width: "30%" }}>
                         <>Price: <b>&#8377;{salePrice}</b></>
