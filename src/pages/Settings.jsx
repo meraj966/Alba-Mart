@@ -4,20 +4,21 @@ import Navbar from "../components/Navbar";
 import "../Dash.css";
 import { db } from "../firebase-config";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppStore } from "../appStore";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
-import SettingsEditForm from "../products/SettingsEditForm";
+import { CATEGORY } from "../Constants";
+import Swal from "sweetalert2";
+import CategoryEditForm from "../products/settings_forms/CategoryEditForm";
+import Tooltip from '@mui/material/Tooltip';
+import { AddCircle } from "@mui/icons-material";
 
 const style = {
     position: "absolute",
@@ -31,52 +32,73 @@ const style = {
     p: 4,
 };
 
-
 export default function Settings() {
-    const [file, setFile] = useState("");
-    const [data, setData] = useState({})
-    const [editOpen, setEditOpen] = useState(false)
-    const [settings, setSettings] = useState({})
-    const [edit, setEdit] = useState("")
-    const [settingsData, setSettingsData] = useState(
-        { category: "", subCategory: "", categories: {}, saleType: "", onSale: false, unit: "" }
-    )
-    const updateSettingsData = (event) => {
-        let data = { ...settingsData }
-        data[event.target.name] = event.target.value
-        if (event.target.name == "onSale") data[event.target.name] = event.target.checked
-        setSettingsData(data);
-    }
+    const [settings, setSettings] = useState(null)
     const dataRef = collection(db, "Settings");
 
+    const [editOpen, setEditOpen] = useState(false)
+    const [editType, setEditType] = useState("")
+    const [type, setType] = useState("edit")
+
+    const [category, setCategory] = useState("")
+    const [categoryList, setCategoryList] = useState([])
+    const [subCategoryList, setSubCategoryList] = useState([])
+    const [categories, setCategories] = useState([])
+
+    const [saleType, setSaleType] = useState([])
+    const [defaultSaleType, setDefaultSaleType] = useState("")
+
+    const [unit, setUnit] = useState([])
+    const [defaultUnit, setDefaultUnit] = useState("")
+
+    const [onSale, setOnSale] = useState(false)
     useEffect(() => {
-        setSettingsData({
-            category: data["defaultCategory"],
-            categories: data["categories"],
-            saleType: data["defaultSaleType"],
-            onSale: data["onSale"],
-            unit: data["defaultUnit"]
-        })
-        setSettings(data)
-    }, [data])
+        if (settings) {
+            const data = settings[0]
+            setCategory(data.defaultCategory)
+            setCategoryList(Object.keys(data.categories))
+            setSubCategoryList(data.categories[data.defaultCategory])
+            setCategories(data.categories)
+            setSaleType(data.saleType)
+            setDefaultSaleType(data.defaultSaleType)
+            setUnit(data.unit)
+            setDefaultUnit(data.defaultUnit)
+            setOnSale(data.onSale)
+        }
+    }, [settings])
 
     useEffect(() => {
-        getSettingsData();
-    }, []);
+        getSettingsData()
+    }, [])
+
+    useEffect(() => {
+        setSubCategoryList(categories[category])
+    }, [category])
 
     const getSettingsData = async () => {
         const data = await getDocs(dataRef);
-        data.docs.map((doc) => {
-            setData({ ...doc.data(), id: doc.id })
-        });
+        setSettings(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
-    const handleUpload = () => { }
-    const handleEditClick = (selectedEdit) => {
+    const handleEditForm = (editType, type) => {
+        setType(type)
+        setEditType(editType)
         setEditOpen(!editOpen)
-        setEdit(selectedEdit)
     }
-    console.log(settingsData, settings, "data")
+
+    const handleSubmit = async () => {
+        const settingsDoc = doc(db, "Settings", "UserSettings")
+        const newFields = {
+            defaultCategory: category,
+            defaultSaleType,
+            onSale
+        }
+        await updateDoc(settingsDoc, newFields)
+        getSettingsData()
+        Swal.fire("Updated!", "Your changes to default settings have been made.", "success")
+    }
+
+    console.log(subCategoryList, settings, category, categoryList, "SETINGSSsss")
     return (
         <>
             <div className="bgcolor">
@@ -85,7 +107,17 @@ export default function Settings() {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description">
                     <Box sx={style} className="editForm">
-                        <SettingsEditForm closeEvent={() => setEditOpen(false)} edit={edit} settingsData={settingsData} setSettingsData={setSettingsData} />
+                        {editType === CATEGORY &&
+                            <CategoryEditForm
+                                closeForm={() => setEditOpen(!editOpen)}
+                                formType={type}
+                                handleEditForm={handleEditForm}
+                                selectedCategory={category}
+                                categories={categories}
+                                refreshSettingsData={getSettingsData}
+                            />
+                        }
+
                     </Box>
                 </Modal>
                 <Navbar />
@@ -97,30 +129,43 @@ export default function Settings() {
                             SETTINGS
                         </Typography>
                         <Grid container spacing={2}>
+                            <Grid item xs={12} ></Grid>
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
                                 <TextField
                                     error={false}
                                     id="category"
                                     name="category"
-                                    value={settingsData["category"]}
-                                    onChange={updateSettingsData}
-                                    label="Category"
+                                    label="Set Default Category"
+                                    value={category}
+                                    onChange={e => setCategory(e.target.value)}
                                     size="small"
                                     select
-                                    sx={{ marginTop: "30px", minWidth: "100%" }}
+                                    sx={{ minWidth: "100%" }}
                                 >
-                                    {settingsData["categories"] && Object.keys(settingsData["categories"])?.map((option) => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
+                                    {categoryList?.map((option) => {
+                                        return (
+                                            <MenuItem key={option} value={option}>
+                                                {option}
+                                            </MenuItem>
+                                        )
+                                    })
+                                    }
                                 </TextField>
                             </Grid>
-                            <Grid item xs={2}>
-                                <IconButton aria-label="edit" onClick={() => handleEditClick("category")} sx={{ marginTop: "30px" }}>
-                                    <EditIcon />
-                                </IconButton>
+                            <Grid item xs={1}>
+                                <Tooltip title="Edit current category">
+                                    <IconButton aria-label="edit" onClick={() => handleEditForm(CATEGORY, "edit")} >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                            <Grid item xs={1}>
+                                <Tooltip title="Add Categories">
+                                    <IconButton onClick={() => handleEditForm(CATEGORY, "add")}>
+                                        <AddCircle />
+                                    </IconButton>
+                                </Tooltip>
                             </Grid>
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
@@ -128,14 +173,13 @@ export default function Settings() {
                                     error={false}
                                     id="subCategory"
                                     name="subCategory"
-                                    value={settingsData["subCategory"]}
-                                    onChange={updateSettingsData}
+                                    value={subCategoryList && subCategoryList[0] || ""}
                                     label="Sub Category"
                                     size="small"
                                     select
                                     sx={{ marginTop: "30px", minWidth: "100%" }}
                                 >
-                                    {settingsData["categories"] && settingsData["categories"][settingsData["category"]]?.map((option) => (
+                                    {subCategoryList?.map((option) => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
@@ -143,9 +187,6 @@ export default function Settings() {
                                 </TextField>
                             </Grid>
                             <Grid item xs={2}>
-                                <IconButton aria-label="edit" onClick={() => handleEditClick("subCategory")} sx={{ marginTop: "30px" }}>
-                                    <EditIcon />
-                                </IconButton>
                             </Grid>
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
@@ -153,14 +194,14 @@ export default function Settings() {
                                     error={false}
                                     id="saleType"
                                     name="saleType"
-                                    value={settingsData["saleType"]}
-                                    onChange={updateSettingsData}
+                                    value={defaultSaleType}
+                                    onChange={(e) => setDefaultSaleType(e.target.value)}
                                     label="Sale Type"
                                     size="small"
                                     select
                                     sx={{ marginTop: "30px", minWidth: "100%" }}
                                 >
-                                    {settings["saleType"] && settings["saleType"].map((option) => (
+                                    {saleType?.map((option) => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
@@ -168,9 +209,6 @@ export default function Settings() {
                                 </TextField>
                             </Grid>
                             <Grid item xs={2}>
-                                <IconButton aria-label="edit" onClick={() => handleEditClick("saleType")} sx={{ marginTop: "30px" }}>
-                                    <EditIcon />
-                                </IconButton>
                             </Grid>
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
@@ -178,29 +216,25 @@ export default function Settings() {
                                     error={false}
                                     id="unit"
                                     name="unit"
-                                    value={settingsData["unit"]}
-                                    onChange={updateSettingsData}
+                                    value={defaultUnit}
+                                    onChange={(e) => setDefaultUnit(e.target.value)}
                                     label="Unit"
                                     size="small"
                                     select
                                     sx={{ marginTop: "30px", minWidth: "100%" }}
                                 >
-                                    {settings["unit"] && settings["unit"].map((option) => (
+                                    {unit.map((option) => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
                                     ))}
                                 </TextField>
                             </Grid>
-                            <Grid item xs={2}>
-                                <IconButton aria-label="edit" onClick={() => handleEditClick("unit")} sx={{ marginTop: "30px" }}>
-                                    <EditIcon />
-                                </IconButton>
-                            </Grid>
+                            <Grid item xs={2}></Grid>
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
                                 <FormControlLabel
-                                    control={<Checkbox checked={settingsData["onSale"]} onChange={updateSettingsData} name="onSale" />}
+                                    control={<Checkbox checked={onSale} onChange={(e)=>setOnSale(e.target.checked)} name="onSale" />}
                                     name="onSale"
                                     sx={{ minWidth: "100%" }}
                                     label="Sale" />
@@ -210,7 +244,7 @@ export default function Settings() {
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
                                 <Typography variant="h5" align="right">
-                                    <Button variant="contained" style={{ width: '200px', align: 'right' }} onClick={handleUpload}>
+                                    <Button variant="contained" style={{ width: '200px', align: 'right' }} onClick={handleSubmit}>
                                         Submit
                                     </Button>
                                 </Typography>

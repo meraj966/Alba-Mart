@@ -61,3 +61,6 @@ export const SETTINGS_LABEL_MAP = {
   saleType: "Sale Type",
   unit: "Unit"
 }
+
+export const CATEGORY = "CATEGORY"
+export const SUBCATEGORY = "SUBCATEGORY"
