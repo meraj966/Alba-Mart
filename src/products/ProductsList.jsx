@@ -128,7 +128,6 @@ export default function ProductsList() {
             {console.log(rows)}
             <Grid container spacing={1}>
               {rows.map((row) => {
-                console.log("in rows", rows)
                 return <Grid item xs={4}>
                   <Product
                   data = {row}

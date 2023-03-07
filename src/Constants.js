@@ -54,3 +54,13 @@ export const SALE_TYPE = [
 export const MEASURE_UNIT = [
   "KG", "LITRE", "PIECE"
 ]
+
+export const SETTINGS_LABEL_MAP = {
+  category: "Category",
+  subCategory: "Sub Category",
+  saleType: "Sale Type",
+  unit: "Unit"
+}
+
+export const CATEGORY = "CATEGORY"
+export const SUBCATEGORY = "SUBCATEGORY"

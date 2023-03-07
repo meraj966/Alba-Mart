@@ -1,25 +1,57 @@
 import React, { useEffect, useState } from 'react'
 import { CurrencyRupee } from '@mui/icons-material';
 import { Grid, InputAdornment, TextField } from '@mui/material'
-import { ITEM_CATEGORY, ITEM_TYPE, MEASURE_UNIT, SALE_TYPE } from '../../Constants';
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase-config';
 
 function AddProductRow({ products, setProducts, index }) {
+    const [settings, setSettings] = useState(null)
+    const dataRef = collection(db, "Settings");
+
     const [rowData, setRowData] = useState({
         name: "",
         description: "",
         saleType: "",
+        saleTypeList: [],
         onSale: false,
         file: null,
-        menuType: "",
+        subCategory: "",
         measureUnit: "",
         quantity: 0,
         price: 0,
         category: "",
-        saleValue: ""
+        saleValue: "",
+        categoryList: [],
+        categories: []
     })
+    useEffect(() => {
+        getSettingsData()
+    }, [])
+    
+    useEffect(()=>{
+        console.log("SETTTINGS IN ADD PRODUCTS", settings)
+        if (settings) {
+            let newRowData = {...rowData}
+            newRowData["onSale"] = settings[0]["onSale"]
+            newRowData["saleType"] = settings[0]["defaultSaleType"]
+            newRowData["saleTypeList"] = settings[0]["saleType"]
+            newRowData["defaultUnit"] = settings[0]["defaultUnit"]
+            newRowData["categories"] = settings[0]["categories"]
+            // newRowData["category"] = Object.keys(settings[0]["categories"])
+            newRowData["category"] = settings[0]["defaultCategory"]
+            newRowData["categoryList"] = Object.keys(settings[0]["categories"])
+            newRowData["measureUnit"] = settings[0]["defaultUnit"]
+            setRowData(newRowData)
+        }
+    }, [settings])
+    {console.log(rowData["categoryList"], "CATEGOR?y KISTTSTAS")}
+    const getSettingsData = async () => {
+        const data = await getDocs(dataRef);
+        setSettings(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
     const handleChange = async (event) => {
         let data = {}
         data[event.target.name] = event.target.value
@@ -102,7 +134,7 @@ function AddProductRow({ products, setProducts, index }) {
                         size="small"
                         sx={{ minWidth: "100%" }}
                     >
-                        {SALE_TYPE.map((option) => (
+                        {rowData["saleTypeList"]?.map((option) => (
                             <MenuItem key={option} value={option}>
                                 {option}
                             </MenuItem>
@@ -135,9 +167,9 @@ function AddProductRow({ products, setProducts, index }) {
                     size="small"
                     sx={{ minWidth: "100%" }}
                 >
-                    {ITEM_CATEGORY.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                    {rowData["categoryList"]?.map((option) => (
+                        <MenuItem key={option} value={option}>
+                            {option}
                         </MenuItem>
                     ))}
                 </TextField>
@@ -145,18 +177,18 @@ function AddProductRow({ products, setProducts, index }) {
             <Grid item xs={2.5}>
                 <TextField
                     error={false}
-                    id="menuType"
-                    label="Menu Type"
+                    id="subCategory"
+                    label="Sub Category"
                     select
-                    name='menuType'
-                    value={rowData["menuType"]}
+                    name='subCategory'
+                    value={rowData["subCategory"]}
                     onChange={handleChange}
                     size="small"
                     sx={{ minWidth: "100%" }}
                 >
-                    {ITEM_TYPE.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                    {rowData["categories"][rowData["category"]]?.map((option) => (
+                        <MenuItem key={option} value={option}>
+                            {option}
                         </MenuItem>
                     ))}
                 </TextField>
@@ -173,7 +205,7 @@ function AddProductRow({ products, setProducts, index }) {
                     size="small"
                     sx={{ minWidth: "100%" }}
                 >
-                    {MEASURE_UNIT.map((option) => (
+                    {settings && settings[0]["unit"]?.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>

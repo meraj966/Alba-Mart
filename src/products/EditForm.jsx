@@ -16,6 +16,7 @@ import { useAppStore } from "../appStore";
 import { MEASURE_UNIT, SALE_TYPE } from "../Constants";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+
 // import uuid from 'uuid/package.json';
 const { v4: uuidv4 } = require('uuid');
 
@@ -23,44 +24,59 @@ export default function EditForm({ fid, closeEvent }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("")
   const [file, setFile] = useState("");
-  const [menuType, setMenutype] = useState("");
+  const [subCategory, setSubCategory] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
   const empCollectionRef = collection(db, "Menu");
   const setRows = useAppStore((state) => state.setRows);
   const rows = useAppStore((state) => state.rows);
+  console.log(rows)
   const [percent, setPercent] = useState(0);
   const [measureUnit, setMeasureUnit] = useState("")
   const [quantity, setQuantity] = useState("")
   const [onSale, setOnSale] = useState(fid.onSale)
   const [saleType, setSaleType] = useState(fid.saleType);
   const [saleValue, setSaleValue] = useState(fid.saleValue);
+  const [settingsData, setSettingsData] = useState({})
+  const settingsDataRef = collection(db, "Settings");
+
   useEffect(() => {
     console.log("FID: " + fid.id);
     setName(fid.name);
     setDescription(fid.description)
     setPrice(fid.price);
-    setMenutype(fid.menuType);
     setCategory(fid.category);
     setMeasureUnit(fid.measureUnit);
     setQuantity(fid.quantity);
+    setSubCategory(fid.subCategory)
   }, []);
 
+  useEffect(() => {
+    getSettingsData()
+  }, [])
+  console.log("SELECTED _ CATEGORY ", category, subCategory)
+  const getSettingsData = async () => {
+    const data = await getDocs(settingsDataRef)
+    data.docs.map((doc)=> {
+      setSettingsData({...doc.data(), id: doc.id})
+    })
+  }
   const getUsers = async () => {
     const data = await getDocs(empCollectionRef);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
-
+  console.log("SETTINGS DATA", settingsData)
   const createUser = async () => {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
-      id: doc.id,
+      // id: doc.id,
       name: name,
       description: description,
       price: Number(price),
-      menuType: menuType,
+      subCategory: subCategory,
       category: category,
     };
+    console.log(newFields, "NEWWWWWWWWWWWW FIELD")
     await updateDoc(userDoc, newFields);
     getUsers();
     closeEvent();
@@ -70,10 +86,11 @@ export default function EditForm({ fid, closeEvent }) {
   const createUserWithFile = async (url) => {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
+      id: doc.id,
       name: name,
       description: description,
       price: Number(price),
-      menuType: menuType,
+      subCategory: subCategory,
       category: category,
       file: url,
     };
@@ -116,55 +133,6 @@ export default function EditForm({ fid, closeEvent }) {
     }
   };
 
-  const mtype = [
-    {
-      value: "Packet",
-      label: "Packet",
-    },
-    {
-      value: "Open",
-      label: "Open",
-    },
-    {
-      value: "Sack",
-      label: "Sack",
-    },
-    {
-      value: "Bottel",
-      label: "Bottel",
-    },
-  ];
-
-  const currencies = [
-    {
-      value: "Dal",
-      label: "Dal",
-    },
-    {
-      value: "Sampoo",
-      label: "Sampoo",
-    },
-    {
-      value: "Rice",
-      label: "Rice",
-    },
-    {
-      value: "Soap",
-      label: "Soap",
-    },
-    {
-      value: "Detergent",
-      label: "Detergent",
-    },
-    {
-      value: "Spices",
-      label: "Spices",
-    },
-    {
-      value: "Dry-Fruits",
-      label: "Dry-Fruits",
-    },
-  ];
   const handleSaleTypeChange = (event) => {
     setSaleType(event.target.value)
   }
@@ -194,8 +162,8 @@ export default function EditForm({ fid, closeEvent }) {
     setFile(event.target.files[0]);
   };
 
-  const handleMenuTypeChange = (event) => {
-    setMenutype(event.target.value);
+  const handleSubCategoryChange = (event) => {
+    setSubCategory(event.target.value);
   };
   const handleChangeOnSale = (event) => {
     setOnSale(event.target.checked)
@@ -309,9 +277,9 @@ export default function EditForm({ fid, closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {currencies.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            {settingsData["categories"] && Object.keys(settingsData["categories"]).map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
               </MenuItem>
             ))}
           </TextField>
@@ -319,17 +287,17 @@ export default function EditForm({ fid, closeEvent }) {
         <Grid item xs={3}>
           <TextField
             error={false}
-            id="menutype"
-            label="Menu Type"
+            id="subCategory"
+            label="Sub Category"
             select
-            value={menuType}
-            onChange={handleMenuTypeChange}
+            value={subCategory}
+            onChange={handleSubCategoryChange}
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {mtype.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            {settingsData["categories"] && settingsData["categories"][category]?.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
               </MenuItem>
             ))}
           </TextField>
