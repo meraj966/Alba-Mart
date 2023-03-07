@@ -33,10 +33,10 @@ function CategoryEditForm({ formType, closeForm, handleEditForm, selectedCategor
             if (isBulkCategoryAdd) {
                 split(addCategory,",").map(i=>newCategories[i.trim()] = [])
             } else {
-                newCategories[addCategory.trim()] = newSubCategory
+                newCategories[addCategory.trim()] = {data: newSubCategory}
             }
         } else {
-            newCategories[category] = newSubCategory
+            newCategories[category] = {data: newSubCategory}
         }
         const settingsDoc = doc(db, "Settings", "UserSettings")
         const newFields = {categories: newCategories}
@@ -46,7 +46,7 @@ function CategoryEditForm({ formType, closeForm, handleEditForm, selectedCategor
         setAddCategory("")
         setSubCategory("")
         setCategory("")
-        // closeForm()
+        closeForm()
     }
     return (
         <>

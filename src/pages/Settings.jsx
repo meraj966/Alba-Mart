@@ -91,6 +91,7 @@ export default function Settings() {
         const newFields = {
             defaultCategory: category,
             defaultSaleType,
+            defaultUnit,
             onSale
         }
         await updateDoc(settingsDoc, newFields)
