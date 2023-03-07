@@ -38,7 +38,7 @@ function AddProducts({ closeEvent }) {
             saleType: prod["saleType"],
             saleValue: prod["saleValue"],
             category: prod["category"],
-            menuType: prod["menuType"],
+            subCategory: prod["subCategory"],
             measureUnit: prod["measureUnit"],
             quantity: prod["quantity"],
             file: url,

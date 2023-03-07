@@ -153,14 +153,14 @@ export default function Settings() {
                                     }
                                 </TextField>
                             </Grid>
-                            <Grid item xs={1}>
+                            <Grid item >
                                 <Tooltip title="Edit current category">
                                     <IconButton aria-label="edit" onClick={() => handleEditForm(CATEGORY, "edit")} >
                                         <EditIcon />
                                     </IconButton>
                                 </Tooltip>
                             </Grid>
-                            <Grid item xs={1}>
+                            <Grid item >
                                 <Tooltip title="Add Categories">
                                     <IconButton onClick={() => handleEditForm(CATEGORY, "add")}>
                                         <AddCircle />
@@ -237,7 +237,7 @@ export default function Settings() {
                                     control={<Checkbox checked={onSale} onChange={(e)=>setOnSale(e.target.checked)} name="onSale" />}
                                     name="onSale"
                                     sx={{ minWidth: "100%" }}
-                                    label="Sale" />
+                                    label="Default On Sale" />
                             </Grid>
                             <Grid item xs={2}>
                             </Grid>
