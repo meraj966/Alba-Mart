@@ -44,6 +44,7 @@ export default function Settings() {
     const [categoryList, setCategoryList] = useState([])
     const [subCategoryList, setSubCategoryList] = useState([])
     const [categories, setCategories] = useState([])
+    const [subCategories, setSubCategories] = useState([])
 
     const [saleType, setSaleType] = useState([])
     const [defaultSaleType, setDefaultSaleType] = useState("")
@@ -55,16 +56,19 @@ export default function Settings() {
     useEffect(() => {
         if (settings) {
             const data = settings[0]
+            console.log(data, "settings useeffect data")
             setCategory(data.defaultCategory)
-            setCategoryList(Object.keys(data.categories))
-            setSubCategoryList(data.categories[data.defaultCategory])
-            setCategories(data.categories)
+            setCategoryList(data.category.map(cat=>cat.name))
+            setSubCategoryList(data.subCategory[data.defaultCategory]?.map(i=>i.name))
             setSaleType(data.saleType)
             setDefaultSaleType(data.defaultSaleType)
             setUnit(data.unit)
             setDefaultUnit(data.defaultUnit)
             setOnSale(data.onSale)
+            setCategories(data.category)
+            setSubCategories(data.subCategory)
         }
+        console.log(category, categoryList)
     }, [settings])
 
     useEffect(() => {
@@ -72,7 +76,7 @@ export default function Settings() {
     }, [])
 
     useEffect(() => {
-        setSubCategoryList(categories[category])
+        setSubCategoryList(subCategories[category]?.map(i=>i.name))
     }, [category])
 
     const getSettingsData = async () => {
@@ -114,8 +118,9 @@ export default function Settings() {
                                 formType={type}
                                 handleEditForm={handleEditForm}
                                 selectedCategory={category}
-                                categories={categories}
+                                settingsData={settings}
                                 refreshSettingsData={getSettingsData}
+                                subCategoryList={subCategoryList}
                             />
                         }
 
