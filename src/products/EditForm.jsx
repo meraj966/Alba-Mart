@@ -30,7 +30,7 @@ export default function EditForm({ fid, closeEvent }) {
   const empCollectionRef = collection(db, "Menu");
   const setRows = useAppStore((state) => state.setRows);
   const rows = useAppStore((state) => state.rows);
-  console.log(rows)
+  // console.log(rows)
   const [percent, setPercent] = useState(0);
   const [measureUnit, setMeasureUnit] = useState("")
   const [quantity, setQuantity] = useState("")
@@ -40,8 +40,18 @@ export default function EditForm({ fid, closeEvent }) {
   const [settingsData, setSettingsData] = useState({})
   const settingsDataRef = collection(db, "Settings");
 
+  const [categoryList, setCategoryList] = useState([])
+  const [subCategoryList, setSubCategoryList] = useState([])
+
   useEffect(() => {
-    console.log("FID: " + fid.id);
+    console.log("SETTTTTTTTTTTTTTTINGSSSSSSSs", settingsData)
+    if (Object.keys(settingsData)) {
+      setCategoryList(settingsData?.category?.map(i=>i.name))
+      setSubCategoryList(settingsData?.subCategory && settingsData?.subCategory[category]?.map(i=>i.name))
+    }
+  }, [settingsData])
+  useEffect(() => {
+    // console.log("FID: " + fid.id);
     setName(fid.name);
     setDescription(fid.description)
     setPrice(fid.price);
@@ -54,7 +64,7 @@ export default function EditForm({ fid, closeEvent }) {
   useEffect(() => {
     getSettingsData()
   }, [])
-  console.log("SELECTED _ CATEGORY ", category, subCategory)
+  // console.log("SELECTED _ CATEGORY ", category, subCategory)
   const getSettingsData = async () => {
     const data = await getDocs(settingsDataRef)
     data.docs.map((doc)=> {
@@ -65,7 +75,7 @@ export default function EditForm({ fid, closeEvent }) {
     const data = await getDocs(empCollectionRef);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
-  console.log("SETTINGS DATA", settingsData)
+  // console.log("SETTINGS DATA", settingsData)
   const createUser = async () => {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
@@ -76,7 +86,7 @@ export default function EditForm({ fid, closeEvent }) {
       subCategory: subCategory,
       category: category,
     };
-    console.log(newFields, "NEWWWWWWWWWWWW FIELD")
+    // console.log(newFields, "NEWWWWWWWWWWWW FIELD")
     await updateDoc(userDoc, newFields);
     getUsers();
     closeEvent();
@@ -125,7 +135,7 @@ export default function EditForm({ fid, closeEvent }) {
         () => {
           // download url
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            console.log(url);
+            // console.log(url);
             createUserWithFile(url);
           });
         }
@@ -156,6 +166,8 @@ export default function EditForm({ fid, closeEvent }) {
   }
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
+    setSubCategory("")
+    setSubCategoryList(settingsData.subCategory[event.target.value]?.map(i=>i.name))
   };
 
   const handlePicChange = (event) => {
@@ -277,7 +289,7 @@ export default function EditForm({ fid, closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {settingsData["categories"] && Object.keys(settingsData["categories"]).map((option) => (
+            {categoryList?.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
@@ -295,7 +307,7 @@ export default function EditForm({ fid, closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {settingsData["categories"] && settingsData["categories"][category]?.map((option) => (
+            {subCategoryList?.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>

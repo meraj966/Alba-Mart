@@ -24,16 +24,22 @@ function AddProductRow({ products, setProducts, index }) {
         price: 0,
         category: "",
         saleValue: "",
-        categoryList: [],
         categories: []
     })
+    const [category, setCategory] = useState("")
+    const [subCategoryList, setSubCategoryList] = useState([])
+    const [categoryList, setCategoryList] = useState([])
     useEffect(() => {
         getSettingsData()
     }, [])
-    
+    useEffect(()=>{
+        console.log(settings && settings[0].subCategory, category)
+        setSubCategoryList(settings && settings[0].subCategory[category]?.map(i=>i.name))
+    }, [category])
     useEffect(()=>{
         console.log("SETTTINGS IN ADD PRODUCTS", settings)
         if (settings) {
+            console.log(settings[0])
             let newRowData = {...rowData}
             newRowData["onSale"] = settings[0]["onSale"]
             newRowData["saleType"] = settings[0]["defaultSaleType"]
@@ -41,19 +47,23 @@ function AddProductRow({ products, setProducts, index }) {
             newRowData["defaultUnit"] = settings[0]["defaultUnit"]
             newRowData["categories"] = settings[0]["categories"]
             // newRowData["category"] = Object.keys(settings[0]["categories"])
-            newRowData["category"] = settings[0]["defaultCategory"]
-            newRowData["categoryList"] = Object.keys(settings[0]["categories"])
+            setCategory(settings[0]["defaultCategory"])
+            setCategoryList(settings[0].category.map(i=>i.name))
+            setSubCategoryList(settings[0].subCategory[settings[0].defaultCategory].map(i=>i.name))
             newRowData["measureUnit"] = settings[0]["defaultUnit"]
             setRowData(newRowData)
         }
     }, [settings])
-    {console.log(rowData["categoryList"], "CATEGOR?y KISTTSTAS")}
     const getSettingsData = async () => {
         const data = await getDocs(dataRef);
         setSettings(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     const handleChange = async (event) => {
         let data = {}
+        if (event.target.name==="category") {
+            setCategory(event.target.value)
+            return 
+        }
         data[event.target.name] = event.target.value
         if (event.target.name == "onSale") data[event.target.name] = event.target.checked
         if (event.target.name == "file" && event.target.files) data[event.target.name] = event.target.files[0]
@@ -162,12 +172,12 @@ function AddProductRow({ products, setProducts, index }) {
                     label="Category"
                     select
                     name="category"
-                    value={rowData["category"]}
+                    value={category}
                     onChange={handleChange}
                     size="small"
                     sx={{ minWidth: "100%" }}
                 >
-                    {rowData["categoryList"]?.map((option) => (
+                    {categoryList?.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>
@@ -186,7 +196,7 @@ function AddProductRow({ products, setProducts, index }) {
                     size="small"
                     sx={{ minWidth: "100%" }}
                 >
-                    {rowData["categories"][rowData["category"]]?.map((option) => (
+                    {subCategoryList?.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>
