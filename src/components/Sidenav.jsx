@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../appStore";
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const drawerWidth = 240;
 
@@ -74,6 +75,32 @@ export default function Sidenav() {
       <DrawerHeader>
       </DrawerHeader>
       <List>
+        <ListItem
+          disablePadding
+          sx={{ display: "block" }}
+          onClick={() => {
+            navigate("/dashboard");
+          }}
+        >
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
         <ListItem
           disablePadding
           sx={{ display: "block" }}
