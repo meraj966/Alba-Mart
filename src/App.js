@@ -5,6 +5,7 @@ import Users from "./pages/Users";
 import Orders from "./pages/Orders";
 import Login from "./Login";
 import Settings from './pages/Settings';
+import Dashboard from "./pages/Dashboard";
 
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" exact element={<Login />}></Route>
+        <Route path="/dashboard" exact element={<Dashboard />}></Route>
         <Route path="/products" exact element={<Products />}></Route>
         <Route path="/users" exact element={<Users />}></Route>
         <Route path="/orders" exact element={<Orders />}></Route>
