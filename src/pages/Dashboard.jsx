@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../appStore";
 import "./Dashboard.css"
+import { Grid } from "@mui/material";
 
 export default function Dashboard() {
   const username = useAppStore((state) => state.username);
@@ -31,32 +32,42 @@ export default function Dashboard() {
         <Box sx={{ display: "flex" }}>
           <Sidenav />
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <div className="grid-container">
-              <div className="card"> Customers </div>
-              <div className="card"> Product </div>
-              <div className="card"> Orders </div>
-              <div className="card"> Today's earnings</div>
-              <div className="card"> Today's orders </div>
-              <div className="card"> Pending orders</div>
-              <div className="card"> Today's declined orders</div>
-              <div className="card"> Today's sale</div>
-              <div className="card">Products sold out </div>
-              <div className="card">Products in low stock</div>
-            </div>
-            <br />
-            <div className="sales-graph">
-                I'm sales graph
-            </div>
-            <br />
-            <div className="order-list">
-            <p>All order list:-</p>
-            <ol>
-              <li>Order no. 1 </li>
-              <li>Order no. 2 </li>
-              <li>Order no. 3</li>
-              <li>Order no. 4 </li>
-            </ol>
-            </div>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                Customers
+              </Grid>
+              <Grid item xs={4}>
+                Product
+              </Grid>
+              <Grid item xs={4}>
+                Orders                
+              </Grid>
+              <Grid item xs={4}>
+                Today's Earnings
+              </Grid>
+              <Grid item xs={4}>
+                Today's Orders
+              </Grid>
+              <Grid item xs={4}>
+                Pending Orders                
+              </Grid>
+              <Grid item xs={4}>
+                Today's Declined Orders
+              </Grid>
+              <Grid item xs={4}>
+                Today's Sale
+              </Grid>
+              <Grid item xs={4}>
+                Products sold out          
+              </Grid>
+              <Grid item xs={4}>
+                Products in low stock     
+              </Grid>
+              <Grid item xs={8}></Grid>
+              <Grid item xs={12}>
+                Im sales graph
+              </Grid>
+            </Grid>
           </Box>
         </Box>
       </div>
