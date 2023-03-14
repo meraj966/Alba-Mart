@@ -16,7 +16,6 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { uuidv4 } from '@firebase/util';
 
 function CategoryEditForm({ formType, subCategoryList, closeForm, handleEditForm, selectedCategory, settingsData, refreshSettingsData }) {
-    console.log(selectedCategory, "selected category")
     const [addCategory, setAddCategory] = useState(formType === "edit" ? selectedCategory : "")
     const [subCategory, setSubCategory] = useState(formType === "edit" ? subCategoryList : "")
     const [isBulkCategoryAdd, setIsBulkCategoryAdd] = useState(false)
@@ -24,8 +23,9 @@ function CategoryEditForm({ formType, subCategoryList, closeForm, handleEditForm
     const [file, setFile] = useState(null)
 
     const saveCategoryImage = async (url) => {
-        let newCategory = [...settingsData[0].category]
-        newCategory.filter(i => i.name === category)[0].imageUrl = url
+        let newCategory = {...settingsData[0].category}
+        let cat = newCategory[addCategory.trim() || selectedCategory]
+        cat.imageUrl = cat ? url: ""
         const settingsDoc = doc(db, "Settings", "UserSettings")
         const newFields = { category: newCategory }
         await updateDoc(settingsDoc, newFields)
@@ -42,44 +42,48 @@ function CategoryEditForm({ formType, subCategoryList, closeForm, handleEditForm
     }
 
     const saveNewSubCategories = async () => {
-        let newSubCategory = subCategory.split(",").map(i => ({ name: i.trim(), imageUrl: '' }))
+        console.log("SAVING SUB CATEGORIES")
+        let subCategoryList = subCategory? subCategory?.split(",").map(i => i.trim()): [], subCategoryNew = { ...settingsData[0].subCategory }
+        subCategoryNew[addCategory.trim()] = {}
+        for (let i=0; i<subCategoryList.length; i++) {
+            subCategoryNew[addCategory.trim()][subCategoryList[i]] = {name: subCategoryList[i], imageUrl: ''}
+        }
         const settingsDoc = doc(db, "Settings", "UserSettings")
-        let data = { ...settingsData[0].subCategory }
-        data[category] = newSubCategory
-        const newFields = { subCategory: data }
+        const newFields = { subCategory: subCategoryNew }
         await updateDoc(settingsDoc, newFields)
     }
 
     const saveNewSingleCategoryWithFile = async () => {
         let data = { ...settingsData[0] }
         let { category } = data, newSubCategory = { ...data.subCategory }
-        category.push({ imageUrl: "", name: addCategory.trim() })
-        newSubCategory[addCategory.trim()] = subCategory.split(",").map(i => ({ name: i.trim(), imageUrl: '' }))
-        console.log("SAVING==>", category, newSubCategory, file)
+        category = {...category, [addCategory.trim()]: {imageUrl: "", name: addCategory.trim()}}
+        let subCategoryList = subCategory.split(",").map(i=>i.trim())
+        newSubCategory[addCategory.trim()] = {}
+        for (let i = 0; i < subCategoryList.length; i++) 
+            newSubCategory[addCategory.trim()][subCategoryList[i]] = {name: subCategoryList[i], imageUrl: ''}
         const settingsDoc = doc(db, "Settings", "UserSettings")
         await updateDoc(settingsDoc, { category, subCategory: newSubCategory })
     }
 
     const saveBulkCategories = async () => {
-        console.log(addCategory, settingsData[0])
-        let data = settingsData[0], newCategory = addCategory.split(",").map(i=>({ name: i.trim(), imageUrl: '' }))
-        let category = [...data.category, ...newCategory]
+        let category = {...settingsData[0]?.category}, categoryList = addCategory.split(",").map(i=>i.trim())
+        for (let i = 0; i < categoryList.length; i++)
+            category[categoryList[i]] = {imageUrl: "", name: categoryList[i]}
         const settingsDoc = doc(db, "Settings", "UserSettings")
         await updateDoc(settingsDoc, {category})
     }
 
     const handleUpdate = async () => {
         if (formType === "edit") {
-            if (!file) saveNewSubCategories()
-            else uploadImageFile()
+            saveNewSubCategories()
+            if (file) uploadImageFile()
         } else {
-            console.log(addCategory, subCategory, file, settingsData)
             if (isBulkCategoryAdd) {
                 saveBulkCategories()
             } else {
                 // single category with file
-                saveNewSingleCategoryWithFile()
                 if (file) uploadImageFile()
+                saveNewSingleCategoryWithFile()
             }
         }
         refreshSettingsData()
@@ -148,7 +152,7 @@ function CategoryEditForm({ formType, subCategoryList, closeForm, handleEditForm
                             maxWidth: { xs: 350, md: 250 },
                         }}
                         alt="Category image"
-                        src={settingsData[0].category.find(i => i.name === category).imageUrl}
+                        src={settingsData[0].category[addCategory|| selectedCategory].imageUrl}
                     />
                 </Grid>)}
                 {(formType === "edit" || !isBulkCategoryAdd) && (<Grid item xs={12}>

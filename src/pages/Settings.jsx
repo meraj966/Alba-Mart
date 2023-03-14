@@ -14,11 +14,12 @@ import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from '@mui/material/IconButton';
 import Button from "@mui/material/Button";
-import { CATEGORY } from "../Constants";
+import { CATEGORY, SUBCATEGORY } from "../Constants";
 import Swal from "sweetalert2";
 import CategoryEditForm from "../products/settings_forms/CategoryEditForm";
 import Tooltip from '@mui/material/Tooltip';
 import { AddCircle } from "@mui/icons-material";
+import SubCategoryEditForm from "../products/settings_forms/SubCategoryEditForm";
 
 const style = {
     position: "absolute",
@@ -43,6 +44,7 @@ export default function Settings() {
     const [category, setCategory] = useState("")
     const [categoryList, setCategoryList] = useState([])
     const [subCategoryList, setSubCategoryList] = useState([])
+    const [subCategory, setSubCategory] = useState()
     const [categories, setCategories] = useState([])
     const [subCategories, setSubCategories] = useState([])
 
@@ -56,10 +58,11 @@ export default function Settings() {
     useEffect(() => {
         if (settings) {
             const data = settings[0]
+            let subCategoryList = (data.subCategory && data.subCategory[data.defaultCategory]) ? Object.keys(data.subCategory[data.defaultCategory]): []
             console.log(data, "settings useeffect data")
             setCategory(data.defaultCategory)
-            setCategoryList(data.category.map(cat=>cat.name))
-            setSubCategoryList(data.subCategory[data.defaultCategory]?.map(i=>i.name))
+            setCategoryList(Object.keys(data.category))
+            setSubCategoryList(subCategoryList)
             setSaleType(data.saleType)
             setDefaultSaleType(data.defaultSaleType)
             setUnit(data.unit)
@@ -76,7 +79,7 @@ export default function Settings() {
     }, [])
 
     useEffect(() => {
-        setSubCategoryList(subCategories[category]?.map(i=>i.name))
+        setSubCategoryList((subCategories && subCategories[category]) && Object.keys(subCategories[category]))  
     }, [category])
 
     const getSettingsData = async () => {
@@ -85,6 +88,8 @@ export default function Settings() {
     };
 
     const handleEditForm = (editType, type) => {
+        console.log("DATAAAAAAAAAAAAAAAAAAa", editType, subCategory)
+        if (editType === SUBCATEGORY && !subCategory) return
         setType(type)
         setEditType(editType)
         setEditOpen(!editOpen)
@@ -123,7 +128,15 @@ export default function Settings() {
                                 subCategoryList={subCategoryList}
                             />
                         }
-
+                        {(editType === SUBCATEGORY) && 
+                            <SubCategoryEditForm
+                                category = {category}
+                                refreshSettingsData={getSettingsData}
+                                subCategories={subCategories}
+                                handleEditForm={handleEditForm}
+                                subCategory={subCategory}
+                            />
+                        }
                     </Box>
                 </Modal>
                 <Navbar />
@@ -179,8 +192,9 @@ export default function Settings() {
                                     error={false}
                                     id="subCategory"
                                     name="subCategory"
-                                    value={subCategoryList && subCategoryList[0] || ""}
-                                    label="Sub Category"
+                                    value={subCategory}
+                                    onChange={e=>setSubCategory(e.target.value)}
+                                    label="Select Sub Category to Edit"
                                     size="small"
                                     select
                                     sx={{ marginTop: "30px", minWidth: "100%" }}
@@ -193,6 +207,11 @@ export default function Settings() {
                                 </TextField>
                             </Grid>
                             <Grid item xs={2}>
+                                <Tooltip title="Edit SubCategory">
+                                    <IconButton aria-label="edit" style={{marginTop: "30px"}} onClick={() => handleEditForm(SUBCATEGORY, "edit")} >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
                             </Grid>
                             <Grid item xs={3}></Grid>
                             <Grid item xs={6}>
