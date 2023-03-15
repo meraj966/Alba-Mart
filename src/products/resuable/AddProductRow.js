@@ -9,8 +9,9 @@ import { db } from '../../firebase-config';
 
 function AddProductRow({ products, setProducts, index }) {
     const [settings, setSettings] = useState(null)
+    const [categoryData, setCategoryData] =useState(null)
     const dataRef = collection(db, "Settings");
-
+    const categoryRef = collection(db, "category");
     const [rowData, setRowData] = useState({
         name: "",
         description: "",
@@ -33,9 +34,11 @@ function AddProductRow({ products, setProducts, index }) {
         getSettingsData()
     }, [])
     useEffect(()=>{
-        console.log(settings && settings[0].subCategory, category)
-        setSubCategoryList(settings && settings[0].subCategory[category]?.map(i=>i.name))
-    }, [category])
+        if (categoryData) 
+        setSubCategoryList(
+            Object.keys(categoryData.find((i) => i.name === category)?.subCategory || {})
+          );    
+        }, [category])
     useEffect(()=>{
         console.log("SETTTINGS IN ADD PRODUCTS", settings)
         if (settings) {
@@ -48,14 +51,22 @@ function AddProductRow({ products, setProducts, index }) {
             newRowData["categories"] = settings[0]["categories"]
             // newRowData["category"] = Object.keys(settings[0]["categories"])
             setCategory(settings[0]["defaultCategory"])
-            setCategoryList(settings[0].category.map(i=>i.name))
-            setSubCategoryList(settings[0].subCategory[settings[0].defaultCategory].map(i=>i.name))
             newRowData["measureUnit"] = settings[0]["defaultUnit"]
             setRowData(newRowData)
         }
     }, [settings])
+    useEffect(()=>{
+        if(categoryData){
+            setCategoryList(categoryData.map((i) => i.name));
+            setSubCategoryList(
+                Object.keys(categoryData.find((i) => i.name === category)?.subCategory || {})
+              );
+        }
+    },[categoryData])
     const getSettingsData = async () => {
         const data = await getDocs(dataRef);
+        const categoryData = await getDocs(categoryRef);
+        setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
         setSettings(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     const handleChange = async (event) => {
