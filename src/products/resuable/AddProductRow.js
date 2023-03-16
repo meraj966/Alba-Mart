@@ -35,7 +35,7 @@ function AddProductRow({ products, setProducts, index }) {
     }, [])
     useEffect(()=>{
         if (categoryData) 
-        setSubCategoryList(
+            setSubCategoryList(
             Object.keys(categoryData.find((i) => i.name === category)?.subCategory || {})
           );    
         }, [category])
@@ -49,7 +49,7 @@ function AddProductRow({ products, setProducts, index }) {
             newRowData["saleTypeList"] = settings[0]["saleType"]
             newRowData["defaultUnit"] = settings[0]["defaultUnit"]
             newRowData["categories"] = settings[0]["categories"]
-            // newRowData["category"] = Object.keys(settings[0]["categories"])
+            newRowData["category"] = settings[0]["defaultCategory"]
             setCategory(settings[0]["defaultCategory"])
             newRowData["measureUnit"] = settings[0]["defaultUnit"]
             setRowData(newRowData)
@@ -72,12 +72,11 @@ function AddProductRow({ products, setProducts, index }) {
     const handleChange = async (event) => {
         let data = {}
         if (event.target.name==="category") {
-            setCategory(event.target.value)
-            return 
+            setCategory(event.target.value) 
         }
         data[event.target.name] = event.target.value
         if (event.target.name == "onSale") data[event.target.name] = event.target.checked
-        if (event.target.name == "file" && event.target.files) data[event.target.name] = event.target.files[0]
+        if (event.target.name == "file" && event.target.files) data[event.target.name] = event.target.files
         setRowData({ ...rowData, ...data })
     }
     useEffect(() => {
@@ -247,7 +246,7 @@ function AddProductRow({ products, setProducts, index }) {
                 />
             </Grid>
             <Grid item xs={3}>
-                <input type="file"  onChange={handleChange} accept="/image/*" name="file" style={{marginTop: "10px"}}/>
+                <input type="file" multiple  onChange={handleChange} accept="/image/*" name="file" style={{marginTop: "10px"}}/>
             </Grid>
         </Grid>
     )

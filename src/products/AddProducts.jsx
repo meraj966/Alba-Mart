@@ -51,6 +51,7 @@ function AddProducts({ closeEvent }) {
 
     const handleUpload = () => {
         const files = map(products, "file")
+        console.log(files, products)
         if (files.every(isNull)) {
             Swal.fire("Failed!", "Please upload an image first!", "error");
         } else {
