@@ -54,43 +54,6 @@ function CategoryEditForm({
     closeForm();
   };
 
-  const uploadImageFile = async () => {
-    const storageRef = ref(storage, `/images/${uuidv4() + file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {},
-      (err) => console.log(err),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          saveCategoryImage(url);
-        });
-      }
-    );
-  };
-  const saveSubCategoryWithCategoryFile = async () => {
-    const storageRef = ref(storage, `/images/${uuidv4() + file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = String(
-          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100) +
-            "%"
-        );
-        // update progress
-        setPercent(percent);
-      },
-      (err) => console.log(err),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          //   saveNewSubCategories();
-          saveCategoryImage(url);
-        });
-      }
-    );
-  };
-
   const uploadFileAndSaveCategory = async () => {
     console.log("SAVE WITH FILE ===", categoryData, addCategory, subCategory);
     let category = addCategory.trim();

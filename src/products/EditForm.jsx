@@ -39,17 +39,29 @@ export default function EditForm({ fid, closeEvent }) {
   const [saleValue, setSaleValue] = useState(fid.saleValue);
   const [settingsData, setSettingsData] = useState({})
   const settingsDataRef = collection(db, "Settings");
-
+  const [stockValue, setStockValue] = useState("")
   const [categoryList, setCategoryList] = useState([])
   const [subCategoryList, setSubCategoryList] = useState([])
-
+  const [categoryData, setCategoryData] = useState(null);
+  const categoryRef = collection(db, "category");
   useEffect(() => {
-    console.log("SETTTTTTTTTTTTTTTINGSSSSSSSs", settingsData)
-    if (Object.keys(settingsData)) {
-      setCategoryList(settingsData?.category?.map(i=>i.name))
-      setSubCategoryList(settingsData?.subCategory && settingsData?.subCategory[category]?.map(i=>i.name))
+    if (categoryData)
+      setSubCategoryList(
+        Object.keys(
+          categoryData.find((i) => i.name === category)?.subCategory || {}
+        )
+      );
+  }, [category]);
+  useEffect(() => {
+    if (categoryData) {
+      setCategoryList(categoryData.map((i) => i.name));
+      setSubCategoryList(
+        Object.keys(
+          categoryData.find((i) => i.name === category)?.subCategory || {}
+        )
+      );
     }
-  }, [settingsData])
+  }, [categoryData]);
   useEffect(() => {
     // console.log("FID: " + fid.id);
     setName(fid.name);
@@ -59,6 +71,7 @@ export default function EditForm({ fid, closeEvent }) {
     setMeasureUnit(fid.measureUnit);
     setQuantity(fid.quantity);
     setSubCategory(fid.subCategory)
+    setStockValue(fid.stockValue)
   }, []);
 
   useEffect(() => {
@@ -66,7 +79,9 @@ export default function EditForm({ fid, closeEvent }) {
   }, [])
   // console.log("SELECTED _ CATEGORY ", category, subCategory)
   const getSettingsData = async () => {
+    const categoryData = await getDocs(categoryRef);
     const data = await getDocs(settingsDataRef)
+    setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
     data.docs.map((doc)=> {
       setSettingsData({...doc.data(), id: doc.id})
     })
@@ -80,11 +95,12 @@ export default function EditForm({ fid, closeEvent }) {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
       // id: doc.id,
-      name: name,
-      description: description,
+      name,
+      description,
       price: Number(price),
-      subCategory: subCategory,
-      category: category,
+      subCategory,
+      category,
+      stockValue
     };
     // console.log(newFields, "NEWWWWWWWWWWWW FIELD")
     await updateDoc(userDoc, newFields);
@@ -102,6 +118,7 @@ export default function EditForm({ fid, closeEvent }) {
       price: Number(price),
       subCategory: subCategory,
       category: category,
+      stockValue,
       file: url,
     };
     await updateDoc(userDoc, newFields);
@@ -166,8 +183,6 @@ export default function EditForm({ fid, closeEvent }) {
   }
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
-    setSubCategory("")
-    setSubCategoryList(settingsData.subCategory[event.target.value]?.map(i=>i.name))
   };
 
   const handlePicChange = (event) => {
@@ -342,6 +357,19 @@ export default function EditForm({ fid, closeEvent }) {
             name='quantity'
             value={quantity}
             onChange={handleSetQuantity}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="stockValue"
+            label="Stock Value"
+            type="stockValue"
+            name='stockValue'
+            value={stockValue}
+            onChange={e=>setStockValue(e.target.value)}
             size="small"
             sx={{ minWidth: "100%" }}
           />
