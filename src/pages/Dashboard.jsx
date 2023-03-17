@@ -11,12 +11,23 @@ import Box from '@mui/material/Box';
 import DashboardCardStock from "../components/DashboardCardStock";
 import ButtonBase from '@mui/material/ButtonBase';
 import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import ProductsAvailability from "../components/popover/ProductsAvailability";
+import { useState } from "react";
+
+
 
 
 export default function Dashboard() {
   const username = useAppStore((state) => state.username);
   const password = useAppStore((state) => state.password);
   const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [title, setTitle] = useState("")
+  const [value, setValue] = useState("")
 
   // useEffect(() => {
   //   if (
@@ -38,7 +49,16 @@ export default function Dashboard() {
           <Sidenav />
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
 
+
             <Grid container spacing={2}>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <ProductsAvailability title = {title} value={value}/>
+              </Modal>
               <Grid item xs={3}>
                 <Link
                   underline="none"
@@ -122,22 +142,20 @@ export default function Dashboard() {
               <Grid item xs={6}>
                 <Link
                   underline="none"
-                  onClick={() => {
-                    console.info("I'm products sold out.");
-                  }}
+                  onClick={handleOpen}
                 >
                   <DashboardCardStock value="10" header="Products sold out" />
                 </Link>
+
               </Grid>
               <Grid item xs={6}>
                 <Link
                   underline="none"
-                  onClick={() => {
-                    console.info("I'm products in low stock.");
-                  }}
+                  onClick={handleOpen}
                 >
                   <DashboardCardStock value="0" header="Products in low stock" />
                 </Link>
+
               </Grid>
               <Grid item xs={12}>
                 Im sales graph
