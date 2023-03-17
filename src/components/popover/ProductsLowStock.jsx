@@ -13,8 +13,7 @@ const style = {
     p: 4,
 };
 
-
-function ProductsAvailability({title}) {
+function ProductsLowStock({title}) {
     const [value, setValue] = useState("")
     return (
         <Box sx={style}>
@@ -28,4 +27,4 @@ function ProductsAvailability({title}) {
     )
 }
 
-export default ProductsAvailability
+export default ProductsLowStock
