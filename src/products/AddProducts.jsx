@@ -41,6 +41,7 @@ function AddProducts({ closeEvent }) {
       saveDone.filter((i) => i === "SAVED").length ===
         Object.keys(products).length
     ) {
+      getUsers();
       Swal.fire("Submitted!", "Your data has been updated.", "success");
       closeEvent();
     }

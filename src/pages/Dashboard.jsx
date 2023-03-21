@@ -15,20 +15,22 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import ProductsAvailability from "../components/popover/ProductsAvailability";
 import { useState } from "react";
-import ProductsLowStock from "../components/popover/ProductsLowStock";
-import { PRODUCTS_AVAILABILITY, PRODUCTS_LOW_STOCK } from "../Constants";
+import { PRODUCTS_UNAVAILABLE, PRODUCTS_LOW_STOCK } from "../Constants";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase-config";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Dashboard() {
-  const username = useAppStore((state) => state.username);
-  const password = useAppStore((state) => state.password);
-  const navigate = useNavigate();
+  const [customers, setCustomers] = useState("");
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [unavailableProd, setUnavailableProd] = useState("");
+  const [lowStockProd, setLowStockProd] = useState("");
   const [open, setOpen] = React.useState(false);
   const [modalType, setModalType] = useState("");
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [value, setValue] = useState("");
-  const handleProductAvailable = () => {
-    setModalType(PRODUCTS_AVAILABILITY);
+  const handleProductUnavailable = () => {
+    setModalType(PRODUCTS_UNAVAILABLE);
     setOpen(true);
   };
   const handleProductLowStock = () => {
@@ -36,16 +38,33 @@ export default function Dashboard() {
     setOpen(true);
   };
 
-  // useEffect(() => {
-  //   if (
-  //     username == "animess.food@gmail.com" &&
-  //     password == "animess.food@gmail.com"
-  //   ) {
-  //     console.log("Login Successful!");
-  //   } else {
-  //     navigate("/");
-  //   }
-  // }, []);
+  const getCustomers = async () => {
+    const data = await getDocs(collection(db, "UserProfile"));
+    setCustomers(data.docs.length);
+  };
+
+  const getProducts = async () => {
+    const data = await getDocs(collection(db, "Menu"));
+    const res = data.docs.map((doc) => ({
+      ...doc.data(),
+      stockValue: Number(doc.data().stockValue),
+    }));
+    setProducts(res);
+    setUnavailableProd(res.filter((i) => i.stockValue === 0));
+    setLowStockProd(res.filter((i) => i.stockValue < 4));
+  };
+
+  const getOrders = async () => {
+    const data = await getDocs(collection(db, "Orders"));
+    setOrders(data.docs.map((doc) => ({ ...doc.data() })));
+  };
+  useEffect(() => {
+    getCustomers();
+    getProducts();
+    getOrders();
+  }, []);
+
+  console.log(customers, orders, products);
 
   return (
     <>
@@ -63,49 +82,37 @@ export default function Dashboard() {
                 aria-describedby="modal-modal-description"
               >
                 <>
-                  {modalType === PRODUCTS_AVAILABILITY && (
-                    <ProductsAvailability
-                      title="Products sold out"
-                      value={value}
-                    />
+                  {modalType === PRODUCTS_UNAVAILABLE && (
+                    <ProductsAvailability title="Products Out of Stock" data={unavailableProd}/>
                   )}
 
                   {modalType === PRODUCTS_LOW_STOCK && (
-                    <ProductsLowStock
-                      title="Products in low stock"
-                      value={value}
-                    />
+                    <ProductsAvailability title="Products in low stock" data ={lowStockProd} />
                   )}
                 </>
               </Modal>
               <Grid item xs={3}>
-                <Link
-                  underline="none"
-                  onClick={() => {
-                    console.info("I'm a Customer.");
-                  }}
-                >
-                  <DashboardCard header="Customers" value="102" />
+                <Link underline="none">
+                  <RouterLink to={"/Users"} style={{ textDecoration: "none" }}>
+                    <DashboardCard header="Customers" value={customers} />
+                  </RouterLink>
                 </Link>
               </Grid>
               <Grid item xs={3}>
-                <Link
-                  underline="none"
-                  onClick={() => {
-                    console.info("I'm a Product.");
-                  }}
-                >
-                  <DashboardCard header="Product" value="500" />
+                <Link underline="none">
+                  <RouterLink
+                    to={"/products"}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <DashboardCard header="Product" value={products.length} />
+                  </RouterLink>
                 </Link>
               </Grid>
               <Grid item xs={3}>
-                <Link
-                  underline="none"
-                  onClick={() => {
-                    console.info("I'm a Order.");
-                  }}
-                >
-                  <DashboardCard header="Orders" value="2000" />
+                <Link underline="none">
+                  <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                    <DashboardCard header="Orders" value={orders.length} />
+                  </RouterLink>
                 </Link>
               </Grid>
               <Grid item xs={3}>
@@ -159,20 +166,20 @@ export default function Dashboard() {
                 </Link>
               </Grid>
               <Grid item xs={6}>
-                <Link underline="none" onClick={handleProductAvailable}>
-                  <DashboardCardStock value="0" header="Products sold out" />
+                <Link underline="none" onClick={handleProductUnavailable}>
+                  <DashboardCardStock
+                    value={unavailableProd.length}
+                    header="Products sold out"
+                  />
                 </Link>
               </Grid>
               <Grid item xs={6}>
                 <Link underline="none" onClick={handleProductLowStock}>
                   <DashboardCardStock
-                    value="0"
+                    value={lowStockProd.length}
                     header="Products in low stock"
                   />
                 </Link>
-              </Grid>
-              <Grid item xs={12}>
-                Im sales graph
               </Grid>
             </Grid>
           </Box>
