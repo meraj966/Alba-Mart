@@ -14,15 +14,15 @@ import { db, storage } from "../firebase-config";
 import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
 import { MEASURE_UNIT, SALE_TYPE } from "../Constants";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 // import uuid from 'uuid/package.json';
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 export default function EditForm({ fid, closeEvent }) {
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("")
+  const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [price, setPrice] = useState(0);
@@ -32,17 +32,18 @@ export default function EditForm({ fid, closeEvent }) {
   const rows = useAppStore((state) => state.rows);
   // console.log(rows)
   const [percent, setPercent] = useState(0);
-  const [measureUnit, setMeasureUnit] = useState("")
-  const [quantity, setQuantity] = useState("")
-  const [onSale, setOnSale] = useState(fid.onSale)
+  const [measureUnit, setMeasureUnit] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [onSale, setOnSale] = useState(fid.onSale);
   const [saleType, setSaleType] = useState(fid.saleType);
+  const [saleTypeList, setSaleTypeList] = useState([]);
   const [saleValue, setSaleValue] = useState(fid.saleValue);
-  const [settingsData, setSettingsData] = useState({})
   const settingsDataRef = collection(db, "Settings");
-  const [stockValue, setStockValue] = useState("")
-  const [categoryList, setCategoryList] = useState([])
-  const [subCategoryList, setSubCategoryList] = useState([])
+  const [stockValue, setStockValue] = useState("");
+  const [categoryList, setCategoryList] = useState([]);
+  const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryData, setCategoryData] = useState(null);
+  const [showProduct, setShowProduct] = useState(false);
   const categoryRef = collection(db, "category");
   useEffect(() => {
     if (categoryData)
@@ -65,32 +66,32 @@ export default function EditForm({ fid, closeEvent }) {
   useEffect(() => {
     // console.log("FID: " + fid.id);
     setName(fid.name);
-    setDescription(fid.description)
+    setDescription(fid.description);
     setPrice(fid.price);
     setCategory(fid.category);
     setMeasureUnit(fid.measureUnit);
     setQuantity(fid.quantity);
-    setSubCategory(fid.subCategory)
-    setStockValue(fid.stockValue)
+    setSubCategory(fid.subCategory);
+    setStockValue(fid.stockValue);
+    setShowProduct(fid.showProduct);
   }, []);
 
   useEffect(() => {
-    getSettingsData()
-  }, [])
+    getSettingsData();
+  }, []);
   // console.log("SELECTED _ CATEGORY ", category, subCategory)
   const getSettingsData = async () => {
     const categoryData = await getDocs(categoryRef);
     const data = await getDocs(settingsDataRef)
+    let settings  = data.docs.map(doc=> ({ ...doc.data() }))
+    console.log(settings)
+    setSaleTypeList(settings[0].saleType)
     setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
-    data.docs.map((doc)=> {
-      setSettingsData({...doc.data(), id: doc.id})
-    })
-  }
+  };
   const getUsers = async () => {
     const data = await getDocs(empCollectionRef);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
-  // console.log("SETTINGS DATA", settingsData)
   const createUser = async () => {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
@@ -100,7 +101,8 @@ export default function EditForm({ fid, closeEvent }) {
       price: Number(price),
       subCategory,
       category,
-      stockValue
+      stockValue,
+      showProduct,
     };
     // console.log(newFields, "NEWWWWWWWWWWWW FIELD")
     await updateDoc(userDoc, newFields);
@@ -120,6 +122,7 @@ export default function EditForm({ fid, closeEvent }) {
       category: category,
       stockValue,
       file: url,
+      showProduct,
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -161,26 +164,26 @@ export default function EditForm({ fid, closeEvent }) {
   };
 
   const handleSaleTypeChange = (event) => {
-    setSaleType(event.target.value)
-  }
+    setSaleType(event.target.value);
+  };
   const handleSaleValueChange = (event) => {
-    setSaleValue(event.target.value)
-  }
+    setSaleValue(event.target.value);
+  };
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
   const handleDescriptionChange = (event) => {
-    setDescription(event.target.value)
-  }
+    setDescription(event.target.value);
+  };
   const handlePriceChange = (event) => {
     setPrice(event.target.value);
   };
   const handleSetQuantity = (event) => {
-    setQuantity(event.target.value)
-  }
+    setQuantity(event.target.value);
+  };
   const handleChangeUnit = (event) => {
-    setMeasureUnit(event.target.value)
-  }
+    setMeasureUnit(event.target.value);
+  };
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
@@ -193,8 +196,11 @@ export default function EditForm({ fid, closeEvent }) {
     setSubCategory(event.target.value);
   };
   const handleChangeOnSale = (event) => {
-    setOnSale(event.target.checked)
-  }
+    setOnSale(event.target.checked);
+  };
+  const handleChangeShowProduct = (event) => {
+    setShowProduct(event.target.checked);
+  };
   return (
     <div>
       <Box sx={{ m: 2 }} />
@@ -208,6 +214,20 @@ export default function EditForm({ fid, closeEvent }) {
         <CloseIcon />
       </IconButton>
       <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showProduct}
+                onChange={handleChangeShowProduct}
+                name="showProduct"
+              />
+            }
+            name="showProduct"
+            sx={{ minWidth: "100%"}}
+            label="Show Product"
+          />
+        </Grid>
         <Grid item xs={6}>
           <TextField
             error={false}
@@ -217,7 +237,7 @@ export default function EditForm({ fid, closeEvent }) {
             onChange={handleNameChange}
             label="Name"
             size="small"
-            sx={{ marginTop: "30px", minWidth: "100%" }}
+            sx={{ minWidth: "100%" }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -229,7 +249,7 @@ export default function EditForm({ fid, closeEvent }) {
             onChange={handleDescriptionChange}
             label="Description"
             size="small"
-            sx={{ marginTop: "30px", minWidth: "100%" }}
+            sx={{ minWidth: "100%" }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -253,34 +273,41 @@ export default function EditForm({ fid, closeEvent }) {
         </Grid>
         <Grid item xs={0.8}>
           <FormControlLabel
-            control={<Checkbox checked={onSale} onChange={handleChangeOnSale} name="onSale" />}
+            control={
+              <Checkbox
+                checked={onSale}
+                onChange={handleChangeOnSale}
+                name="onSale"
+              />
+            }
             name="onSale"
             sx={{ minWidth: "100%" }}
-            label="Sale" />
+            label="Sale"
+          />
         </Grid>
         <Grid item xs={2.6}>
-          {onSale &&
+          {onSale && (
             <TextField
               error={false}
               id="saleType"
               label="SaleType"
               select
-              name='saleType'
+              name="saleType"
               value={saleType}
               onChange={handleSaleTypeChange}
               size="small"
               sx={{ minWidth: "100%" }}
             >
-              {SALE_TYPE.map((option) => (
+              {saleTypeList.map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
               ))}
             </TextField>
-          }
+          )}
         </Grid>
         <Grid item xs={2.6}>
-          {onSale &&
+          {onSale && (
             <TextField
               error={false}
               id="SaleValue"
@@ -291,7 +318,8 @@ export default function EditForm({ fid, closeEvent }) {
               label="Sale Value"
               size="small"
               sx={{ minWidth: "100%" }}
-            />}
+            />
+          )}
         </Grid>
         <Grid item xs={3}>
           <TextField
@@ -354,7 +382,7 @@ export default function EditForm({ fid, closeEvent }) {
             id="quantity"
             label="Quantity"
             type="number"
-            name='quantity'
+            name="quantity"
             value={quantity}
             onChange={handleSetQuantity}
             size="small"
@@ -367,9 +395,9 @@ export default function EditForm({ fid, closeEvent }) {
             id="stockValue"
             label="Stock Value"
             type="stockValue"
-            name='stockValue'
+            name="stockValue"
             value={stockValue}
-            onChange={e=>setStockValue(e.target.value)}
+            onChange={(e) => setStockValue(e.target.value)}
             size="small"
             sx={{ minWidth: "100%" }}
           />

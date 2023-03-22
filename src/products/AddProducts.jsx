@@ -9,8 +9,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import Swal from "sweetalert2";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../firebase-config";
+import { db } from "../firebase-config";
 import {
   collection,
   addDoc,
@@ -50,9 +49,6 @@ function AddProducts({ closeEvent }) {
   useEffect(() => {
     const files = map(products, "file");
     console.log(Object.keys(payload), payload, files[0]);
-    // if (Object.keys(payload)?.length === files[0].length) {
-    //     console.log("PAYLOADDDDDDDDDDDDDDDd", payload)
-    // }
   }, [payload]);
 
   const getUsers = async () => {
