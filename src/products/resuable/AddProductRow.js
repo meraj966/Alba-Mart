@@ -29,6 +29,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [onSale, setOnSale] = useState(false);
+  const [showProduct, setShowProduct] = useState(false);
   const [saleType, setSaleType] = useState("");
   const [saleTypeList, setSaleTypeList] = useState([]);
   const [saleValue, setSaleValue] = useState("");
@@ -58,6 +59,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       quantity,
       stockValue,
       url,
+      showProduct,
       date: String(new Date()),
     });
     const id = docData.id;
@@ -91,6 +93,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
     if (settings) {
       let data = settings[0];
       setOnSale(data.onSale);
+      setShowProduct(data.showProduct);
       setSaleType(data.defaultSaleType);
       setSaleTypeList(data.saleType);
       setMeasureUnit(data.defaultUnit);
@@ -130,6 +133,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       measureUnit,
       quantity,
       files,
+      showProduct
     };
     setProducts({ ...products, [index]: rowData });
   }, [
@@ -144,10 +148,25 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
     measureUnit,
     quantity,
     files,
+    showProduct
   ]);
 
   return (
     <Grid container direction="row" spacing={0.8}>
+      <Grid item xs={12}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showProduct}
+              onChange={(e) => setShowProduct(e.target.checked)}
+              name="showProduct"
+            />
+          }
+          name="showProduct"
+          sx={{ minWidth: "100%" }}
+          label="Show Product"
+        />
+      </Grid>
       <Grid item xs={3}>
         <TextField
           error={false}
