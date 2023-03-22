@@ -58,10 +58,19 @@ export default function Dashboard() {
     const data = await getDocs(collection(db, "Orders"));
     setOrders(data.docs.map((doc) => ({ ...doc.data() })));
   };
-  useEffect(() => {
+
+  const refreshPage = () => {
     getCustomers();
     getProducts();
     getOrders();
+  };
+  
+  useEffect(() => {
+    refreshPage()
+    const interval = setInterval(() => {
+      refreshPage()
+    }, 60 * 3 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   console.log(customers, orders, products);
@@ -83,11 +92,17 @@ export default function Dashboard() {
               >
                 <>
                   {modalType === PRODUCTS_UNAVAILABLE && (
-                    <ProductsAvailability title="Products Out of Stock" data={unavailableProd}/>
+                    <ProductsAvailability
+                      title="Products Out of Stock"
+                      data={unavailableProd}
+                    />
                   )}
 
                   {modalType === PRODUCTS_LOW_STOCK && (
-                    <ProductsAvailability title="Products in low stock" data ={lowStockProd} />
+                    <ProductsAvailability
+                      title="Products in low stock"
+                      data={lowStockProd}
+                    />
                   )}
                 </>
               </Modal>
