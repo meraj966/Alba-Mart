@@ -128,15 +128,16 @@ export default function ProductsList() {
             {console.log(rows)}
             <Grid container spacing={1}>
               {rows.map((row) => {
-                return <Grid item xs={4}>
-                  <Product
-                  data = {row}
-                   {...row}
-                   setFormid={setFormid}
-                   handleEditOpen={handleEditOpen}
-                   deleteProd={getUsers}
-                  />
-                </Grid>
+                return 
+                // <Grid item xs={4}>
+                //   <Product
+                //   data = {row}
+                //    {...row}
+                //    setFormid={setFormid}
+                //    handleEditOpen={handleEditOpen}
+                //    deleteProd={getUsers}
+                //   />
+                // </Grid>
               })}
             </Grid>
           </>
