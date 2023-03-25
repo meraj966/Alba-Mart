@@ -6,6 +6,7 @@ import Orders from "./pages/Orders";
 import Login from "./Login";
 import Settings from './pages/Settings';
 import Dashboard from "./pages/Dashboard";
+import OfferSettings from './pages/OfferSettings';
 
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/users" exact element={<Users />}></Route>
         <Route path="/orders" exact element={<Orders />}></Route>
         <Route path="/settings" exact element={<Settings/>}></Route>
+        <Route path="/offer-settings" exact element={<OfferSettings/>}></Route>
       </Routes>
     </BrowserRouter>
    </>
