@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -23,6 +23,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Carousel from "./Carousel";
+import { Box, Modal } from "@mui/material";
+import ProductPopup from "./ProductPopup";
 function Product({
   id,
   name,
@@ -44,6 +46,7 @@ function Product({
 }) {
   let salePrice = price;
   let discount = 0;
+  const [open, setOpen] = useState(false);
   if (onSale) {
     if (saleType === "%") {
       let percent = (saleValue / 100).toFixed(2);
@@ -87,47 +90,82 @@ function Product({
     setFormid(newData);
     handleEditOpen();
   };
-  const afterSalePrice = saleType == "RS" ? String(price - saleValue) : String(price - (saleValue/100))
-
+  const afterSalePrice =
+    saleType == "RS"
+      ? String(price - saleValue)
+      : String(price - saleValue / 100);
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    borderRadius: '20px'
+  };
   return (
-    <TableRow hover role="checkbox" tabIndex={-1}>
-      <TableCell align="left" >{name}</TableCell>
-      <TableCell align="left" >{afterSalePrice}</TableCell>
-      <TableCell align="left">{String(category)}</TableCell>
-      <TableCell align="left">{String(subCategory)}</TableCell>
-      <TableCell align="left">{String(date)}</TableCell>
-      <TableCell align="left">
-        <Stack spacing={2} direction="row">
-          <EditIcon
-            style={{
-              fontSize: "20px",
-              color: "blue",
-              cursor: "pointer",
-            }}
-            className="cursor-pointer"
-            onClick={() => {
-              editData(
-                id,
-                name,
-                price,
-                subCategory,
-                category
-              );
-            }}
+    <>
+      <Modal open={open} onClose={()=>setOpen(false)}>
+        <Box sx={style}>
+          <ProductPopup
+            id={id}
+            name={name}
+            date={date}
+            url={url}
+            onSale={onSale}
+            price={price}
+            saleType={saleType}
+            saleValue={saleValue}
+            description={description}
+            category={category}
+            subCategory={subCategory}
+            quantity={quantity}
+            measureUnit={measureUnit}
+            deleteProd={deleteProd}
+            handleEditOpen={handleEditOpen}
+            setFormid={setFormid}
+            data={data}
           />
-          <DeleteIcon
-            style={{
-              fontSize: "20px",
-              color: "darkred",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-                deleteProduct()
-            }}
-          />
-        </Stack>
-      </TableCell>
-    </TableRow>
+        </Box>
+      </Modal>
+      <TableRow
+        hover
+        role="checkbox"
+        tabIndex={-1}
+        onClick={() => setOpen(true)}
+      >
+        <TableCell align="left">{name}</TableCell>
+        <TableCell align="left">{afterSalePrice}</TableCell>
+        <TableCell align="left">{String(category)}</TableCell>
+        <TableCell align="left">{String(subCategory)}</TableCell>
+        <TableCell align="left">{String(date)}</TableCell>
+        <TableCell align="left">
+          <Stack spacing={2} direction="row">
+            <EditIcon
+              style={{
+                fontSize: "20px",
+                color: "blue",
+                cursor: "pointer",
+              }}
+              className="cursor-pointer"
+              onClick={() => {
+                editData(id, name, price, subCategory, category);
+              }}
+            />
+            <DeleteIcon
+              style={{
+                fontSize: "20px",
+                color: "darkred",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                deleteProduct();
+              }}
+            />
+          </Stack>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }
 
