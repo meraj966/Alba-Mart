@@ -122,7 +122,7 @@ function Product({
               cursor: "pointer",
             }}
             onClick={() => {
-            //   deleteUser(id);
+                deleteProduct()
             }}
           />
         </Stack>

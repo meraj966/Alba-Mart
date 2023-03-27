@@ -42,7 +42,7 @@ const style = {
 export default function ProductsList() {
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
-  const empCollectionRef = collection(db, "Menu");
+  const menuRef = collection(db, "Menu");
   const [formid, setFormid] = useState("");
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
@@ -50,13 +50,13 @@ export default function ProductsList() {
   const handleBulkClose = () => setBulkOpen(false);
   const handleEditOpen = () => setEditOpen(true);
   const handleEditClose = () => setEditOpen(false);
-
+  console.log("product list", rows)
   useEffect(() => {
-    getUsers();
+    getMenuData();
   }, []);
 
-  const getUsers = async () => {
-    const data = await getDocs(empCollectionRef);
+  const getMenuData = async () => {
+    const data = await getDocs(menuRef);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
@@ -64,7 +64,7 @@ export default function ProductsList() {
     if (v) {
       setRows([v]);
     } else {
-      getUsers();
+      getMenuData();
     }
   };
 
@@ -113,7 +113,7 @@ export default function ProductsList() {
             options={rows}
             sx={{ width: 300 }}
             onChange={(e, v) => filterData(v)}
-            getOptionLabel={(rows) => rows.name || ""}
+            getOptionLabel={rows=>rows.name}
             renderInput={(params) => (
               <TextField {...params} size="small" label="Search Products" />
             )}
@@ -155,7 +155,7 @@ export default function ProductsList() {
                         {...row}
                         setFormid={setFormid}
                         handleEditOpen={handleEditOpen}
-                        deleteProd={getUsers}
+                        deleteProd={getMenuData}
                       />
                     );
                   })}
