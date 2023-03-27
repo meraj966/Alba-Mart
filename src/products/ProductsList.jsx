@@ -15,8 +15,6 @@ import EditForm from "./EditForm";
 import Skeleton from "@mui/material/Skeleton";
 import { useAppStore } from "../appStore";
 import AddProducts from "./AddProducts";
-import ProductPopup from "./resuable/ProductPopup";
-import { Grid } from "@mui/material";
 import Product from "./resuable/Product";
 
 import Table from "@mui/material/Table";
@@ -24,7 +22,6 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
 const style = {
@@ -140,10 +137,11 @@ export default function ProductsList() {
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">Name</TableCell>
-                    <TableCell align="left">Price</TableCell>
-                    <TableCell align="left">Category</TableCell>
-                    <TableCell align="left">Sub Category</TableCell>
-                    <TableCell align="left">Created At</TableCell>
+                    <TableCell align="left">MRP</TableCell>
+                    <TableCell align="left">Sale Price</TableCell>
+                    <TableCell align="left">Stock Value</TableCell>
+                    <TableCell align="left">Quantity</TableCell>
+                    <TableCell align="left">Is Product Live</TableCell>
                     <TableCell align="left">Action</TableCell>
                   </TableRow>
                 </TableHead>

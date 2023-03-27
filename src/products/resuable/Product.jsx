@@ -1,13 +1,6 @@
 import React, { useState } from "react";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Tooltip from "@mui/material/Tooltip";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Stack from "@mui/material/Stack";
@@ -43,6 +36,8 @@ function Product({
   handleEditOpen,
   setFormid,
   data,
+  stockValue,
+  showProduct
 }) {
   let salePrice = price;
   let discount = 0;
@@ -135,10 +130,11 @@ function Product({
         onClick={() => setOpen(true)}
       >
         <TableCell align="left">{name}</TableCell>
+        <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{afterSalePrice}</TableCell>
-        <TableCell align="left">{String(category)}</TableCell>
-        <TableCell align="left">{String(subCategory)}</TableCell>
-        <TableCell align="left">{String(date)}</TableCell>
+        <TableCell align="left">{stockValue}</TableCell>
+        <TableCell align="left">{quantity}</TableCell>
+        <TableCell align="left">{showProduct? "Yes" : "No"}</TableCell>
         <TableCell align="left">
           <Stack spacing={2} direction="row">
             <EditIcon
