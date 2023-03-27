@@ -8,6 +8,10 @@ import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Tooltip from "@mui/material/Tooltip";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Stack from "@mui/material/Stack";
+
 import Swal from "sweetalert2";
 import {
   collection,
@@ -83,45 +87,47 @@ function Product({
     setFormid(newData);
     handleEditOpen();
   };
+  const afterSalePrice = saleType == "RS" ? String(price - saleValue) : String(price - (saleValue/100))
 
   return (
-    <Card style={(onSale && { border: "2px solid red" }) || null}>
-      <CardHeader
-        title={name}
-        subheader={new Date(date).toLocaleString()}
-        action={
-          <>
-            <IconButton aria-label="edit" onClick={editData}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={deleteProduct}>
-              <DeleteIcon />
-            </IconButton>
-          </>
-        }
-      />
-      {/* <CardMedia component="img" height={"194"} image={url[0]} alt={name} /> */}
-      <CardMedia className="cardMedia" height={"194"} ><Carousel images={url}/> </CardMedia>
-
-      <CardContent>
-        <Typography>{description}</Typography>
-        <div style={{ display: "flex" }}>
-          <Typography style={{ width: "70%" }}>
-            {" "}
-            {category} | {subCategory} | {quantity} {measureUnit}
-          </Typography>
-          <Tooltip
-            title={onSale && `Actual Price:  ${price} | Discount: ${discount}`}
-          >
-            <Typography style={{ textAlignLast: "right", width: "30%" }}>
-              <>
-                Price: <b>&#8377;{salePrice}</b>
-              </>
-            </Typography>
-          </Tooltip>
-        </div>
-      </CardContent>
-    </Card>
+    <TableRow hover role="checkbox" tabIndex={-1}>
+      <TableCell align="left" >{name}</TableCell>
+      <TableCell align="left" >{afterSalePrice}</TableCell>
+      <TableCell align="left">{String(category)}</TableCell>
+      <TableCell align="left">{String(subCategory)}</TableCell>
+      <TableCell align="left">{String(date)}</TableCell>
+      <TableCell align="left">
+        <Stack spacing={2} direction="row">
+          <EditIcon
+            style={{
+              fontSize: "20px",
+              color: "blue",
+              cursor: "pointer",
+            }}
+            className="cursor-pointer"
+            onClick={() => {
+              editData(
+                id,
+                name,
+                price,
+                subCategory,
+                category
+              );
+            }}
+          />
+          <DeleteIcon
+            style={{
+              fontSize: "20px",
+              color: "darkred",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+            //   deleteUser(id);
+            }}
+          />
+        </Stack>
+      </TableCell>
+    </TableRow>
   );
 }
 

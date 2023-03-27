@@ -7,10 +7,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { db } from "../firebase-config";
-import {
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Modal from "@mui/material/Modal";
@@ -18,8 +15,17 @@ import EditForm from "./EditForm";
 import Skeleton from "@mui/material/Skeleton";
 import { useAppStore } from "../appStore";
 import AddProducts from "./AddProducts";
-import Product from "./resuable/Product";
+import ProductPopup from "./resuable/ProductPopup";
 import { Grid } from "@mui/material";
+import Product from "./resuable/Product";
+
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
 
 const style = {
   position: "absolute",
@@ -62,15 +68,18 @@ export default function ProductsList() {
     }
   };
 
-
   return (
     <>
       <div>
-        <Modal
-          open={bulkOpen}
-          sx={{ margin: 'auto' }}
-        >
-          <Box sx={{ ...style, overflow: 'scroll', maxHeight: '70%', width: '80%' }}>
+        <Modal open={bulkOpen} sx={{ margin: "auto" }}>
+          <Box
+            sx={{
+              ...style,
+              overflow: "scroll",
+              maxHeight: "70%",
+              width: "80%",
+            }}
+          >
             <AddProducts closeEvent={handleBulkClose} />
           </Box>
         </Modal>
@@ -126,19 +135,33 @@ export default function ProductsList() {
         {rows.length > 0 && (
           <>
             {console.log(rows)}
-            <Grid container spacing={1}>
-              {rows.map((row) => {
-                return <Grid item xs={4}>
-                  <Product
-                  data = {row}
-                   {...row}
-                   setFormid={setFormid}
-                   handleEditOpen={handleEditOpen}
-                   deleteProd={getUsers}
-                  />
-                </Grid>
-              })}
-            </Grid>
+            <TableContainer>
+              <Table stickyHeader aria-label="Products">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="left">Name</TableCell>
+                    <TableCell align="left">Price</TableCell>
+                    <TableCell align="left">Category</TableCell>
+                    <TableCell align="left">Sub Category</TableCell>
+                    <TableCell align="left">Created At</TableCell>
+                    <TableCell align="left">Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => {
+                    return (
+                      <Product
+                        data={row}
+                        {...row}
+                        setFormid={setFormid}
+                        handleEditOpen={handleEditOpen}
+                        deleteProd={getUsers}
+                      />
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </>
         )}
       </Paper>
