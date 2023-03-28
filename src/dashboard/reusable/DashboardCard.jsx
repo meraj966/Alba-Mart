@@ -8,16 +8,26 @@ import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 
 
-function DashboardCardStock({value,header}) {
+
+const bull = (
+    <Box
+        component="span"
+        sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+    >
+        •
+    </Box>
+);
+
+function DashboardCard({header, value}) {
     return (
-        <Card sx={{ minWidth: 275 }}>
+        <Card sx={{ minWidth: 275} }>
             <CardActionArea>
                 <CardContent>
-                    <Typography variant="h4" component="h4" align="center" >
-                        {value}
-                    </Typography>
-                    <Typography variant="h4" component="h4" align="center" color="text.secondary">
+                    <Typography variant="h5" component="h5" align = "center" >
                         {header}
+                    </Typography>
+                    <Typography variant="h5" component="h5" align = "center" color="text.secondary">
+                        {value}
                     </Typography>
                 </CardContent>
             </CardActionArea>
@@ -25,4 +35,4 @@ function DashboardCardStock({value,header}) {
     )
 }
 
-export default DashboardCardStock
+export default DashboardCard

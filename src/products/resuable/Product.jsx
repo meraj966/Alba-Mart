@@ -4,18 +4,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Stack from "@mui/material/Stack";
-
+import PreviewIcon from '@mui/icons-material/Preview';
 import Swal from "sweetalert2";
 import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
   deleteDoc,
-  doc,
+  doc
 } from "firebase/firestore";
 import { db } from "../../firebase-config";
-import Carousel from "./Carousel";
 import { Box, Modal } from "@mui/material";
 import ProductPopup from "./ProductPopup";
 function Product({
@@ -37,7 +32,7 @@ function Product({
   setFormid,
   data,
   stockValue,
-  showProduct
+  showProduct,
 }) {
   let salePrice = price;
   let discount = 0;
@@ -96,11 +91,11 @@ function Product({
     transform: "translate(-50%, -50%)",
     bgcolor: "background.paper",
     boxShadow: 24,
-    borderRadius: '20px'
+    borderRadius: "20px",
   };
   return (
     <>
-      <Modal open={open} onClose={()=>setOpen(false)}>
+      <Modal open={open} onClose={() => setOpen(false)}>
         <Box sx={style}>
           <ProductPopup
             id={id}
@@ -127,20 +122,27 @@ function Product({
         hover
         role="checkbox"
         tabIndex={-1}
-        onClick={() => setOpen(true)}
       >
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{afterSalePrice}</TableCell>
         <TableCell align="left">{stockValue}</TableCell>
         <TableCell align="left">{quantity}</TableCell>
-        <TableCell align="left">{showProduct? "Yes" : "No"}</TableCell>
+        <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
         <TableCell align="left">
           <Stack spacing={2} direction="row">
+            <PreviewIcon
+              style={{
+                fontSize: "20px",
+                cursor: "pointer",
+                color: open ? "black" : "gray",
+              }}
+              onClick={() => setOpen(true)}
+            />
             <EditIcon
               style={{
                 fontSize: "20px",
-                color: "blue",
+                color: "#1976d2",
                 cursor: "pointer",
               }}
               className="cursor-pointer"

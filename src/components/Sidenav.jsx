@@ -14,7 +14,6 @@ import { useAppStore } from "../appStore";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import OfferSettings from "../pages/OfferSettings";
 
 const drawerWidth = 240;
 

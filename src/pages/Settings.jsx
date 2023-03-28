@@ -20,18 +20,8 @@ import CategoryEditForm from "../products/settings_forms/CategoryEditForm";
 import Tooltip from "@mui/material/Tooltip";
 import { AddCircle } from "@mui/icons-material";
 import SubCategoryEditForm from "../products/settings_forms/SubCategoryEditForm";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 300,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { BOX_STYLE } from "./reusable/Styles";
+import PageTemplate from "./reusable/PageTemplate";
 
 export default function Settings() {
   const [onSale, setOnSale] = useState(false);
@@ -113,209 +103,202 @@ export default function Settings() {
     );
   };
 
-
   const handleEditForm = (editType, type) => {
     if (editType === SUBCATEGORY) {
-        if (!subCategory) return
+      if (!subCategory) return;
     }
-    setType(type)
-    setEditType(editType)
-    setEditOpen(!editOpen)
-}
-return (
+    setType(type);
+    setEditType(editType);
+    setEditOpen(!editOpen);
+  };
+  return (
     <>
-      <div className="bgcolor">
-        <Modal
-          open={editOpen}
-          // onClose={handleEditClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style} className="editForm">
-            {editType === CATEGORY && (
-              <CategoryEditForm
-                closeForm={() => setEditOpen(!editOpen)}
-                formType={type}
-                handleEditForm={handleEditForm}
-                selectedCategory={category}
-                settingsData={settings}
-                refreshSettingsData={getDataFromFirestore}
-                subCategoryList={subCategoryList}
-                categoryData={categoryData}
-              />
-            )} 
-            {editType === SUBCATEGORY && (
-              <SubCategoryEditForm 
-              handleEditForm={handleEditForm}
-              subCategory={subCategory}
-              subCategories={subCategoryList}
-              category={category}
-              categoryData={categoryData}
-              refreshSettingsData={getDataFromFirestore}
-              />
-            )}
-          </Box>
-        </Modal>
-        <Navbar />
-        <Box height={70} />
-        <Box sx={{ display: "flex" }}>
-          <Sidenav />
-          <Box component={"main"} sx={{ flexGrow: 1, p: 3 }}>
-            <Typography variant="h5" align="center">
-              SETTINGS
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12}></Grid>
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <TextField
-                  error={false}
-                  id="category"
-                  name="category"
-                  label="Set Default Category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  size="small"
-                  select
-                  sx={{ minWidth: "100%" }}
-                >
-                  {categoryList?.map((option) => {
-                    return (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    );
-                  })}
-                </TextField>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Edit current category">
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => handleEditForm(CATEGORY, "edit")}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Add Categories">
-                  <IconButton onClick={() => handleEditForm(CATEGORY, "add")}>
-                    <AddCircle />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              {/* SUB CATEGORY */}
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <TextField
-                  error={false}
-                  id="subCategory"
-                  name="subCategory"
-                  value={subCategory}
-                  onChange={e=>setSubCategory(e.target.value)}
-                  label="Sub Category"
-                  size="small"
-                  select
-                  sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                  {subCategoryList?.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item>
-                <Tooltip
-                  title="Select sub-category"
-                  sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => handleEditForm(SUBCATEGORY, "edit")}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              {/* SALE TYPE */}
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <TextField
-                  error={false}
-                  id="saleType"
-                  name="saleType"
-                  value={saleType}
-                  onChange={(e) => setSaleType(e.target.value)}
-                  label="Sale Type"
-                  size="small"
-                  select
-                  sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                  {saleTypeList?.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={2}></Grid>
-              {/* Unit */}
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <TextField
-                  id="unit"
-                  name="unit"
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  label="Unit"
-                  size="small"
-                  select
-                  sx={{ marginTop: "30px", minWidth: "100%" }}
-                >
-                  {unitList.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={2}></Grid>
-              {/* CHECKBOX */}
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={onSale}
-                      onChange={(e) => setOnSale(e.target.checked)}
-                      name="onSale"
-                    />
-                  }
-                  name="onSale"
-                  sx={{ minWidth: "100%" }}
-                  label="Default On Sale"
+      <PageTemplate
+        title="Settings"
+        modal={
+          <Modal
+            open={editOpen}
+            // onClose={handleEditClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={BOX_STYLE} className="editForm">
+              {editType === CATEGORY && (
+                <CategoryEditForm
+                  closeForm={() => setEditOpen(!editOpen)}
+                  formType={type}
+                  handleEditForm={handleEditForm}
+                  selectedCategory={category}
+                  settingsData={settings}
+                  refreshSettingsData={getDataFromFirestore}
+                  subCategoryList={subCategoryList}
+                  categoryData={categoryData}
                 />
-              </Grid>
-              <Grid item xs={2}></Grid>
-              {/* SUBMIT BUTTON */}
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <Typography variant="h5" align="right">
-                  <Button
-                    variant="contained"
-                    style={{ width: "200px", align: "right" }}
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </Button>
-                </Typography>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-      </div>
+              )}
+              {editType === SUBCATEGORY && (
+                <SubCategoryEditForm
+                  handleEditForm={handleEditForm}
+                  subCategory={subCategory}
+                  subCategories={subCategoryList}
+                  category={category}
+                  categoryData={categoryData}
+                  refreshSettingsData={getDataFromFirestore}
+                />
+              )}
+            </Box>
+          </Modal>
+        }
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12}></Grid>
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <TextField
+              error={false}
+              id="category"
+              name="category"
+              label="Set Default Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              size="small"
+              select
+              sx={{ minWidth: "100%" }}
+            >
+              {categoryList?.map((option) => {
+                return (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                );
+              })}
+            </TextField>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Edit current category">
+              <IconButton
+                aria-label="edit"
+                onClick={() => handleEditForm(CATEGORY, "edit")}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Add Categories">
+              <IconButton onClick={() => handleEditForm(CATEGORY, "add")}>
+                <AddCircle />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          {/* SUB CATEGORY */}
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <TextField
+              error={false}
+              id="subCategory"
+              name="subCategory"
+              value={subCategory}
+              onChange={(e) => setSubCategory(e.target.value)}
+              label="Sub Category"
+              size="small"
+              select
+              sx={{ marginTop: "30px", minWidth: "100%" }}
+            >
+              {subCategoryList?.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item>
+            <Tooltip
+              title="Select sub-category"
+              sx={{ marginTop: "30px", minWidth: "100%" }}
+            >
+              <IconButton
+                aria-label="edit"
+                onClick={() => handleEditForm(SUBCATEGORY, "edit")}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          {/* SALE TYPE */}
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <TextField
+              error={false}
+              id="saleType"
+              name="saleType"
+              value={saleType}
+              onChange={(e) => setSaleType(e.target.value)}
+              label="Sale Type"
+              size="small"
+              select
+              sx={{ marginTop: "30px", minWidth: "100%" }}
+            >
+              {saleTypeList?.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={2}></Grid>
+          {/* Unit */}
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="unit"
+              name="unit"
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              label="Unit"
+              size="small"
+              select
+              sx={{ marginTop: "30px", minWidth: "100%" }}
+            >
+              {unitList.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={2}></Grid>
+          {/* CHECKBOX */}
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={onSale}
+                  onChange={(e) => setOnSale(e.target.checked)}
+                  name="onSale"
+                />
+              }
+              name="onSale"
+              sx={{ minWidth: "100%" }}
+              label="Default On Sale"
+            />
+          </Grid>
+          <Grid item xs={2}></Grid>
+          {/* SUBMIT BUTTON */}
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <Typography variant="h5" align="right">
+              <Button
+                variant="contained"
+                style={{ width: "200px", align: "right" }}
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+            </Typography>
+          </Grid>
+        </Grid>
+      </PageTemplate>
     </>
   );
 }
