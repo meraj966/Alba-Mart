@@ -1,29 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import { db } from "../../firebase-config";
 import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Stack,
+  IconButton,
+} from "@mui/material";
+import { db } from "../../firebase-config";
+import { collection, getDocs } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Link } from "react-router-dom";
 
 function OfferList() {
   const [offerData, setOfferData] = useState([]);
@@ -59,8 +51,11 @@ function OfferList() {
               <TableCell align="left" style={{ minWidth: "100px" }}>
                 Is Offer Live
               </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
+              <TableCell align="left" style={{ width: "100px" }}>
                 Action
+              </TableCell>
+              <TableCell align="left" style={{ width: "100px" }}>
+                View Products
               </TableCell>
             </TableRow>
           </TableHead>
@@ -95,20 +90,16 @@ function OfferList() {
                     />
                   </Stack>
                 </TableCell>
+                <TableCell align="center">
+                  <Link to={`/offer-details/${row.id}`} target="_blank" rel="noopener noreferrer">
+                      <OpenInNewIcon color="primary"/>
+                  </Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        /> */}
     </>
   );
 }

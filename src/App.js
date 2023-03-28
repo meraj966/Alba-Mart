@@ -7,6 +7,7 @@ import Login from "./Login";
 import Settings from './pages/Settings';
 import Dashboard from "./dashboard";
 import OfferSettings from './offers';
+import OfferDetailView from './offers/components/OfferDetailView';
 
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/orders" exact element={<Orders />}></Route>
         <Route path="/settings" exact element={<Settings/>}></Route>
         <Route path="/offer-settings" exact element={<OfferSettings/>}></Route>
+        <Route path="/offer-details/:id" exact element={<OfferDetailView/>}></Route>
       </Routes>
     </BrowserRouter>
    </>

@@ -14,6 +14,7 @@ import { useAppStore } from "../appStore";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 const drawerWidth = 240;
 
@@ -199,7 +200,7 @@ export default function Sidenav() {
                 justifyContent: "center",
               }}
             >
-              <Settings/>
+              <LocalOfferIcon/>
             </ListItemIcon>
             <ListItemText primary="Offer Settings" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
