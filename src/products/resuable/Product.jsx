@@ -33,6 +33,7 @@ function Product({
   data,
   stockValue,
   showProduct,
+  isDetailView
 }) {
   let salePrice = price;
   let discount = 0;
@@ -122,6 +123,7 @@ function Product({
         hover
         role="checkbox"
         tabIndex={-1}
+        style={{border: '1px solid red !important'}}
       >
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
@@ -129,6 +131,7 @@ function Product({
         <TableCell align="left">{stockValue}</TableCell>
         <TableCell align="left">{quantity}</TableCell>
         <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
+        {!isDetailView &&
         <TableCell align="left">
           <Stack spacing={2} direction="row">
             <PreviewIcon
@@ -161,7 +164,7 @@ function Product({
               }}
             />
           </Stack>
-        </TableCell>
+        </TableCell> }
       </TableRow>
     </>
   );
