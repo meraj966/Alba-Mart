@@ -145,7 +145,7 @@ export default function OrdersList() {
             onChange={(e, v) => filterData(v)}
             getOptionLabel={(rows) => rows.name || ""}
             renderInput={(params) => (
-              <TextField {...params} size="small" label="Search Products" />
+              <TextField {...params} size="small" label="Search Orders" />
             )}
           />
           <Typography

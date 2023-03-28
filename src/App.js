@@ -1,12 +1,12 @@
 import React from 'react';
 import {Routes, Route, BrowserRouter} from "react-router-dom";
 import Products from "./pages/Products";
-import Users from "./pages/Users";
+import Users from "./users";
 import Orders from "./pages/Orders";
 import Login from "./Login";
 import Settings from './pages/Settings';
-import Dashboard from "./pages/Dashboard";
-import OfferSettings from './pages/OfferSettings';
+import Dashboard from "./dashboard";
+import OfferSettings from './offers';
 
 
 export default function App() {
