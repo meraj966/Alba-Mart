@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../Dash.css";
 import { useEffect } from "react";
-import { useAppStore } from "d:/AlbaProject/abcd/src/appStore";
+import { useAppStore } from "../appStore";
 import PageTemplate from "./reusable/PageTemplate";
 import {
   Modal,
@@ -12,10 +12,10 @@ import {
   Button,
 } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "d:/AlbaProject/abcd/src/firebase-config";
+import { db } from "../firebase-config";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 
-export default function Products() {
+export default function Coupans() {
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
   const menuRef = collection(db, "Menu");
@@ -40,6 +40,7 @@ export default function Products() {
               id="combo-box-demo"
               options={rows}
               sx={{ width: 300 }}
+              getOptionLabel={(rows) => rows.name}
               renderInput={(params) => (
                 <TextField {...params} size="small" label="Search Coupan" />
               )}
