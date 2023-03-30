@@ -185,7 +185,7 @@ export default function Sidenav() {
           disablePadding
           sx={{ display: "block" }}
           onClick={() => {
-            navigate("/coupan");
+            navigate("/promo-codes");
           }}
         >
           <ListItemButton
