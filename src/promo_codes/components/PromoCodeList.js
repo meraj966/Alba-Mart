@@ -22,10 +22,10 @@ function PromoCodeList() {
   const ref = collection(db, "PromoCode");
 
   useEffect(() => {
-    getOfferData();
+    getPromoCodeData();
   }, []);
 
-  const getOfferData = async () => {
+  const getPromoCodeData = async () => {
     const data = await getDocs(ref);
     setPromoCodeData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };

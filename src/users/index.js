@@ -17,7 +17,7 @@ export default function Users() {
   // const [rows, setRows] = useState([]);
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
-  const empCollectionRef = collection(db, "Users");
+  const empCollectionRef = collection(db, "Address");
   const filterData = (v) => {
     if (v) {
       setRows([v]);
