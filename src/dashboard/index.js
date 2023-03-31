@@ -32,7 +32,7 @@ export default function Dashboard() {
   };
 
   const getCustomers = async () => {
-    const data = await getDocs(collection(db, "UserProfile"));
+    const data = await getDocs(collection(db, "Address"));
     setCustomers(data.docs.length);
   };
 

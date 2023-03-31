@@ -204,7 +204,7 @@ export default function Sidenav() {
             >
               <BookOnlineOutlinedIcon />
             </ListItemIcon>
-            <ListItemText primary="Coupan" sx={{ opacity: open ? 1 : 0 }} />
+            <ListItemText primary="Promo Code" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
           </ListItem>
 
