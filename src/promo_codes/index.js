@@ -54,6 +54,7 @@ function PromoCodes() {
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <button onClick={handleClose}>X</button>
           </div>
+          <h2 style={{ textAlign: "center" }}>Add Promo Code</h2>
           <AddNewPromoCode />
         </div>
       )}
