@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Settings from "@mui/icons-material/Settings";
 import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import GroupIcon from "@mui/icons-material/Group";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../appStore";
@@ -206,7 +207,34 @@ export default function Sidenav() {
             </ListItemIcon>
             <ListItemText primary="Promo Code" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
-          </ListItem>
+        </ListItem>
+
+        <ListItem
+          disablePadding
+          sx={{ display: "block" }}
+          onClick={() => {
+            navigate("/delivery_slot");
+          }}
+        >
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <LocalShippingIcon />
+            </ListItemIcon>
+            <ListItemText primary="Delivery Slot" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
 
         <ListItem
           disablePadding
@@ -229,7 +257,7 @@ export default function Sidenav() {
                 justifyContent: "center",
               }}
             >
-              <LocalOfferIcon/>
+              <LocalOfferIcon />
             </ListItemIcon>
             <ListItemText primary="Offer Settings" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
