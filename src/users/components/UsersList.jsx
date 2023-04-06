@@ -64,9 +64,9 @@ export default function UsersList({rows}) {
                       key={row.code}
                     >
                       <TableCell align="left">{row.name}</TableCell>
-                      <TableCell align="left">{String(row.email)}</TableCell>
-                      <TableCell align="left">{String(row.phone)}</TableCell>
-                      <TableCell align="left">{String(row.pincode)}</TableCell>
+                      <TableCell align="left">{String(row.emailId)}</TableCell>
+                      <TableCell align="left">{String(row.phoneNo)}</TableCell>
+                      <TableCell align="left">{String(row.postalCode)}</TableCell>
                       <TableCell align="left">{String(row.address)}</TableCell>
                     </TableRow>
                   );
