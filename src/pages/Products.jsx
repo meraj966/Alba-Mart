@@ -89,7 +89,6 @@ export default function Products() {
               options={options}
               sx={{ width: 300 }}
               onChange={(e, v) => filterData(v)}
-              // getOptionLabel={(rows) => rows.name}
               renderInput={(params) => (
                 <TextField {...params} size="small" label="Search Products" />
               )}
