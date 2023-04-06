@@ -15,7 +15,7 @@ function PageTemplate(props) {
             {props.modal}
             <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
               <Typography gutterBottom variant="h5" sx={{ padding: "20px", fontWeight: 550 }}>
-                {props.title}
+                {props.title} {props.subTitle}
               </Typography>
               <Divider />
               <Box height={10} />
