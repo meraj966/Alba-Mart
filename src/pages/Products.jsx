@@ -68,7 +68,6 @@ export default function Products() {
             </Modal>
             <Modal
               open={editopen}
-              // onClose={handleEditClose}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >

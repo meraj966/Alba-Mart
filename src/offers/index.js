@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { Modal, Stack, Typography, Button } from "@mui/material";
-import AddNewOffer from "../offers/components/AddNewOffer";
 import OfferList from "../offers/components/OfferList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { BOX_STYLE } from "../pages/reusable/Styles";
+import { Box } from "@mui/system";
+import AddNewOffer from "./components/AddNewOffer";
 
 function OfferSettings() {
   const [addNewOffer, setAddNewOffer] = useState(false);
   const modal = () => (
     <Modal onClose={() => setAddNewOffer(false)} open={addNewOffer}>
-      <AddNewOffer />
+      <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
+        <AddNewOffer />
+      </Box>
     </Modal>
   );
   const actionBar = () => (
@@ -24,6 +28,7 @@ function OfferSettings() {
         <Button
           variant="contained"
           endIcon={<AddCircleIcon />}
+          onClick={() => setAddNewOffer(true)}
         >
           Add Offer
         </Button>
