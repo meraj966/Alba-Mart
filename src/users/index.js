@@ -14,17 +14,10 @@ import {
 import PageTemplate from "../pages/reusable/PageTemplate";
 
 export default function Users() {
-  // const [rows, setRows] = useState([]);
+  const [options, setOptions] = useState([]);
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
-  const empCollectionRef = collection(db, "Users");
-  const filterData = (v) => {
-    if (v) {
-      setRows([v]);
-    } else {
-      getUsers();
-    }
-  };
+  const empCollectionRef = collection(db, "Address");
 
   useEffect(() => {
     getUsers();
@@ -32,7 +25,18 @@ export default function Users() {
 
   const getUsers = async () => {
     const data = await getDocs(empCollectionRef);
+    const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
+    setOptions(uniqueValues);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  };
+
+  const filterData = (v) => {
+    if (v) {
+      const filteredRows = rows.filter(row => Object.values(row).includes(v));
+      setRows(filteredRows);
+    } else {
+      getUsers();
+    }
   };
 
   const actionBar = () => (
@@ -40,10 +44,9 @@ export default function Users() {
       <Autocomplete
         disablePortal
         id="combo-box-demo"
-        options={rows}
+        options={options}
         sx={{ width: 300 }}
         onChange={(e, v) => filterData(v)}
-        getOptionLabel={(rows) => rows.name || ""}
         renderInput={(params) => (
           <TextField {...params} size="small" label="Search Users" />
         )}

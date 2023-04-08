@@ -8,6 +8,8 @@ import Settings from './pages/Settings';
 import Dashboard from "./dashboard";
 import OfferSettings from './offers';
 import OfferDetailView from './offers/components/OfferDetailView';
+import PromoCodes from './promo_codes';
+import DeliverySlots from './delivery_slot'
 
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" exact element={<Login />}></Route>
+        <Route path="/promo-codes" exact element={<PromoCodes />}></Route>
+        <Route path="/delivery_slot" exact element={<DeliverySlots />}></Route>
         <Route path="/dashboard" exact element={<Dashboard />}></Route>
         <Route path="/products" exact element={<Products />}></Route>
         <Route path="/users" exact element={<Users />}></Route>

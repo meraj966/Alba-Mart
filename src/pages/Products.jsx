@@ -21,6 +21,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { BOX_STYLE } from "./reusable/Styles";
 
 export default function Products() {
+  const [options, setOptions] = useState([]);
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
   const menuRef = collection(db, "Menu");
@@ -38,12 +39,15 @@ export default function Products() {
 
   const getMenuData = async () => {
     const data = await getDocs(menuRef);
+    const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
+    setOptions(uniqueValues);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
   const filterData = (v) => {
     if (v) {
-      setRows([v]);
+      const filteredRows = rows.filter(row => Object.values(row).includes(v));
+      setRows(filteredRows);
     } else {
       getMenuData();
     }
@@ -82,10 +86,9 @@ export default function Products() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={rows}
+              options={options}
               sx={{ width: 300 }}
               onChange={(e, v) => filterData(v)}
-              getOptionLabel={(rows) => rows.name}
               renderInput={(params) => (
                 <TextField {...params} size="small" label="Search Products" />
               )}
