@@ -1,18 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Stack, Typography, Button } from "@mui/material";
 import OfferList from "../offers/components/OfferList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { BOX_STYLE } from "../pages/reusable/Styles";
 import { Box } from "@mui/system";
+import { collection, getDocs } from "firebase/firestore";
 import AddNewOffer from "./components/AddNewOffer";
+import { db } from "../firebase-config";
 
 function OfferSettings() {
+  const [offerData, setOfferData] = useState([]);
   const [addNewOffer, setAddNewOffer] = useState(false);
+  const ref = collection(db, "Offers");
+
+  useEffect(() => {
+    getOfferData();
+  }, []);
+
+  const getOfferData = async () => {
+    const data = await getDocs(ref);
+    setOfferData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  };  
+
   const modal = () => (
     <Modal onClose={() => setAddNewOffer(false)} open={addNewOffer}>
       <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
-        <AddNewOffer />
+        <AddNewOffer closeModal={()=>setAddNewOffer(false)} getOfferData={getOfferData}/>
       </Box>
     </Modal>
   );
@@ -42,7 +56,7 @@ function OfferSettings() {
         actionBar={actionBar()}
         title={"Offer Settings"}
       >
-        <OfferList />
+        <OfferList offerData={offerData}/>
       </PageTemplate>
     </>
   );

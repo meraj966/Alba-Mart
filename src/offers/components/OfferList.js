@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Paper,
   Table,
@@ -10,25 +10,13 @@ import {
   Stack,
   IconButton,
 } from "@mui/material";
-import { db } from "../../firebase-config";
-import { collection, getDocs } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function OfferList() {
-  const [offerData, setOfferData] = useState([]);
-  const ref = collection(db, "Offers");
+function OfferList({offerData}) {
 
-  useEffect(() => {
-    getOfferData();
-  }, []);
-
-  const getOfferData = async () => {
-    const data = await getDocs(ref);
-    setOfferData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  };
   console.log(offerData);
   return (
     <>
