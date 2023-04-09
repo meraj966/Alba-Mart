@@ -8,6 +8,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Skeleton } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import { useState } from "react";
 
 export default function ProductsList({
   rows,
@@ -15,8 +17,26 @@ export default function ProductsList({
   handleEditOpen,
   getMenuData,
   isDetailView,
+  handleSelectedProducts,
+  isEditOffer,
 }) {
-  console.log("product list", rows);
+  const [selectAll, setSelectAll] = useState(false);
+  const productSelected = (id, checked) => {
+    let products = [...rows];
+    products.map((prod) => {
+      if (prod.id === id) {
+        prod.isSelected = checked;
+      }
+    });
+    handleSelectedProducts([...products]);
+  };
+  const handleSelectAll = (e) => {
+    let products = [...rows]
+    products.map(prod=> prod['isSelected'] = e.target.checked)
+    console.log(products, " prodisajdjfkasdjfkadk")
+    handleSelectedProducts([...products])
+    setSelectAll(e.target.checked)
+  }
   return (
     <>
       {rows.length > 0 && (
@@ -25,28 +45,40 @@ export default function ProductsList({
             <Table stickyHeader aria-label="Products">
               <TableHead>
                 <TableRow>
-                  <TableCell align="left" >Name</TableCell>
+                  {isEditOffer && (
+                    <TableCell align="left">
+                      <Checkbox checked={selectAll} onChange={handleSelectAll}></Checkbox>
+                    </TableCell>
+                  )}
+                  <TableCell align="left">Name</TableCell>
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Stock Value</TableCell>
                   <TableCell align="left">Quantity</TableCell>
                   <TableCell align="left">Is Product Live</TableCell>
-                  {!isDetailView && <TableCell align="left">Action</TableCell>}
+                  {isDetailView || isEditOffer ? null : (
+                    <TableCell align="left">Action</TableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => {
-                  return (
-                    <Product
-                      data={row}
-                      {...row}
-                      setFormid={setFormid}
-                      handleEditOpen={handleEditOpen}
-                      deleteProd={getMenuData}
-                      isDetailView={isDetailView}
-                    />
-                  );
-                })}
+                {rows.length > 0 &&
+                  rows.map((row) => {
+                    return (
+                      <Product
+                        data={row}
+                        {...row}
+                        isEditOffer={isEditOffer}
+                        setFormid={setFormid}
+                        handleEditOpen={handleEditOpen}
+                        deleteProd={getMenuData}
+                        isDetailView={isDetailView}
+                        productSelected={(checked) =>
+                          productSelected(row.id, checked)
+                        }
+                      />
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
