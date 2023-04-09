@@ -4,13 +4,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Stack from "@mui/material/Stack";
-import PreviewIcon from '@mui/icons-material/Preview';
+import PreviewIcon from "@mui/icons-material/Preview";
 import Swal from "sweetalert2";
-import {
-  deleteDoc,
-  doc
-} from "firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
+import Checkbox from "@mui/material/Checkbox";
 import { Box, Modal } from "@mui/material";
 import ProductPopup from "./ProductPopup";
 function Product({
@@ -33,8 +31,13 @@ function Product({
   data,
   stockValue,
   showProduct,
-  isDetailView
+  isDetailView,
+  isSelected,
+  productSelected,
+  isEditOffer,
 }) {
+  console.log(isSelected, "isSelected")
+  const [selected, setSelected] = useState(isSelected);
   let salePrice = price;
   let discount = 0;
   const [open, setOpen] = useState(false);
@@ -81,10 +84,12 @@ function Product({
     setFormid(newData);
     handleEditOpen();
   };
-  const afterSalePrice =
-    saleType == "RS"
-      ? String(price - saleValue)
-      : String(price - saleValue / 100);
+  const afterSalePrice = onSale
+    ? saleType == "RS"
+      ? String(Number(price) - Number(saleValue))
+      : String((Number(price) - Number(saleValue)) / 100)
+    : "-";
+  
   const style = {
     position: "absolute",
     top: "50%",
@@ -123,48 +128,61 @@ function Product({
         hover
         role="checkbox"
         tabIndex={-1}
-        style={{border: '1px solid red !important'}}
+        style={{ border: "1px solid red !important" }}
       >
+        {isEditOffer && (
+          <TableCell align="left" width={"5%"}>
+            <Checkbox
+              checked={selected}
+              onChange={(e) => {
+                setSelected(e.target.checked);
+                productSelected(e.target.checked);
+              }}
+            />
+          </TableCell>
+        )}
+
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{afterSalePrice}</TableCell>
         <TableCell align="left">{stockValue}</TableCell>
         <TableCell align="left">{quantity}</TableCell>
         <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
-        {!isDetailView &&
-        <TableCell align="left">
-          <Stack spacing={2} direction="row">
-            <PreviewIcon
-              style={{
-                fontSize: "20px",
-                cursor: "pointer",
-                color: open ? "black" : "gray",
-              }}
-              onClick={() => setOpen(true)}
-            />
-            <EditIcon
-              style={{
-                fontSize: "20px",
-                color: "#1976d2",
-                cursor: "pointer",
-              }}
-              className="cursor-pointer"
-              onClick={() => {
-                editData(id, name, price, subCategory, category);
-              }}
-            />
-            <DeleteIcon
-              style={{
-                fontSize: "20px",
-                color: "darkred",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                deleteProduct();
-              }}
-            />
-          </Stack>
-        </TableCell> }
+        {isDetailView || isEditOffer ? null : (
+          <TableCell align="left">
+            <Stack spacing={2} direction="row">
+              <PreviewIcon
+                style={{
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  color: open ? "black" : "gray",
+                }}
+                onClick={() => setOpen(true)}
+              />
+              <EditIcon
+                style={{
+                  fontSize: "20px",
+                  color: "#1976d2",
+                  cursor: "pointer",
+                }}
+                className="cursor-pointer"
+                onClick={() => {
+                  editData(id, name, price, subCategory, category);
+                }}
+              />
+              <DeleteIcon
+                style={{
+                  fontSize: "20px",
+                  color: "darkred",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  deleteProduct();
+                }}
+              />
+            </Stack>
+          </TableCell>
+        )}
       </TableRow>
     </>
   );

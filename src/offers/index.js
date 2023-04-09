@@ -56,7 +56,7 @@ function OfferSettings() {
         actionBar={actionBar()}
         title={"Offer Settings"}
       >
-        <OfferList offerData={offerData}/>
+        <OfferList offerData={offerData} getOfferData={getOfferData}/>
       </PageTemplate>
     </>
   );

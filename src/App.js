@@ -10,6 +10,7 @@ import OfferSettings from './offers';
 import OfferDetailView from './offers/components/OfferDetailView';
 import PromoCodes from './promo_codes';
 import DeliverySlots from './delivery_slot'
+import EditOffer from './offers/components/EditOffer';
 
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/settings" exact element={<Settings/>}></Route>
         <Route path="/offer-settings" exact element={<OfferSettings/>}></Route>
         <Route path="/offer-details/:id" exact element={<OfferDetailView/>}></Route>
+        <Route path="/edit-offer/:id" exact element={<EditOffer/>}></Route>
       </Routes>
     </BrowserRouter>
    </>
