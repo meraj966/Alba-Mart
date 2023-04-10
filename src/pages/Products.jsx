@@ -112,7 +112,7 @@ export default function Products() {
           rows={rows}
           setFormid={setFormid}
           handleEditOpen={handleEditOpen}
-          deleteProd={getMenuData}
+          getMenuData={getMenuData}
         />
       </PageTemplate>
     </>

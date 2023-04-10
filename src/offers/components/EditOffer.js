@@ -37,7 +37,9 @@ function EditOffer() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const formatDate = (obj) => {
-    return !isNaN(obj?.date()) ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
+    return !isNaN(obj?.date())
+      ? `${obj.month() + 1}/${obj.date()}/${obj.year()}`
+      : "";
   };
   console.log(selectedProducts);
   useEffect(() => {
@@ -53,7 +55,7 @@ function EditOffer() {
       setEndDate(dayjs(offerData.endDate));
     }
   }, [offerData]);
-  console.log(offerData)
+  console.log(offerData);
   const getOfferData = async () => {
     const offerData = await getDoc(doc(db, "Offers", id));
     setOfferData(offerData.data());
@@ -62,7 +64,8 @@ function EditOffer() {
   const getProductData = async () => {
     const data = await getDocs(productsRef);
     let products = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    products = products.filter(i=>['', id].includes(i.saleTag));
+    console.log(products, "productssssssssssss");
+    products = products.filter((i) => ["", id].includes(i.saleTag));
     products.map((prod) => (prod.isSelected = prod.saleTag === id));
     setSelectedProducts(products);
   };
@@ -77,6 +80,9 @@ function EditOffer() {
     const currentOffer = doc(db, "Offers", id);
     for (let i = 0; i < newProds.length; i++) {
       newProds[i]["saleTag"] = newProds[i].isSelected ? id : "";
+      newProds[i]["onSale"] = newProds[i].isSelected;
+      newProds[i]["saleType"] = "%";
+      newProds[i]["saleValue"] = discount;
       const prodDoc = doc(db, "Menu", newProds[i]["id"]);
       await updateDoc(prodDoc, { ...newProds[i] });
       if (newProds[i].isSelected) selectedProdIds.push(newProds[i]["id"]);
@@ -131,6 +137,7 @@ function EditOffer() {
             onChange={(e) => setDiscount(e.target.value)}
             label="Discount"
             size="small"
+            sx={{ width: "100px" }}
           />
           <FormGroup>
             <FormControlLabel
@@ -153,6 +160,7 @@ function EditOffer() {
               rows={selectedProducts}
               isEditOffer={true}
               handleSelectedProducts={handleSelectedProducts}
+              saleValue={discount}
             />
           ) : null}
         </Grid>

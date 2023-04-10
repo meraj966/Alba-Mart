@@ -102,7 +102,10 @@ export default function EditForm({ fid, closeEvent }) {
       category,
       stockValue,
       showProduct,
-      saleValue
+      saleValue,
+      onSale,
+      saleType,
+      quantity,
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -120,9 +123,12 @@ export default function EditForm({ fid, closeEvent }) {
       subCategory: subCategory,
       category: category,
       stockValue,
+      quantity,
       file: url,
       showProduct,
-      saleValue
+      saleValue,
+      onSale,
+      saleType
     };
     await updateDoc(userDoc, newFields);
     getUsers();
