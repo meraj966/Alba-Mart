@@ -1,11 +1,12 @@
-import { Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useAppStore } from "../../appStore";
+import { Link, useParams } from "react-router-dom";
 import PageTemplate from "../../pages/reusable/PageTemplate";
 import ProductsList from "../../products/ProductsList";
 import { collection, getDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase-config";
+import { Stack } from "@mui/system";
+import EditIcon from "@mui/icons-material/Edit";
 
 function OfferDetailView(props) {
   const { id } = useParams();
@@ -13,13 +14,13 @@ function OfferDetailView(props) {
   const [offerData, setOfferData] = useState({});
 
   const getProducts = async () => {
-    const menuData = await getDocs(collection(db, "Menu"))
+    const menuData = await getDocs(collection(db, "Menu"));
     const data = menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    setRows(data.filter((prod) => prod.saleTag == id))
+    setRows(data.filter((prod) => prod.saleTag == id));
   };
 
   useEffect(() => {
-    getProducts()
+    getProducts();
     getOfferById();
   }, []);
 
@@ -29,15 +30,28 @@ function OfferDetailView(props) {
     setOfferData(data.data());
   };
 
+  const subTitle = () => (
+    <>
+      {Object.keys(offerData).length
+        ? `- ${offerData.title} | ${offerData.startDate} | ${offerData.endDate} | Discount - ${offerData.discountPercent}`
+        : ""}
+      <Stack
+        direction={"row"}
+        sx={{ float: "right" }}
+        spacing={2}
+        className="my-2 mb-2"
+      >
+        <Link to={`/edit-offer/${id}`} style={{textDecoration: 'none'}}>
+
+        <Button sx={{ marginTop: "5px" }} type="submit" variant="contained">
+          <EditIcon sx={{marginRight: '8px', fontSize: '18px'}}/>  Edit Offer
+        </Button>
+        </Link>
+      </Stack>
+    </>
+  );
   return (
-    <PageTemplate
-      title="Offer Details"
-      subTitle={
-        Object.keys(offerData).length
-          ? `- ${offerData.title} | ${offerData.startDate} | ${offerData.endDate} | Discount - ${offerData.discountPercent}`
-          : ""
-      }
-    >
+    <PageTemplate title="Offer Details" subTitle={subTitle()}>
       {rows.length ? (
         <ProductsList rows={rows} isDetailView={true} />
       ) : (
