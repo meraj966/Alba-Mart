@@ -33,7 +33,6 @@ export default function ProductsList({
   const handleSelectAll = (e) => {
     let products = [...rows]
     products.map(prod=> prod['isSelected'] = e.target.checked)
-    console.log(products, " prodisajdjfkasdjfkadk")
     handleSelectedProducts([...products])
     setSelectAll(e.target.checked)
   }

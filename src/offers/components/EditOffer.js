@@ -160,6 +160,7 @@ function EditOffer() {
               rows={selectedProducts}
               isEditOffer={true}
               handleSelectedProducts={handleSelectedProducts}
+              saleValue={discount}
             />
           ) : null}
         </Grid>

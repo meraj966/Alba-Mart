@@ -15,7 +15,7 @@ export const getDiscountedPrice = (saleType, price, discount = 0) => {
         let percent = (discount/100).toFixed(2)
         discount = (price * percent).toFixed(2)
         discountedPrice = price - discount
-    } else if (saleType === 'RS') {
+    } else if (['Rs', 'RS'].includes(saleType)) {
         discountedPrice = price - discount
     } else discountedPrice = '-'
     return discountedPrice
