@@ -11,6 +11,7 @@ import { db } from "../../firebase-config";
 import Checkbox from "@mui/material/Checkbox";
 import { Box, Modal } from "@mui/material";
 import ProductPopup from "./ProductPopup";
+import { getDiscountedPrice } from "../../utils";
 function Product({
   id,
   name,
@@ -37,20 +38,20 @@ function Product({
   isEditOffer,
 }) {
   const [selected, setSelected] = useState(isSelected);
-  let salePrice = price;
-  let discount = 0;
+  // let salePrice = price;
+  // let discount = 0;
   const [open, setOpen] = useState(false);
-  if (onSale) {
-    if (saleType === "%") {
-      let percent = (saleValue / 100).toFixed(2);
-      discount = (price * percent).toFixed(2);
-      salePrice = price - discount;
-    } else {
-      discount = saleValue;
-      salePrice = price - saleValue;
-    }
-  } else salePrice = '-'
-
+  // if (onSale) {
+  //   if (saleType === "%") {
+  //     let percent = (saleValue / 100).toFixed(2);
+  //     discount = (price * percent).toFixed(2);
+  //     salePrice = price - discount;
+  //   } else {
+  //     discount = saleValue;
+  //     salePrice = price - saleValue;
+  //   }
+  // } else salePrice = '-'
+  let salePrice = onSale ? getDiscountedPrice(saleType, price, saleValue) : '-'
   useEffect(()=>{
     setSelected(isSelected)
   }, [isSelected])

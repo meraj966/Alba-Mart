@@ -8,3 +8,15 @@ export const splitText = (text) => {
     }
     return res
 }
+
+export const getDiscountedPrice = (saleType, price, discount = 0) => {
+    let discountedPrice = price
+    if (saleType === '%') {
+        let percent = (discount/100).toFixed(2)
+        discount = (price * percent).toFixed(2)
+        discountedPrice = price - discount
+    } else if (saleType === 'RS') {
+        discountedPrice = price - discount
+    } else discountedPrice = '-'
+    return discountedPrice
+}
