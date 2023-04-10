@@ -22,6 +22,11 @@ import {
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
 import { Stack } from "@mui/system";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+
 function EditOffer() {
   const { id } = useParams();
   const [offerData, setOfferData] = useState([]);
@@ -29,16 +34,26 @@ function EditOffer() {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isOfferLive, setIsOfferLive] = useState(false);
   const [discount, setDiscount] = useState(0);
-    console.log(selectedProducts,)
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const formatDate = (obj) => {
+    return obj ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
+  };
+  console.log(selectedProducts);
   useEffect(() => {
     getOfferData();
     getProductData();
   }, []);
 
   useEffect(() => {
-    setIsOfferLive(offerData.isOfferLive);
-    setDiscount(offerData.discountPercent)
+    if (offerData) {
+      setIsOfferLive(offerData.isOfferLive);
+      setDiscount(offerData.discountPercent);
+      setStartDate(dayjs(offerData.startDate));
+      setEndDate(dayjs(offerData.endDate));
+    }
   }, [offerData]);
+
   const getOfferData = async () => {
     const offerData = await getDoc(doc(db, "Offers", id));
     setOfferData(offerData.data());
@@ -46,7 +61,8 @@ function EditOffer() {
 
   const getProductData = async () => {
     const data = await getDocs(productsRef);
-    const products = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    let products = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    products = products.filter(i=>['', id].includes(i.saleTag));
     products.map((prod) => (prod.isSelected = prod.saleTag === id));
     setSelectedProducts(products);
   };
@@ -63,14 +79,16 @@ function EditOffer() {
       newProds[i]["saleTag"] = newProds[i].isSelected ? id : "";
       const prodDoc = doc(db, "Menu", newProds[i]["id"]);
       await updateDoc(prodDoc, { ...newProds[i] });
-      selectedProdIds.push(newProds[i]["id"]);
+      if (newProds[i].isSelected) selectedProdIds.push(newProds[i]["id"]);
       delete newProds[i].isSelected;
     }
     console.log(selectedProdIds, "selectedproda");
     await updateDoc(currentOffer, {
       products: selectedProdIds,
       isOfferLive,
-      discountPercent: discount
+      discountPercent: discount,
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate),
     }).then(() => {
       Swal.fire("Successful", "Updated Offer Details", "success");
     });
@@ -80,7 +98,30 @@ function EditOffer() {
     <PageTemplate
       title={`Edit Offer | ${offerData?.title}`}
       subTitle={
-        <Stack direction={"row"} sx={{float:'right'}} spacing={2} className="my-2 mb-2">
+        <Stack
+          direction={"row"}
+          sx={{ float: "right" }}
+          spacing={1}
+          className="my-4 mb-4"
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Start Date"
+              value={startDate}
+              onChange={(value) => setStartDate(value)}
+              className="date-picker"
+              format="DD/MM/YYYY"
+            />
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              className="date-picker"
+              onChange={(value) => setEndDate(value)}
+              format="DD/MM/YYYY"
+            />
+          </LocalizationProvider>
           <TextField
             type="number"
             error={false}

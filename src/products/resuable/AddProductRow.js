@@ -93,7 +93,6 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
     if (settings) {
       let data = settings[0];
       setOnSale(data.onSale);
-      setShowProduct(data.showProduct);
       setSaleType(data.defaultSaleType);
       setSaleTypeList(data.saleType);
       setMeasureUnit(data.defaultUnit);

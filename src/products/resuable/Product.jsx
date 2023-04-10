@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TableRow from "@mui/material/TableRow";
@@ -36,7 +36,6 @@ function Product({
   productSelected,
   isEditOffer,
 }) {
-  console.log(isSelected, "isSelected")
   const [selected, setSelected] = useState(isSelected);
   let salePrice = price;
   let discount = 0;
@@ -50,8 +49,11 @@ function Product({
       discount = saleValue;
       salePrice = price - saleValue;
     }
-  }
+  } else salePrice = '-'
 
+  useEffect(()=>{
+    setSelected(isSelected)
+  }, [isSelected])
   const deleteApi = async (id) => {
     const userDoc = doc(db, "Menu", id);
     await deleteDoc(userDoc);
@@ -84,11 +86,6 @@ function Product({
     setFormid(newData);
     handleEditOpen();
   };
-  const afterSalePrice = onSale
-    ? saleType == "RS"
-      ? String(Number(price) - Number(saleValue))
-      : String((Number(price) - Number(saleValue)) / 100)
-    : "-";
   
   const style = {
     position: "absolute",
@@ -144,7 +141,8 @@ function Product({
 
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
-        <TableCell align="left">{afterSalePrice}</TableCell>
+        <TableCell align="left">{salePrice}</TableCell>
+        <TableCell align="left">{onSale ? `${saleValue} ${saleType}` : '-'}</TableCell>
         <TableCell align="left">{stockValue}</TableCell>
         <TableCell align="left">{quantity}</TableCell>
         <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
