@@ -80,7 +80,7 @@ function OfferList({ offerData, getOfferData }) {
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.title)}</TableCell>
                 <TableCell align="left">{String(row.startDate) || '-'}</TableCell>
-                <TableCell align="left">{String(row.endDate) || '-'}</TableCell>
+                <TableCell align="left">{row.endDate || '-'}</TableCell>
                 <TableCell align="left">
                   {String(row.discountPercent)}
                 </TableCell>

@@ -37,7 +37,7 @@ function EditOffer() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const formatDate = (obj) => {
-    return obj ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
+    return !isNaN(obj?.date()) ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
   };
   console.log(selectedProducts);
   useEffect(() => {
@@ -53,7 +53,7 @@ function EditOffer() {
       setEndDate(dayjs(offerData.endDate));
     }
   }, [offerData]);
-
+  console.log(offerData)
   const getOfferData = async () => {
     const offerData = await getDoc(doc(db, "Offers", id));
     setOfferData(offerData.data());

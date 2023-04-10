@@ -29,7 +29,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
   const [file, setFile] = useState(null);
   const [percent, setPercent] = useState("");
   const formatDate = (obj) => {
-    return obj ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
+    return obj && !isNaN(obj.date()) ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
   };
   const saveOffer = async (url) => {
     const offerRef = collection(db, "Offers");
