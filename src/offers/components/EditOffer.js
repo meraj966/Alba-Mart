@@ -26,6 +26,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { getDiscountedPrice } from "../../utils";
 
 function EditOffer() {
   const { id } = useParams();
@@ -83,6 +84,11 @@ function EditOffer() {
       newProds[i]["onSale"] = newProds[i].isSelected;
       newProds[i]["saleType"] = "%";
       newProds[i]["saleValue"] = discount;
+      newProds[i]["salePrice"] = getDiscountedPrice(
+        "%",
+        newProds[i]["price"],
+        discount
+      );
       const prodDoc = doc(db, "Menu", newProds[i]["id"]);
       await updateDoc(prodDoc, { ...newProds[i] });
       if (newProds[i].isSelected) selectedProdIds.push(newProds[i]["id"]);
