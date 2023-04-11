@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Settings from "@mui/icons-material/Settings";
 import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import GroupIcon from "@mui/icons-material/Group";
 import { useNavigate } from "react-router-dom";
@@ -233,6 +234,33 @@ export default function Sidenav() {
               <LocalShippingIcon />
             </ListItemIcon>
             <ListItemText primary="Delivery Slot" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem
+          disablePadding
+          sx={{ display: "block" }}
+          onClick={() => {
+            navigate("/delivery_boy");
+          }}
+        >
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <PersonAddIcon />
+            </ListItemIcon>
+            <ListItemText primary="Delivery Boy" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
         </ListItem>
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Stack, Typography, Button } from "@mui/material";
+import { Stack, Typography, Button, Box, Modal } from "@mui/material";
 import AddNewPromoCode from "../promo_codes/components/AddNewPromoCode";
 import PromoCodeList from "../promo_codes/components/PromoCodeList";
 import PageTemplate from "../pages/reusable/PageTemplate";
@@ -9,6 +9,15 @@ function PromoCodes() {
   const [addNewPromoCode, setAddNewPromoCode] = useState(false);
   const handleOpen = () => setAddNewPromoCode(true);
   const handleClose = () => setAddNewPromoCode(false);
+  const [promoCodeModalData, setPromoCodeModalData] = useState(null)
+
+  const modal = () => (
+        <Modal onClose={() => setAddNewPromoCode(false)} open={addNewPromoCode}>
+          <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
+            <AddNewPromoCode closeModal={()=>setAddNewPromoCode(false)} data={promoCodeModalData} />
+          </Box>
+        </Modal>
+      );
 
   const actionBar = () => (
     <>
@@ -31,33 +40,11 @@ function PromoCodes() {
   );
   return (
     <>
-      <PageTemplate actionBar={actionBar()} title={"Promo Codes"}>
-        <PromoCodeList />
+      <PageTemplate modal={modal()} actionBar={actionBar()} title={"Promo Codes"}>
+        <PromoCodeList openModal={(row)=> {setPromoCodeModalData(row)
+        handleOpen()}}/>
       </PageTemplate>
-      {addNewPromoCode && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "#fff",
-            padding: "20px",
-            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
-            borderRadius: "5px",
-            border: "1px solid #000",
-            zIndex: "999",
-            overflowY: "scroll",
-            maxHeight: "80vh", // set a maximum height to prevent the pop-up from taking up the entire screen
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button onClick={handleClose}>X</button>
-          </div>
-          <h2 style={{ textAlign: "center" }}>Add Promo Code</h2>
-          <AddNewPromoCode />
-        </div>
-      )}
+
     </>
   );
 }

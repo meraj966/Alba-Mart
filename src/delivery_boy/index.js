@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Stack, Typography, Button, Box, Modal } from "@mui/material";
+import { Stack, Typography, Button, Modal, Box } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import AddNewDeliverySlot from "../delivery_slot/components/AddNewDeliverySlot";
-import DeliverySlotList from "../delivery_slot/components/DeliverySlotList";
+import AddNewDeliveryBoy from "../delivery_boy/components/AddNewDeliveryBoy";
+import DeliveryBoyList from "../delivery_boy/components/DeliveryBoyList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -14,22 +14,22 @@ import {
 } from "firebase/firestore";
 
 function DeliverySlots() {
-    const [addNewDeliverySlot, setAddNewDeliverySlot] = useState(false);
-    const handleOpen = () => setAddNewDeliverySlot(true);
-    const handleClose = () => setAddNewDeliverySlot(false);
-    const [deliveryModalData, setDeliveryModalData] = useState(null)
+    const [addNewDeliveryBoy, setAddNewDeliveryBoy] = useState(false);
+    const [deliveryBoyModalData, setDeliveryBoyModalData] = useState(null)
+    const handleOpen = () => setAddNewDeliveryBoy(true);
+    const handleClose = () => setAddNewDeliveryBoy(false);
     const [options, setOptions] = useState([]);
     const rows = useAppStore((state) => state.rows);
     const setRows = useAppStore((state) => state.setRows);
-    const deliverySlotCollectionRef = collection(db, "DeliverySlot");
+    const deliveryBoyCollectionRef = collection(db, "DeliveryBoy");
 
 
     useEffect(() => {
-        getUsers();
+        getBoys();
     }, []);
 
-    const getUsers = async () => {
-        const data = await getDocs(deliverySlotCollectionRef);
+    const getBoys = async () => {
+        const data = await getDocs(deliveryBoyCollectionRef);
         const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
         setOptions(uniqueValues);
         setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
@@ -40,14 +40,14 @@ function DeliverySlots() {
             const filteredRows = rows.filter(row => Object.values(row).includes(v));
             setRows(filteredRows);
         } else {
-            getUsers();
+            getBoys();
         }
     };
 
     const modal = () => (
-        <Modal onClose={() => setAddNewDeliverySlot(false)} open={addNewDeliverySlot}>
+        <Modal onClose={() => setDeliveryBoyModalData(false)} open={addNewDeliveryBoy}>
           <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
-            <AddNewDeliverySlot closeModal={()=>setAddNewDeliverySlot(false)} data={deliveryModalData} />
+            <AddNewDeliveryBoy closeModal={()=>setDeliveryBoyModalData(false)} data={deliveryBoyModalData} />
           </Box>
         </Modal>
       );
@@ -63,7 +63,7 @@ function DeliverySlots() {
                     sx={{ width: 300 }}
                     onChange={(e, v) => filterData(v)}
                     renderInput={(params) => (
-                        <TextField {...params} size="small" label="Search" />
+                        <TextField {...params} size="small" label="Search Boy" />
                     )}
                 />
                 {/* must have some filters */}
@@ -77,18 +77,17 @@ function DeliverySlots() {
                     endIcon={<AddCircleIcon />}
                     onClick={handleOpen}
                 >
-                    Add Delivery Slot
+                    Add Delivery Boy
                 </Button>
             </Stack>
         </>
     );
     return (
         <>
-            <PageTemplate modal={modal()} actionBar={actionBar()} title={"Delivery Slots"}>
-                <DeliverySlotList openModal={(row)=> {setDeliveryModalData(row)
+            <PageTemplate modal={modal()} actionBar={actionBar()} title={"Delivery Boys"}>
+                <DeliveryBoyList openModal={(row)=> {setDeliveryBoyModalData(row)
                 handleOpen()}}/>
             </PageTemplate>
-
         </>
     );
 }
