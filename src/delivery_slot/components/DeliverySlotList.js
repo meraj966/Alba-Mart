@@ -17,36 +17,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function DeliverySlotList({ openModal }) {
-  const [deliveryslotData, setDeliverySlotData] = useState([]);
-  const ref = collection(db, "DeliverySlot");
+function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
 
-  useEffect(() => {
-    getDeliverySlotData();
-    listenForChanges();
-  }, []);
-
-  const getDeliverySlotData = async () => {
-    const data = await getDocs(ref);
-    setDeliverySlotData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  };
-
-  const listenForChanges = () => {
-    onSnapshot(ref, (querySnapshot) => {
-      const updatedData = [];
-      querySnapshot.forEach((doc) => {
-        updatedData.push({ ...doc.data(), id: doc.id });
-      });
-      setDeliverySlotData(updatedData);
-    });
-  };
-
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(ref, id));
-    setDeliverySlotData(deliveryslotData.filter((row) => row.id !== id));
-  };
-  console.log("delivery datasssssssss",deliveryslotData)
-
+  
   return (
     <>
       <TableContainer>
@@ -71,7 +44,7 @@ function DeliverySlotList({ openModal }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {deliveryslotData.map((row) => (
+            {deliveryslotData?.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.day)}</TableCell>
                 <TableCell align="left">{String(row.timeFrom)}</TableCell>

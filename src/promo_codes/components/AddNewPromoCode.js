@@ -24,6 +24,8 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   const [promoCode, setPromoCode] = useState(isEditMode ? data.code : "");
   const [message, setMessage] = useState(isEditMode ? data.message : "");
   const [numUsers, setNumUsers] = useState(isEditMode ? data.numUsers : 0);
+  const [startDate, setStartDate] = useState(isEditMode ? data.startDate : "dd-mm-yyyy");
+  const [endDate, setEndDate] = useState(isEditMode ? data.endDate: "dd-mm-yyyy");
   const [minOrderAmount, setMinOrderAmount] = useState(
     isEditMode ? data.minOrderAmount : 0
   );
@@ -37,8 +39,8 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   const [discountStatus, setDiscountStatus] = useState(
     isEditMode ? data.discountStatus : true
   );
-  const [startDate, setStartDate] = useState("dd-mm-yyyy"); // new state for "Start Date"
-  const [endDate, setEndDate] = useState("dd-mm-yyyy"); // new state for "End Date"
+  // const [startDate, setStartDate] = useState("dd-mm-yyyy"); // new state for "Start Date"
+  // const [endDate, setEndDate] = useState("dd-mm-yyyy"); // new state for "End Date"
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -123,7 +125,6 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={8}>
-            {/* <form onSubmit={handleSubmit}> */}
             <TextField
               label="Promo Code"
               type="text"
@@ -159,7 +160,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
               sx={{ mb: 2, display: "block" }}
             />
           </Grid>
-          {/* <Grid item xs={4}>
+          <Grid item xs={4}>
             <TextField
               label="Start Date"
               type="date"
@@ -176,7 +177,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
               onChange={handleEndDateChange}
               sx={{ mb: 2 }}
             />
-          </Grid> */}
+          </Grid>
           <Grid item xs={4}>
             <FormControl sx={{ mb: 2, minWidth: "80%" }}>
               <InputLabel>Discount Type</InputLabel>
@@ -223,7 +224,6 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
             </Typography>
           </Grid>
         </Grid>
-        {/* </form> */}
       </CardContent>
     </Card>
   );
