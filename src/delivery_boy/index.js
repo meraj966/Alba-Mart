@@ -45,9 +45,9 @@ function DeliverySlots() {
     };
 
     const modal = () => (
-        <Modal onClose={() => setDeliveryBoyModalData(false)} open={addNewDeliveryBoy}>
+        <Modal onClose={() => setAddNewDeliveryBoy(false)} open={addNewDeliveryBoy}>
           <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
-            <AddNewDeliveryBoy closeModal={()=>setDeliveryBoyModalData(false)} data={deliveryBoyModalData} />
+            <AddNewDeliveryBoy closeModal={()=>setAddNewDeliveryBoy(false)} data={deliveryBoyModalData} />
           </Box>
         </Modal>
       );
