@@ -84,7 +84,6 @@ export default function EditForm({ fid, closeEvent }) {
     const categoryData = await getDocs(categoryRef);
     const data = await getDocs(settingsDataRef)
     let settings  = data.docs.map(doc=> ({ ...doc.data() }))
-    console.log(settings)
     setSaleTypeList(settings[0].saleType)
     setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
   };
@@ -103,8 +102,11 @@ export default function EditForm({ fid, closeEvent }) {
       category,
       stockValue,
       showProduct,
+      saleValue,
+      onSale,
+      saleType,
+      quantity,
     };
-    // console.log(newFields, "NEWWWWWWWWWWWW FIELD")
     await updateDoc(userDoc, newFields);
     getUsers();
     closeEvent();
@@ -121,8 +123,12 @@ export default function EditForm({ fid, closeEvent }) {
       subCategory: subCategory,
       category: category,
       stockValue,
+      quantity,
       file: url,
       showProduct,
+      saleValue,
+      onSale,
+      saleType
     };
     await updateDoc(userDoc, newFields);
     getUsers();

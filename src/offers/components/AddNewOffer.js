@@ -27,12 +27,11 @@ function AddNewOffer({ closeModal, getOfferData }) {
   const [isOfferLive, setIsOfferLive] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [file, setFile] = useState(null);
-  const [percent, setPercent] = useState("")
+  const [percent, setPercent] = useState("");
   const formatDate = (obj) => {
-    return `${obj.date()}/${obj.month()}/${obj.year()}`;
+    return obj && !isNaN(obj.date()) ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
   };
   const saveOffer = async (url) => {
-    console.log(startDate, endDate, dayjs(startDate));
     const offerRef = collection(db, "Offers");
     const docData = await addDoc(offerRef, {
       title,
@@ -48,29 +47,32 @@ function AddNewOffer({ closeModal, getOfferData }) {
     const id = docData.id;
     await updateDoc(doc(db, "Offers", id), { saleTag: id });
     Swal.fire("Submitted!", "New Offer has been added", "success");
-    getOfferData()
+    getOfferData();
     closeModal();
   };
   const submitNewOffer = async () => {
-    const storageRef = ref(storage, `/images/${Math.random() + file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = String(
-          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100) +
-            "%"
-        );
-        // update progress
-        setPercent(percent);
-      },
-      (err) => console.log(err),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (url) => {
-          await saveOffer(url);
-        });
-      }
-    );
+    if (file) {
+      const storageRef = ref(storage, `/images/${Math.random() + file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const percent = String(
+            Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            ) + "%"
+          );
+          // update progress
+          setPercent(percent);
+        },
+        (err) => console.log(err),
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async (url) => {
+            await saveOffer(url);
+          });
+        }
+      );
+    } else saveOffer("");
   };
   const handleSubmit = () => {
     if (!title) Swal.fire("Validation Issue!", "Please add a Title", "error");
@@ -124,6 +126,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
                 label="Start Date"
                 value={startDate}
                 onChange={(value) => setStartDate(value)}
+                format="DD/MM/YYYY"
               />
             </LocalizationProvider>
           </Grid>
@@ -133,6 +136,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
                 label="End Date"
                 value={endDate}
                 onChange={(value) => setEndDate(value)}
+                format="DD/MM/YYYY"
               />
             </LocalizationProvider>
           </Grid>
@@ -159,10 +163,10 @@ function AddNewOffer({ closeModal, getOfferData }) {
             />
           </Grid>
           {percent && (
-          <Grid item xs={12}>
-            {percent}
-          </Grid>
-        )}
+            <Grid item xs={12}>
+              {percent}
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Typography variant="h5" align="right">
               <Button variant="contained" onClick={handleSubmit}>

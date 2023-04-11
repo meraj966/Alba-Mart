@@ -1,18 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Stack from "@mui/material/Stack";
-import PreviewIcon from '@mui/icons-material/Preview';
+import PreviewIcon from "@mui/icons-material/Preview";
 import Swal from "sweetalert2";
-import {
-  deleteDoc,
-  doc
-} from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase-config";
+import Checkbox from "@mui/material/Checkbox";
 import { Box, Modal } from "@mui/material";
 import ProductPopup from "./ProductPopup";
+import { getDiscountedPrice } from "../../utils";
 function Product({
   id,
   name,
@@ -33,24 +32,28 @@ function Product({
   data,
   stockValue,
   showProduct,
-  isDetailView
+  isDetailView,
+  isSelected,
+  productSelected,
+  isEditOffer,
 }) {
-  let salePrice = price;
-  let discount = 0;
+  const [selected, setSelected] = useState(isSelected);
   const [open, setOpen] = useState(false);
-  if (onSale) {
-    if (saleType === "%") {
-      let percent = (saleValue / 100).toFixed(2);
-      discount = (price * percent).toFixed(2);
-      salePrice = price - discount;
-    } else {
-      discount = saleValue;
-      salePrice = price - saleValue;
-    }
-  }
-
+  let salePrice = onSale ? getDiscountedPrice(saleType, price, saleValue) : "-";
+  useEffect(() => {
+    setSelected(isSelected);
+  }, [isSelected]);
   const deleteApi = async (id) => {
     const userDoc = doc(db, "Menu", id);
+    let productData = (await getDoc(userDoc)).data();
+    console.log(userDoc, productData.data(), "doc");
+    if (productData.saleTag) {
+      const offerDocRef = doc(db, "Offers", productData.saleTag);
+      let offerData = (await getDoc(offerDocRef)).data()
+      let newProducts = [...offerData.products]
+      newProducts = newProducts.filter(i=>i != productData.saleTag)
+      await updateDoc(offerDocRef, {products: newProducts})
+    }
     await deleteDoc(userDoc);
     Swal.fire("Deleted!", "Your file has been deleted.", "success");
     deleteProd();
@@ -81,10 +84,7 @@ function Product({
     setFormid(newData);
     handleEditOpen();
   };
-  const afterSalePrice =
-    saleType == "RS"
-      ? String(price - saleValue)
-      : String(price - saleValue / 100);
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -123,48 +123,64 @@ function Product({
         hover
         role="checkbox"
         tabIndex={-1}
-        style={{border: '1px solid red !important'}}
+        style={{ border: "1px solid red !important" }}
       >
+        {isEditOffer && (
+          <TableCell align="left" width={"5%"}>
+            <Checkbox
+              checked={selected}
+              onChange={(e) => {
+                setSelected(e.target.checked);
+                productSelected(e.target.checked);
+              }}
+            />
+          </TableCell>
+        )}
+
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
-        <TableCell align="left">{afterSalePrice}</TableCell>
+        <TableCell align="left">{salePrice}</TableCell>
+        <TableCell align="left">
+          {onSale ? `${saleValue} ${saleType}` : "-"}
+        </TableCell>
         <TableCell align="left">{stockValue}</TableCell>
         <TableCell align="left">{quantity}</TableCell>
         <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
-        {!isDetailView &&
-        <TableCell align="left">
-          <Stack spacing={2} direction="row">
-            <PreviewIcon
-              style={{
-                fontSize: "20px",
-                cursor: "pointer",
-                color: open ? "black" : "gray",
-              }}
-              onClick={() => setOpen(true)}
-            />
-            <EditIcon
-              style={{
-                fontSize: "20px",
-                color: "#1976d2",
-                cursor: "pointer",
-              }}
-              className="cursor-pointer"
-              onClick={() => {
-                editData(id, name, price, subCategory, category);
-              }}
-            />
-            <DeleteIcon
-              style={{
-                fontSize: "20px",
-                color: "darkred",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                deleteProduct();
-              }}
-            />
-          </Stack>
-        </TableCell> }
+        {isDetailView || isEditOffer ? null : (
+          <TableCell align="left">
+            <Stack spacing={2} direction="row">
+              <PreviewIcon
+                style={{
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  color: open ? "black" : "gray",
+                }}
+                onClick={() => setOpen(true)}
+              />
+              <EditIcon
+                style={{
+                  fontSize: "20px",
+                  color: "#1976d2",
+                  cursor: "pointer",
+                }}
+                className="cursor-pointer"
+                onClick={() => {
+                  editData(id, name, price, subCategory, category);
+                }}
+              />
+              <DeleteIcon
+                style={{
+                  fontSize: "20px",
+                  color: "darkred",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  deleteProduct();
+                }}
+              />
+            </Stack>
+          </TableCell>
+        )}
       </TableRow>
     </>
   );

@@ -54,3 +54,7 @@ code {
     height: 100%;
     justify-content: center;
 }
+.date-picker .MuiInputBase-root.MuiOutlinedInput-root {
+  height: 40px;
+  width: 170px;
+}

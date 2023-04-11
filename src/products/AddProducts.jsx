@@ -34,7 +34,7 @@ function AddProducts({ closeEvent }) {
   const setData = useAppStore((state) => state.setRows);
 
   useEffect(() => {
-    console.log(saveDone, products);
+    console.log(saveDone, products, 'SAVE DONE FOR PRODUCTS');
     if (
       Object.keys(products).length > 0 &&
       saveDone.filter((i) => i === "SAVED").length ===

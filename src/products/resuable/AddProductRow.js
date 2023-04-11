@@ -22,9 +22,6 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
   const [categoryData, setCategoryData] = useState(null);
   const dataRef = collection(db, "Settings");
   const categoryRef = collection(db, "category");
-
-  //NEw implementation
-  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -60,17 +57,21 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       stockValue,
       url,
       showProduct,
+      saleTag: '',
       date: String(new Date()),
     });
     const id = docData.id;
-    await updateDoc(doc(db, "Menu", id), { id });
+    await updateDoc(doc(db, "Menu", id), { id }).then(
+      delete products[index]
+    );
   };
 
   const handleSave = async () => {
     let urls = await uploadImages(files);
-    await saveRowData(urls);
-    setSaveDone([...saveDone, "SAVED"])
-    setSave(false);
+    await saveRowData(urls).then(()=> {
+      setSaveDone([...saveDone, "SAVED"])
+      setSave(false);
+    });
   };
   useEffect(() => {
     if (save) handleSave();
@@ -93,7 +94,6 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
     if (settings) {
       let data = settings[0];
       setOnSale(data.onSale);
-      setShowProduct(data.showProduct);
       setSaleType(data.defaultSaleType);
       setSaleTypeList(data.saleType);
       setMeasureUnit(data.defaultUnit);
@@ -133,6 +133,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       measureUnit,
       quantity,
       files,
+      saleTag: '',
       showProduct
     };
     setProducts({ ...products, [index]: rowData });
