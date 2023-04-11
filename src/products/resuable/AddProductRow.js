@@ -57,6 +57,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       stockValue,
       url,
       showProduct,
+      saleTag: '',
       date: String(new Date()),
     });
     const id = docData.id;

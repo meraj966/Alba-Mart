@@ -6,7 +6,7 @@ import TableCell from "@mui/material/TableCell";
 import Stack from "@mui/material/Stack";
 import PreviewIcon from "@mui/icons-material/Preview";
 import Swal from "sweetalert2";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Checkbox from "@mui/material/Checkbox";
 import { Box, Modal } from "@mui/material";
@@ -38,25 +38,22 @@ function Product({
   isEditOffer,
 }) {
   const [selected, setSelected] = useState(isSelected);
-  // let salePrice = price;
-  // let discount = 0;
   const [open, setOpen] = useState(false);
-  // if (onSale) {
-  //   if (saleType === "%") {
-  //     let percent = (saleValue / 100).toFixed(2);
-  //     discount = (price * percent).toFixed(2);
-  //     salePrice = price - discount;
-  //   } else {
-  //     discount = saleValue;
-  //     salePrice = price - saleValue;
-  //   }
-  // } else salePrice = '-'
-  let salePrice = onSale ? getDiscountedPrice(saleType, price, saleValue) : '-'
-  useEffect(()=>{
-    setSelected(isSelected)
-  }, [isSelected])
+  let salePrice = onSale ? getDiscountedPrice(saleType, price, saleValue) : "-";
+  useEffect(() => {
+    setSelected(isSelected);
+  }, [isSelected]);
   const deleteApi = async (id) => {
     const userDoc = doc(db, "Menu", id);
+    let productData = (await getDoc(userDoc)).data();
+    console.log(userDoc, productData.data(), "doc");
+    if (productData.saleTag) {
+      const offerDocRef = doc(db, "Offers", productData.saleTag);
+      let offerData = (await getDoc(offerDocRef)).data()
+      let newProducts = [...offerData.products]
+      newProducts = newProducts.filter(i=>i != productData.saleTag)
+      await updateDoc(offerDocRef, {products: newProducts})
+    }
     await deleteDoc(userDoc);
     Swal.fire("Deleted!", "Your file has been deleted.", "success");
     deleteProd();
@@ -87,7 +84,7 @@ function Product({
     setFormid(newData);
     handleEditOpen();
   };
-  
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -143,7 +140,9 @@ function Product({
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{salePrice}</TableCell>
-        <TableCell align="left">{onSale ? `${saleValue} ${saleType}` : '-'}</TableCell>
+        <TableCell align="left">
+          {onSale ? `${saleValue} ${saleType}` : "-"}
+        </TableCell>
         <TableCell align="left">{stockValue}</TableCell>
         <TableCell align="left">{quantity}</TableCell>
         <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
