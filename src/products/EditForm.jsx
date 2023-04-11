@@ -16,6 +16,7 @@ import { useAppStore } from "../appStore";
 import { MEASURE_UNIT, SALE_TYPE } from "../Constants";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { getDiscountedPrice } from "../utils";
 
 // import uuid from 'uuid/package.json';
 const { v4: uuidv4 } = require("uuid");
@@ -82,9 +83,9 @@ export default function EditForm({ fid, closeEvent }) {
   // console.log("SELECTED _ CATEGORY ", category, subCategory)
   const getSettingsData = async () => {
     const categoryData = await getDocs(categoryRef);
-    const data = await getDocs(settingsDataRef)
-    let settings  = data.docs.map(doc=> ({ ...doc.data() }))
-    setSaleTypeList(settings[0].saleType)
+    const data = await getDocs(settingsDataRef);
+    let settings = data.docs.map((doc) => ({ ...doc.data() }));
+    setSaleTypeList(settings[0].saleType);
     setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
   };
   const getUsers = async () => {
@@ -106,6 +107,7 @@ export default function EditForm({ fid, closeEvent }) {
       onSale,
       saleType,
       quantity,
+      salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -128,7 +130,8 @@ export default function EditForm({ fid, closeEvent }) {
       showProduct,
       saleValue,
       onSale,
-      saleType
+      saleType,
+      salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -230,7 +233,7 @@ export default function EditForm({ fid, closeEvent }) {
               />
             }
             name="showProduct"
-            sx={{ minWidth: "100%"}}
+            sx={{ minWidth: "100%" }}
             label="Show Product"
           />
         </Grid>

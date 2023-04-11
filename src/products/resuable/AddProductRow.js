@@ -16,8 +16,17 @@ import { db, storage } from "../../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { uuidv4 } from "@firebase/util";
 import { uploadImages } from "../../firebase_utils";
+import { getDiscountedPrice } from "../../utils";
 
-function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, save, setSave }) {
+function AddProductRow({
+  saveDone,
+  setSaveDone,
+  products,
+  setProducts,
+  index,
+  save,
+  setSave,
+}) {
   const [settings, setSettings] = useState(null);
   const [categoryData, setCategoryData] = useState(null);
   const dataRef = collection(db, "Settings");
@@ -57,19 +66,18 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       stockValue,
       url,
       showProduct,
-      saleTag: '',
+      saleTag: "",
       date: String(new Date()),
+      salePrice: getDiscountedPrice(saleType, price, saleValue),
     });
     const id = docData.id;
-    await updateDoc(doc(db, "Menu", id), { id }).then(
-      delete products[index]
-    );
+    await updateDoc(doc(db, "Menu", id), { id }).then(delete products[index]);
   };
 
   const handleSave = async () => {
     let urls = await uploadImages(files);
-    await saveRowData(urls).then(()=> {
-      setSaveDone([...saveDone, "SAVED"])
+    await saveRowData(urls).then(() => {
+      setSaveDone([...saveDone, "SAVED"]);
       setSave(false);
     });
   };
@@ -133,8 +141,9 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
       measureUnit,
       quantity,
       files,
-      saleTag: '',
-      showProduct
+      saleTag: "",
+      showProduct,
+      salePrice: getDiscountedPrice(saleType, price, saleValue),
     };
     setProducts({ ...products, [index]: rowData });
   }, [
@@ -149,7 +158,7 @@ function AddProductRow({ saveDone, setSaveDone, products, setProducts, index, sa
     measureUnit,
     quantity,
     files,
-    showProduct
+    showProduct,
   ]);
 
   return (

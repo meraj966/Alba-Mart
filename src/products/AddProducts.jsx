@@ -19,6 +19,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { useAppStore } from "../appStore";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const { v4: uuidv4 } = require("uuid");
 
@@ -34,16 +35,21 @@ function AddProducts({ closeEvent }) {
   const setData = useAppStore((state) => state.setRows);
 
   useEffect(() => {
-    console.log(saveDone, products, 'SAVE DONE FOR PRODUCTS');
-    if (
-      Object.keys(products).length > 0 &&
-      saveDone.filter((i) => i === "SAVED").length ===
-        Object.keys(products).length
-    ) {
+    console.log(saveDone, products, "SAVE DONE FOR PRODUCTS");
+    if (Object.keys(products).length === 0 && saveDone.length > 0) {
       getUsers();
       Swal.fire("Submitted!", "Your data has been updated.", "success");
       closeEvent();
     }
+    // if (
+    //   Object.keys(products).length > 0 &&
+    //   saveDone.filter((i) => i === "SAVED").length ===
+    //     Object.keys(products).length
+    // ) {
+    //   getUsers();
+    //   Swal.fire("Submitted!", "Your data has been updated.", "success");
+    //   closeEvent();
+    // }
   }, [saveDone]);
 
   useEffect(() => {
@@ -72,6 +78,7 @@ function AddProducts({ closeEvent }) {
   return (
     <>
       <Box sx={{ width: "auto" }}>
+         {save && <CircularProgress />}
         <Typography variant="h5" align="center">
           Add Multiple Products
         </Typography>
@@ -134,6 +141,7 @@ function AddProducts({ closeEvent }) {
             variant="contained"
             style={{ width: "200px", marginRight: "25px" }}
             onClick={handleUpload}
+            disabled={save}
           >
             Submit
           </Button>

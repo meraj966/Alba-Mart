@@ -46,7 +46,6 @@ function Product({
   const deleteApi = async (id) => {
     const userDoc = doc(db, "Menu", id);
     let productData = (await getDoc(userDoc)).data();
-    console.log(userDoc, productData.data(), "doc");
     if (productData.saleTag) {
       const offerDocRef = doc(db, "Offers", productData.saleTag);
       let offerData = (await getDoc(offerDocRef)).data()
