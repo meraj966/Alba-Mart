@@ -10,31 +10,14 @@ import {
   Stack,
   IconButton,
 } from "@mui/material";
-import { db } from "../../firebase-config";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function PromoCodeList({ openModal }) {
-  const [promocodeData, setPromoCodeData] = useState([]);
-  const ref = collection(db, "PromoCode");
-
-  useEffect(() => {
-    getPromoCodeData();
-  }, []);
-
-  const getPromoCodeData = async () => {
-    const data = await getDocs(ref);
-    setPromoCodeData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  };
-
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(ref, id));
-    setPromoCodeData(promocodeData.filter((row) => row.id !== id));
-  };
-
+function PromoCodeList({ openModal, promocodeData, handleDelete }) {
+  
+  
     return (
       <>
         <TableContainer>
@@ -62,7 +45,7 @@ function PromoCodeList({ openModal }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {promocodeData.map((row) => (
+              {promocodeData?.map((row) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                   <TableCell align="left">{String(row.code)}</TableCell>
                   <TableCell align="left">{String(row.startDate)}</TableCell>
