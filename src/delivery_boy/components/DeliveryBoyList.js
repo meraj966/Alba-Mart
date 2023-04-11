@@ -17,18 +17,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function DeliverySlotList({ openModal }) {
-  const [deliveryslotData, setDeliverySlotData] = useState([]);
-  const ref = collection(db, "DeliverySlot");
+function DeliveryBoyList({ openModal }) {
+  const [deliveryboyData, setDeliveryBoyData] = useState([]);
+  const ref = collection(db, "DeliveryBoy");
 
   useEffect(() => {
-    getDeliverySlotData();
+    getDeliveryBoyData();
     listenForChanges();
   }, []);
 
-  const getDeliverySlotData = async () => {
+  const getDeliveryBoyData = async () => {
     const data = await getDocs(ref);
-    setDeliverySlotData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setDeliveryBoyData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
   const listenForChanges = () => {
@@ -37,15 +37,14 @@ function DeliverySlotList({ openModal }) {
       querySnapshot.forEach((doc) => {
         updatedData.push({ ...doc.data(), id: doc.id });
       });
-      setDeliverySlotData(updatedData);
+      setDeliveryBoyData(updatedData);
     });
   };
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(ref, id));
-    setDeliverySlotData(deliveryslotData.filter((row) => row.id !== id));
+    setDeliveryBoyData(deliveryboyData.filter((row) => row.id !== id));
   };
-  console.log("delivery datasssssssss",deliveryslotData)
 
   return (
     <>
@@ -54,16 +53,16 @@ function DeliverySlotList({ openModal }) {
           <TableHead>
             <TableRow>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Day
+                Name
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Time (from)
+                Mobile
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Time (To)
+                DL Number
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                No. of Possible Delivery
+                Date Of Join
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
                 Action
@@ -71,12 +70,12 @@ function DeliverySlotList({ openModal }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {deliveryslotData.map((row) => (
+            {deliveryboyData.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                <TableCell align="left">{String(row.day)}</TableCell>
-                <TableCell align="left">{String(row.timeFrom)}</TableCell>
-                <TableCell align="left">{String(row.timeTo)}</TableCell>
-                <TableCell align="left">{String(row.numDeliveries)}</TableCell>
+                <TableCell align="left">{String(row.name)}</TableCell>
+                <TableCell align="left">{String(row.phoneNumber)}</TableCell>
+                <TableCell align="left">{String(row.dlnum)}</TableCell>
+                <TableCell align="left">{String(row.doj)}</TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
                     <EditIcon
@@ -107,4 +106,4 @@ function DeliverySlotList({ openModal }) {
   );
 }
 
-export default DeliverySlotList;
+export default DeliveryBoyList;

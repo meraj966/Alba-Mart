@@ -17,7 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function PromoCodeList() {
+function PromoCodeList({ openModal }) {
   const [promocodeData, setPromoCodeData] = useState([]);
   const ref = collection(db, "PromoCode");
 
@@ -82,6 +82,7 @@ function PromoCodeList() {
                           cursor: "pointer",
                         }}
                         className="cursor-pointer"
+                        onClick={()=> openModal(row)}
                       />
                       <DeleteIcon
                         style={{
