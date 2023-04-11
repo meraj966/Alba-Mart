@@ -1,72 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { Stack, Typography, Button, Box, Modal } from "@mui/material";
-import TextField from "@mui/material/TextField";
 import AddNewDeliverySlot from "../delivery_slot/components/AddNewDeliverySlot";
 import DeliverySlotList from "../delivery_slot/components/DeliverySlotList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import Autocomplete from "@mui/material/Autocomplete";
-import { useAppStore } from "../appStore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
-import {
-    collection,
-    getDocs,
-} from "firebase/firestore";
 
 function DeliverySlots() {
     const [addNewDeliverySlot, setAddNewDeliverySlot] = useState(false);
     const handleOpen = () => setAddNewDeliverySlot(true);
     const handleClose = () => setAddNewDeliverySlot(false);
-    const [deliveryModalData, setDeliveryModalData] = useState(null)
-    const [options, setOptions] = useState([]);
-    const rows = useAppStore((state) => state.rows);
-    const setRows = useAppStore((state) => state.setRows);
-    const deliverySlotCollectionRef = collection(db, "DeliverySlot");
-
+    const [deliveryModalData, setDeliveryModalData] = useState(null);
+    const [openInEditMode, setOpenInEditMode] = useState(false);
+    const [deliveryslotData, setDeliverySlotData] = useState([]);
+    const ref = collection(db, "DeliverySlot");
 
     useEffect(() => {
-        getUsers();
+        getDeliverySlotData();
     }, []);
 
-    const getUsers = async () => {
-        const data = await getDocs(deliverySlotCollectionRef);
-        const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
-        setOptions(uniqueValues);
-        setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    const getDeliverySlotData = async () => {
+        const data = await getDocs(ref);
+        setDeliverySlotData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
-    const filterData = (v) => {
-        if (v) {
-            const filteredRows = rows.filter(row => Object.values(row).includes(v));
-            setRows(filteredRows);
-        } else {
-            getUsers();
-        }
+    const handleDelete = async (id) => {
+        await deleteDoc(doc(ref, id));
+        setDeliverySlotData(deliveryslotData.filter((row) => row.id !== id));
     };
 
     const modal = () => (
         <Modal onClose={() => setAddNewDeliverySlot(false)} open={addNewDeliverySlot}>
-          <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
-            <AddNewDeliverySlot closeModal={()=>setAddNewDeliverySlot(false)} data={deliveryModalData} />
-          </Box>
+            <Box sx={{ width: "50%", margin: "0 auto", top: "50%" }}>
+                <AddNewDeliverySlot
+                    closeModal={() => setAddNewDeliverySlot(false)}
+                    isEditMode={openInEditMode}
+                    data={deliveryModalData}
+                    refreshDeliverySlot={getDeliverySlotData}
+                    handleClose={handleClose}
+                />
+            </Box>
         </Modal>
-      );
+    );
 
 
     const actionBar = () => (
         <>
             <Stack direction="row" spacing={2} className="my-2 mb-2">
-                <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
-                    options={options}
-                    sx={{ width: 300 }}
-                    onChange={(e, v) => filterData(v)}
-                    renderInput={(params) => (
-                        <TextField {...params} size="small" label="Search" />
-                    )}
-                />
-                {/* must have some filters */}
                 <Typography
                     variant="h6"
                     component="div"
@@ -75,7 +56,10 @@ function DeliverySlots() {
                 <Button
                     variant="contained"
                     endIcon={<AddCircleIcon />}
-                    onClick={handleOpen}
+                    onClick={() => {
+                        handleOpen();
+                        setOpenInEditMode(false);
+                    }}
                 >
                     Add Delivery Slot
                 </Button>
@@ -84,9 +68,20 @@ function DeliverySlots() {
     );
     return (
         <>
-            <PageTemplate modal={modal()} actionBar={actionBar()} title={"Delivery Slots"}>
-                <DeliverySlotList openModal={(row)=> {setDeliveryModalData(row)
-                handleOpen()}}/>
+            <PageTemplate
+                modal={modal()}
+                actionBar={actionBar()}
+                title={"Delivery Slots"}
+            >
+                <DeliverySlotList
+                    openModal={(row) => {
+                        setOpenInEditMode(true);
+                        setDeliveryModalData(row);
+                        handleOpen();
+                    }}
+                    deliveryslotData={deliveryslotData}
+                    handleDelete={handleDelete}
+                />
             </PageTemplate>
 
         </>
