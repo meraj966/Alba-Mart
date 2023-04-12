@@ -13,7 +13,6 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebase-config";
 import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
-import { MEASURE_UNIT, SALE_TYPE } from "../Constants";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { getDiscountedPrice } from "../utils";
@@ -34,6 +33,7 @@ export default function EditForm({ fid, closeEvent }) {
   // console.log(rows)
   const [percent, setPercent] = useState(0);
   const [measureUnit, setMeasureUnit] = useState("");
+  const [unitList, setUnitList] = useState([])
   const [quantity, setQuantity] = useState("");
   const [onSale, setOnSale] = useState(fid.onSale);
   const [saleType, setSaleType] = useState(fid.saleType);
@@ -86,6 +86,7 @@ export default function EditForm({ fid, closeEvent }) {
     const data = await getDocs(settingsDataRef);
     let settings = data.docs.map((doc) => ({ ...doc.data() }));
     setSaleTypeList(settings[0].saleType);
+    setUnitList(settings[0].unit)
     setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
   };
   const getUsers = async () => {
@@ -378,7 +379,7 @@ export default function EditForm({ fid, closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {MEASURE_UNIT.map((option) => (
+            {unitList.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
