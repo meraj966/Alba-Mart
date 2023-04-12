@@ -27,6 +27,7 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
   const [alternateNumber, SetAlternateNumber] = useState("")
   const [joinDate, setJoinDate] = useState(dayjs(new Date()));
   const [address, setAddress] = useState("");
+  const [dlnumber, setDlNumber] = useState("");
   const [file, setFile] = useState(null);
   const [percent, setPercent] = useState("")
   const formatDate = (obj) => {
@@ -37,14 +38,15 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
     const offerRef = collection(db, "DeliveryBoy");
     const docData = await addDoc(offerRef, {
       name,
-      bannerImage: url,
+      dlImage: url,
+      profilePic: url,
       address: address,
+      dlnumber: dlnumber,
       phoneNumber: phoneNumber,
       alternateNumber: alternateNumber,
       joinDate: formatDate(joinDate),
     });
     const id = docData.id;
-    await updateDoc(doc(db, "DeliveryBoy", id), { saleTag: id });
     Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
     getDeliveryBoyData()
     closeModal();
@@ -88,7 +90,7 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
               onChange={(e) => setName(e.target.value)}
               label="Name"
               size="small"
-              sx={{ mb: 2, display: 'block' }}
+              sx={{ mb: 2 }}
             />
           </Grid>
           <Grid item xs={4}>
@@ -100,7 +102,19 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
               onChange={(e) => setAddress(e.target.value)}
               label="Address"
               size="small"
-              sx={{ mb: 2, display: 'block' }}
+              sx={{ mb: 2 }}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              error={false}
+              id="dlnumber"
+              name="dlnumber"
+              value={dlnumber}
+              onChange={(e) => setDlNumber(e.target.value)}
+              label="Dl Number"
+              size="small"
+              sx={{ mb: 2 }}
             />
           </Grid>
           <Grid item xs={4}>
@@ -130,11 +144,27 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
               />
             </LocalizationProvider>
           </Grid>
+          
           <Grid item>
+          <h4>Upload DL Image</h4>
             <input
               type="file"
               style={{ marginTop: "10px" }}
               onChange={(e) => setFile(e.target.files[0])}
+              accept="/image/*"
+            />
+          </Grid>
+          {percent && (
+            <Grid item xs={12}>
+              {percent}
+            </Grid>
+          )}
+          <Grid item>
+          <h4>Upload Profile Pic</h4>
+            <input
+              type="file"
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setFile(e.target.files[1])}
               accept="/image/*"
             />
           </Grid>
