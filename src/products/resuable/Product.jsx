@@ -58,6 +58,7 @@ function Product({
     Swal.fire("Deleted!", "Your file has been deleted.", "success");
     deleteProd();
   };
+  let discount = price - salePrice;
 
   const deleteProduct = () => {
     Swal.fire({
@@ -141,6 +142,7 @@ function Product({
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{salePrice}</TableCell>
+        <TableCell align="left">{discount}</TableCell>
         <TableCell align="left">
           {onSale ? `${saleValue} ${saleType}` : "-"}
         </TableCell>
