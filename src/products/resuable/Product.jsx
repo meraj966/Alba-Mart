@@ -140,7 +140,7 @@ function Product({
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{salePrice}</TableCell>
-        <TableCell align="left">{discount}</TableCell>
+        <TableCell align="left">{onSale ? `${discount}` : "-"}</TableCell>
         <TableCell align="left">
           {onSale ? `${saleValue} ${saleType}` : "-"}
         </TableCell>
