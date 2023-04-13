@@ -58,3 +58,6 @@ code {
   height: 40px;
   width: 170px;
 }
+.MuiDataGrid-virtualScroller.css-axafay-MuiDataGrid-virtualScroller {
+  overflow-x: hidden;
+}

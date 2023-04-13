@@ -18,9 +18,9 @@ function PageTemplate(props) {
                 {props.title} {props.subTitle}
               </Typography>
               {props.toolbar}
-              <Divider />
               <Box height={10} />
               {props.actionBar}
+              <Divider sx={{margin: '10px 0'}}/>
               {props.children}
             </Paper>
           </>

@@ -19,6 +19,7 @@ import AddProducts from "../products/AddProducts";
 import EditForm from "../products/EditForm";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { BOX_STYLE } from "./reusable/Styles";
+import ProductsGrid from "../products";
 
 export default function Products() {
   const [options, setOptions] = useState([]);
@@ -39,14 +40,16 @@ export default function Products() {
 
   const getMenuData = async () => {
     const data = await getDocs(menuRef);
-    const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
+    const uniqueValues = [
+      ...new Set(data.docs.flatMap((doc) => Object.values(doc.data()))),
+    ];
     setOptions(uniqueValues);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
   const filterData = (v) => {
     if (v) {
-      const filteredRows = rows.filter(row => Object.values(row).includes(v));
+      const filteredRows = rows.filter((row) => Object.values(row).includes(v));
       setRows(filteredRows);
     } else {
       getMenuData();
@@ -108,12 +111,14 @@ export default function Products() {
           </Stack>
         }
       >
+        <ProductsGrid data={rows} />
+        {/*         
         <ProductsList
           rows={rows}
           setFormid={setFormid}
           handleEditOpen={handleEditOpen}
           getMenuData={getMenuData}
-        />
+        /> */}
       </PageTemplate>
     </>
   );

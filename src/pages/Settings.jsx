@@ -24,7 +24,6 @@ import Swal from "sweetalert2";
 import CategoryEditForm from "../products/settings_forms/CategoryEditForm";
 import Tooltip from "@mui/material/Tooltip";
 import { AddCircle } from "@mui/icons-material";
-import SubCategoryEditForm from "../products/settings_forms/SubCategoryEditForm";
 import { BOX_STYLE } from "./reusable/Styles";
 import PageTemplate from "./reusable/PageTemplate";
 import SelectInput from "../components/reusable/SelectInput";
@@ -86,6 +85,7 @@ export default function Settings() {
       );
     }
   }, [categoryData]);
+
   useEffect(() => {
     if (category && categoryData)
       setSubCategoryList(
@@ -94,6 +94,7 @@ export default function Settings() {
         )
       );
   }, [category]);
+
   useEffect(() => {
     getDataFromFirestore();
   }, []);
@@ -186,6 +187,7 @@ export default function Settings() {
       setBrandName('')
     });
   };
+  
   return (
     <>
       <PageTemplate
