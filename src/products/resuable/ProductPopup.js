@@ -29,6 +29,7 @@ function ProductPopup({
   saleType,
   saleValue,
   description,
+  brandName,
   category,
   subCategory,
   quantity,
@@ -107,7 +108,7 @@ function ProductPopup({
         <Typography>{description}</Typography>
         <div style={{ display: "flex" }}>
           <Typography style={{ width: "70%" }}>
-            {category} | {subCategory} | {quantity} {measureUnit}
+            {brandName} | {category} | {subCategory} | {quantity} {measureUnit}
           </Typography>
           <Tooltip
             title={onSale && `Actual Price:  ${price} | Discount: ${discount}`}

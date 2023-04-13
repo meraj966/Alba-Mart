@@ -1,12 +1,17 @@
 import Sidenav from "../components/Sidenav";
 import { Box, Typography } from "@mui/material";
-import Navbar from "../components/Navbar";
 import "../Dash.css";
 import { db } from "../firebase-config";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -14,19 +19,26 @@ import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
-import { CATEGORY, SUBCATEGORY } from "../Constants";
+import { BRAND_NAME, CATEGORY, SUBCATEGORY } from "../Constants";
 import Swal from "sweetalert2";
 import CategoryEditForm from "../products/settings_forms/CategoryEditForm";
 import Tooltip from "@mui/material/Tooltip";
 import { AddCircle } from "@mui/icons-material";
-import SubCategoryEditForm from "../products/settings_forms/SubCategoryEditForm";
 import { BOX_STYLE } from "./reusable/Styles";
 import PageTemplate from "./reusable/PageTemplate";
+import SelectInput from "../components/reusable/SelectInput";
+import SettingsEditForm from "../products/settings_forms";
+import TextFieldBulkAdd from "../components/reusable/TextFieldBulkAdd";
+import Image from "../components/reusable/Image";
+import { saveSubCategoryImage, uploadImageAndSaveUrl } from "../firebase_utils";
 
 export default function Settings() {
   const [onSale, setOnSale] = useState(false);
   const [unit, setUnit] = useState(false);
   const [unitList, setUnitList] = useState([]);
+  const [brandName, setBrandName] = useState("");
+  const [defaultBrandName, setDefaultBrandName] = useState("");
+  const [brandNameList, setBrandNameList] = useState([]);
   const [saleType, setSaleType] = useState("");
   const [saleTypeList, setSaleTypeList] = useState([]);
   const [category, setCategory] = useState("");
@@ -44,6 +56,10 @@ export default function Settings() {
   const [settings, setSettings] = useState(null);
   const [categoryData, setCategoryData] = useState(null);
 
+  const [isBulkAdd, setIsBulkAdd] = useState(false);
+
+  const [file, setFile] = useState(null);
+
   useEffect(() => {
     if (settings) {
       console.log("SETTINGS=>", settings);
@@ -51,6 +67,8 @@ export default function Settings() {
       setOnSale(data.onSale);
       setUnit(data.defaultUnit);
       setUnitList(data.unit);
+      setDefaultBrandName(data.defaultBrandName);
+      setBrandNameList(data.brandNameList);
       setSaleType(data.defaultSaleType);
       setSaleTypeList(data.saleType);
       setCategory(data.defaultCategory);
@@ -67,6 +85,7 @@ export default function Settings() {
       );
     }
   }, [categoryData]);
+
   useEffect(() => {
     if (category && categoryData)
       setSubCategoryList(
@@ -75,6 +94,7 @@ export default function Settings() {
         )
       );
   }, [category]);
+
   useEffect(() => {
     getDataFromFirestore();
   }, []);
@@ -92,6 +112,7 @@ export default function Settings() {
       defaultCategory: category,
       defaultSaleType: saleType,
       defaultUnit: unit,
+      defaultBrandName,
       onSale,
     };
     await updateDoc(settingsDoc, newFields);
@@ -111,6 +132,62 @@ export default function Settings() {
     setEditType(editType);
     setEditOpen(!editOpen);
   };
+
+  const handleBulkAddChange = (e) => {
+    if (e.target.name === "brandName") setBrandName(e.target.value);
+    if (e.target.value.includes(",")) setIsBulkAdd(true);
+    else setIsBulkAdd(false);
+  };
+
+  const closeSettingsForm = () => {
+    handleEditForm("", "edit");
+    setIsBulkAdd(false);
+  };
+
+  const getImageUrl = () =>
+    categoryData.find((i) => i.name === category).subCategory[subCategory]
+      .imageUrl;
+
+  const saveSubCategoryImage = async (url) => {
+    let payload = { [subCategory]: { imageUrl: url } };
+    let subCategoryData = {
+      ...categoryData.find((i) => i.name === category).subCategory,
+      ...payload,
+    };
+    const categoryDoc = doc(db, "category", category);
+    await updateDoc(categoryDoc, { subCategory: subCategoryData }).then(() => {
+      Swal.fire("Submitted!", "Your file has been submitted.", "success");
+    });
+    await getDataFromFirestore();
+    setFile(null);
+    handleEditForm("", "edit");
+  };
+
+  const handleCategorySave = async () => {
+    if (!file) Swal.fire("Failed!", "Please upload an image first!", "error");
+    else {
+      uploadImageAndSaveUrl(file, saveSubCategoryImage);
+    }
+  };
+
+  const handleBrandNameSave = async () => {
+    const brandNames = brandName.split(",").map((i) => i.trim());
+    let brandNameList = settings[0]?.brandNameList
+      ? [...brandNames, ...settings[0]?.brandNameList]
+      : [...brandNames];
+    const settingsDoc = doc(db, "Settings", "UserSettings");
+    await updateDoc(settingsDoc, { brandNameList }).then(() => {
+      getDataFromFirestore();
+      Swal.fire(
+        "Updated!",
+        "You have successfully added Brands to your list",
+        "success"
+      );
+      setEditOpen(!editOpen);
+      setBrandName('')
+    });
+  };
+  
   return (
     <>
       <PageTemplate
@@ -121,6 +198,7 @@ export default function Settings() {
             // onClose={handleEditClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
+            onClose={() => handleEditForm("", "edit")}
           >
             <Box sx={BOX_STYLE} className="editForm">
               {editType === CATEGORY && (
@@ -136,14 +214,53 @@ export default function Settings() {
                 />
               )}
               {editType === SUBCATEGORY && (
-                <SubCategoryEditForm
-                  handleEditForm={handleEditForm}
-                  subCategory={subCategory}
-                  subCategories={subCategoryList}
-                  category={category}
-                  categoryData={categoryData}
-                  refreshSettingsData={getDataFromFirestore}
-                />
+                <SettingsEditForm
+                  title="Edit SubCategory"
+                  subTitle={`Sub Category - ${subCategory}`}
+                  onSave={handleCategorySave}
+                  submitButtonText={"SAVE"}
+                  onClose={closeSettingsForm}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Image url={getImageUrl()} alt="Category Image" />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <input
+                        type="file"
+                        onChange={(e) => setFile(e.target.files[0])}
+                      />
+                    </Grid>
+                  </Grid>
+                </SettingsEditForm>
+              )}
+              {editType === BRAND_NAME && (
+                <SettingsEditForm
+                  title={"Add Brand Name"}
+                  onClose={closeSettingsForm}
+                  submitButtonText={"SAVE"}
+                  onSave={handleBrandNameSave}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} />
+                    <Grid item xs={12}>
+                      <TextFieldBulkAdd
+                        id="brandName"
+                        name="brandName"
+                        value={brandName}
+                        onChange={handleBulkAddChange}
+                        label={"Brand Name"}
+                        size="small"
+                        placeholder={`Add brand name for eg., "Dove"`}
+                        sx={{ minWidth: "100%" }}
+                        isBulkAdd={isBulkAdd}
+                        bulkAddAlert={
+                          "Tip: By adding commas, you can add multiple brands in bulk. For e.g., Dove, Loreal, Wow, Mamaearth"
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </SettingsEditForm>
               )}
             </Box>
           </Modal>
@@ -267,7 +384,30 @@ export default function Settings() {
             </TextField>
           </Grid>
           <Grid item xs={2}></Grid>
-          {/* CHECKBOX */}
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+            <SelectInput
+              id="brandName"
+              label="Brand Name"
+              size="small"
+              sx={{ marginTop: "30px", minWidth: "100%" }}
+              name="brandName"
+              value={defaultBrandName}
+              onChange={(e) => setDefaultBrandName(e.target.value)}
+              data={brandNameList}
+            />
+          </Grid>
+          <Grid item>
+            <Tooltip title="Add Brand Name">
+              <IconButton
+                aria-label="edit"
+                onClick={() => handleEditForm(BRAND_NAME, "edit")}
+                sx={{ marginTop: "30px" }}
+              >
+                 <AddCircle />
+              </IconButton>
+            </Tooltip>
+          </Grid>
           <Grid item xs={3}></Grid>
           <Grid item xs={6}>
             <FormControlLabel

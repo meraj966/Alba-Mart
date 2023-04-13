@@ -1,7 +1,11 @@
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { uuidv4 } from "@firebase/util";
 import { storage } from "../firebase-config";
-
 
 async function uploadImage(image) {
   const storageRef = ref(storage, `images/${uuidv4()}-${image.name}`);
@@ -17,3 +21,29 @@ export async function uploadImages(images) {
   const imageRes = await Promise.all(imagePromises);
   return imageRes; // list of url like ["https://..", ...]
 }
+
+export const uploadImageAndSaveUrl = async (
+  file,
+  saveUrl,
+  setPercent = () => {}
+) => {
+  const storageRef = ref(storage, `/images/${uuidv4() + file.name}`);
+  const uploadTask = uploadBytesResumable(storageRef, file);
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const percent = String(
+        Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100) +
+          "%"
+      );
+      // update progress
+      setPercent(percent);
+    },
+    (err) => console.log(err),
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then(async (url) => {
+        await saveUrl(url);
+      });
+    }
+  );
+};
