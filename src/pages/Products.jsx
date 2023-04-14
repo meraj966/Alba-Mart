@@ -20,19 +20,32 @@ import EditForm from "../products/EditForm";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { BOX_STYLE } from "./reusable/Styles";
 import ProductsGrid from "../products";
+import ProductPopup from "../products/resuable/ProductPopup";
 
 export default function Products() {
   const [options, setOptions] = useState([]);
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
   const menuRef = collection(db, "Menu");
+  const [row, setRow] = useState(null);
   const [formid, setFormid] = useState("");
+  const [openProductPreview, setOpenProductPreview] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
-  const handleBulkOpen = () => setBulkOpen(true);
+  const [modalType, setModalType] = useState("");
+  const handleBulkOpen = () => {
+    setBulkOpen(true);
+    setModalType("EDIT_OPEN");
+  };
   const handleBulkClose = () => setBulkOpen(false);
-  const handleEditOpen = () => setEditOpen(true);
-  const handleEditClose = () => setEditOpen(false);
+  const handleEditOpen = () => {
+    setEditOpen(true);
+    setModalType("EDIT_OPEN");
+  };
+  const handleEditClose = () => {
+    setEditOpen(false);
+    setModalType("");
+  };
 
   useEffect(() => {
     getMenuData();
@@ -55,34 +68,65 @@ export default function Products() {
       getMenuData();
     }
   };
+  const modalTypeEditOpen = () => (
+    <div>
+      <Modal open={bulkOpen} sx={{ margin: "auto" }}>
+        <Box
+          sx={{
+            ...BOX_STYLE,
+            overflow: "scroll",
+            maxHeight: "70%",
+            width: "80%",
+          }}
+        >
+          <AddProducts closeEvent={handleBulkClose} />
+        </Box>
+      </Modal>
+      <Modal
+        open={editopen}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={BOX_STYLE} className="editForm">
+          <EditForm closeEvent={handleEditClose} fid={formid} />
+        </Box>
+      </Modal>
+    </div>
+  );
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    borderRadius: "20px",
+  };
+  const handleClosePreviewModal = () => {
+    setModalType("");
+    setOpenProductPreview(false);
+    setRow(null);
+  }
+
+  const modalTypeProductPreview = () => (
+    <Modal
+      open={openProductPreview}
+      onClose={handleClosePreviewModal}
+    >
+      <Box sx={style}>
+        <ProductPopup {...row} data={row} deleteProd={getMenuData} clearRow={handleClosePreviewModal} />
+      </Box>
+    </Modal>
+  );
+
   return (
     <>
       <PageTemplate
         title="Products List"
         modal={
-          <div>
-            <Modal open={bulkOpen} sx={{ margin: "auto" }}>
-              <Box
-                sx={{
-                  ...BOX_STYLE,
-                  overflow: "scroll",
-                  maxHeight: "70%",
-                  width: "80%",
-                }}
-              >
-                <AddProducts closeEvent={handleBulkClose} />
-              </Box>
-            </Modal>
-            <Modal
-              open={editopen}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={BOX_STYLE} className="editForm">
-                <EditForm closeEvent={handleEditClose} fid={formid} />
-              </Box>
-            </Modal>
-          </div>
+          modalType === "EDIT_OPEN"
+            ? modalTypeEditOpen()
+            : modalTypeProductPreview()
         }
         actionBar={
           <Stack direction="row" spacing={2} className="my-2 mb-2">
@@ -111,7 +155,16 @@ export default function Products() {
           </Stack>
         }
       >
-        <ProductsGrid data={rows} />
+        <ProductsGrid
+          data={rows}
+          openProductPreview={(row) => {
+            console.log("prodcut preview", row);
+            setOpenProductPreview(true);
+            setModalType("PRODUCT_PREVIEW");
+            setRow(row);
+          }}
+          open={openProductPreview}
+        />
         {/*         
         <ProductsList
           rows={rows}

@@ -37,6 +37,7 @@ function ProductPopup({
   deleteProd,
   handleEditOpen,
   setFormid,
+  clearRow,
   data,
 }) {
   let salePrice = price;
@@ -57,6 +58,7 @@ function ProductPopup({
     await deleteDoc(userDoc);
     Swal.fire("Deleted!", "Your file has been deleted.", "success");
     deleteProd();
+    clearRow()
   };
 
   const deleteProduct = () => {
