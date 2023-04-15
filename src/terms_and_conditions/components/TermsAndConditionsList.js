@@ -25,7 +25,7 @@ function TermsAndConditionsList({ openModal, termsAndConditionsData, handleDelet
             <TableHead>
               <TableRow>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  User Or DeliveryBoy ?
+                  User / Delivery Boy
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
                   Description
