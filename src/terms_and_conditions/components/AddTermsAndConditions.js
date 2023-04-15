@@ -62,7 +62,7 @@ function AddTermsAndConditions({ data, isEditMode, refreshTermsAndConditions, ha
         <Grid container spacing={2}>
           <Grid item xs={8}>
             <TextField
-              label="For User Or Delivery Boy ?"
+              label="User Or Delivery Boy"
               type="text"
               value={userOrDeliveryBoy}
               onChange={handleUserOrDeliveryBoyChange}
