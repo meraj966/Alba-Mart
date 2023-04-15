@@ -13,10 +13,10 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebase-config";
 import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
-import { MEASURE_UNIT, SALE_TYPE } from "../Constants";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { getDiscountedPrice } from "../utils";
+import SelectInput from "../components/reusable/SelectInput";
 
 // import uuid from 'uuid/package.json';
 const { v4: uuidv4 } = require("uuid");
@@ -32,8 +32,11 @@ export default function EditForm({ fid, closeEvent }) {
   const setRows = useAppStore((state) => state.setRows);
   const rows = useAppStore((state) => state.rows);
   // console.log(rows)
+  const [brandName, setBrandName] = useState('')
+  const [brandNameList, setBrandNameList] = useState([])
   const [percent, setPercent] = useState(0);
   const [measureUnit, setMeasureUnit] = useState("");
+  const [unitList, setUnitList] = useState([])
   const [quantity, setQuantity] = useState("");
   const [onSale, setOnSale] = useState(fid.onSale);
   const [saleType, setSaleType] = useState(fid.saleType);
@@ -75,6 +78,7 @@ export default function EditForm({ fid, closeEvent }) {
     setSubCategory(fid.subCategory);
     setStockValue(fid.stockValue);
     setShowProduct(fid.showProduct);
+    setBrandName(fid.brandName)
   }, []);
 
   useEffect(() => {
@@ -86,6 +90,8 @@ export default function EditForm({ fid, closeEvent }) {
     const data = await getDocs(settingsDataRef);
     let settings = data.docs.map((doc) => ({ ...doc.data() }));
     setSaleTypeList(settings[0].saleType);
+    setUnitList(settings[0].unit)
+    setBrandNameList(settings[0].brandNameList)
     setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
   };
   const getUsers = async () => {
@@ -107,6 +113,7 @@ export default function EditForm({ fid, closeEvent }) {
       onSale,
       saleType,
       quantity,
+      brandName,
       salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
     };
     await updateDoc(userDoc, newFields);
@@ -131,6 +138,7 @@ export default function EditForm({ fid, closeEvent }) {
       saleValue,
       onSale,
       saleType,
+      brandName,
       salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
     };
     await updateDoc(userDoc, newFields);
@@ -378,7 +386,7 @@ export default function EditForm({ fid, closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           >
-            {MEASURE_UNIT.map((option) => (
+            {unitList.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
@@ -396,6 +404,17 @@ export default function EditForm({ fid, closeEvent }) {
             onChange={handleSetQuantity}
             size="small"
             sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs= {3}>
+          <SelectInput 
+          id="brandName"
+          label={'Brand Name'}
+          size={'small'}
+          sx={{minWidth: '100%'}}
+          data={brandNameList}
+          value={brandName}
+          onChange={e=>setBrandName(e.target.value)}
           />
         </Grid>
         <Grid item xs={3}>

@@ -17,6 +17,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { uuidv4 } from "@firebase/util";
 import { uploadImages } from "../../firebase_utils";
 import { getDiscountedPrice } from "../../utils";
+import SelectInput from "../../components/reusable/SelectInput";
 
 function AddProductRow({
   saveDone,
@@ -36,6 +37,8 @@ function AddProductRow({
   const [price, setPrice] = useState("");
   const [onSale, setOnSale] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
+  const [brandName, setBrandName] = useState("");
+  const [brandNameList, setBrandNameList] = useState([]);
   const [saleType, setSaleType] = useState("");
   const [saleTypeList, setSaleTypeList] = useState([]);
   const [saleValue, setSaleValue] = useState("");
@@ -69,6 +72,7 @@ function AddProductRow({
       saleTag: "",
       date: String(new Date()),
       salePrice: getDiscountedPrice(saleType, price, saleValue),
+      brandName,
     });
     const id = docData.id;
     await updateDoc(doc(db, "Menu", id), { id }).then(delete products[index]);
@@ -106,7 +110,9 @@ function AddProductRow({
       setSaleTypeList(data.saleType);
       setMeasureUnit(data.defaultUnit);
       setCategory(data.defaultCategory);
+      setBrandName(data.defaultBrandName)
       setMeasureUnitList(data.unit);
+      setBrandNameList(data.brandNameList);
     }
   }, [settings]);
 
@@ -143,6 +149,7 @@ function AddProductRow({
       files,
       saleTag: "",
       showProduct,
+      brandName,
       salePrice: getDiscountedPrice(saleType, price, saleValue),
     };
     setProducts({ ...products, [index]: rowData });
@@ -158,6 +165,7 @@ function AddProductRow({
     measureUnit,
     quantity,
     files,
+    brandName,
     showProduct,
   ]);
 
@@ -239,23 +247,16 @@ function AddProductRow({
       </Grid>
       <Grid item xs={1.6}>
         {onSale && (
-          <TextField
-            error={false}
+          <SelectInput
             id="saleType"
             label="SaleType"
-            select
             name="saleType"
             value={saleType}
             onChange={(e) => setSaleType(e.target.value)}
             size="small"
             sx={{ minWidth: "100%" }}
-          >
-            {saleTypeList?.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
+            data={saleTypeList}
+          />
         )}
       </Grid>
       <Grid item xs={2}>
@@ -274,61 +275,52 @@ function AddProductRow({
         )}
       </Grid>
       <Grid item xs={2.5}>
-        <TextField
-          error={false}
+        <SelectInput
           id="category"
           label="Category"
-          select
           name="category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           size="small"
           sx={{ minWidth: "100%" }}
-        >
-          {categoryList?.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
+          data={categoryList}
+        />
       </Grid>
-      <Grid item xs={2.5}>
-        <TextField
-          error={false}
+      <Grid item xs={2}>
+        <SelectInput
           id="subCategory"
           label="Sub Category"
-          select
+          size="small"
           name="subCategory"
           value={subCategory}
           onChange={(e) => setSubCategory(e.target.value)}
+          sx={{ minWidth: "100%" }}
+          data={subCategoryList}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <SelectInput
+          id="brandName"
+          label="Brand Name"
           size="small"
           sx={{ minWidth: "100%" }}
-        >
-          {subCategoryList?.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
+          name="brandName"
+          value={brandName}
+          onChange={(e) => setBrandName(e.target.value)}
+          data={brandNameList}
+        />
       </Grid>
       <Grid item xs={1.5}>
-        <TextField
-          error={false}
+        <SelectInput
           id="measureUnit"
           label="Unit"
-          select
           name="measureUnit"
           value={measureUnit}
           onChange={(e) => setMeasureUnit(e.target.value)}
+          data={measureUnitList}
           size="small"
           sx={{ minWidth: "100%" }}
-        >
-          {measureUnitList?.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
+        />
       </Grid>
       <Grid item xs={1.5}>
         <TextField

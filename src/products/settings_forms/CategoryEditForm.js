@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import Alert from "@mui/material/Alert";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { uuidv4 } from "@firebase/util";
+import TextFieldBulkAdd from "../../components/reusable/TextFieldBulkAdd";
 
 function CategoryEditForm({
   formType,
@@ -150,6 +151,15 @@ function CategoryEditForm({
       save();
     }
   };
+  
+  const handleCategoryChange = (e) => {
+    if (e.target.value.includes(",")) {
+      setSubCategory("");
+      setIsBulkCategoryAdd(true);
+    } else setIsBulkCategoryAdd(false);
+    setAddCategory(e.target.value);
+  };
+
   return (
     <>
       <Typography variant="h5" align="center">
@@ -164,30 +174,21 @@ function CategoryEditForm({
       <Grid container spacing={2}>
         <Grid item xs={12}></Grid>
         <Grid item xs={12}>
-          <TextField
-            error={false}
+          <TextFieldBulkAdd
             id="category"
             name="category"
             disabled={formType === "edit"}
+            bulkAddAlert={
+              "Tip: By adding commas, you can add categories in bulk. For e.g., Shampoo,Detergent,Pulses"
+            }
             value={addCategory}
-            onChange={(e) => {
-              if (e.target.value.includes(",")) {
-                setSubCategory("");
-                setIsBulkCategoryAdd(true);
-              } else setIsBulkCategoryAdd(false);
-              setAddCategory(e.target.value);
-            }}
+            onChange={handleCategoryChange}
             label="Category"
             size="small"
             placeholder='Add category... for eg., "Shampoo"'
             sx={{ minWidth: "100%" }}
+            isBulkAdd={isBulkCategoryAdd}
           />
-          {isBulkCategoryAdd && (
-            <Alert severity="info">
-              Tip: By adding commas, you can add categories in bulk. For e.g.,
-              Shampoo,Detergent,Pulses
-            </Alert>
-          )}
         </Grid>
         <Grid item xs={12}>
           <TextField

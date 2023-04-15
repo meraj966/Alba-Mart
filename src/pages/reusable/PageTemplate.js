@@ -17,9 +17,10 @@ function PageTemplate(props) {
               <Typography gutterBottom variant="h5" sx={{ padding: "20px", fontWeight: 550 }}>
                 {props.title} {props.subTitle}
               </Typography>
-              <Divider />
+              {props.toolbar}
               <Box height={10} />
               {props.actionBar}
+              <Divider sx={{margin: '10px 0'}}/>
               {props.children}
             </Paper>
           </>

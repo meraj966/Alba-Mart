@@ -18,6 +18,7 @@ function Product({
   date,
   url,
   onSale,
+  brandName,
   price,
   saleType,
   saleValue,
@@ -104,6 +105,7 @@ function Product({
             date={date}
             url={url}
             onSale={onSale}
+            brandName={brandName}
             price={price}
             saleType={saleType}
             saleValue={saleValue}
