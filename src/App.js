@@ -11,6 +11,7 @@ import OfferDetailView from './offers/components/OfferDetailView';
 import PromoCodes from './promo_codes';
 import DeliverySlots from './delivery_slot'
 import DeliveryBoys from './delivery_boy'
+import TermsAndConditions from './terms_and_conditions';
 import EditOffer from './offers/components/EditOffer';
 
 
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/promo-codes" exact element={<PromoCodes />}></Route>
         <Route path="/delivery_slot" exact element={<DeliverySlots />}></Route>
         <Route path="/delivery_boy" exact element={<DeliveryBoys />}></Route>
+        <Route path="/terms_and_conditions" exact element={<TermsAndConditions />}></Route>
         <Route path="/dashboard" exact element={<Dashboard />}></Route>
         <Route path="/products" exact element={<Products />}></Route>
         <Route path="/users" exact element={<Users />}></Route>

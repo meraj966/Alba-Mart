@@ -18,6 +18,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 const drawerWidth = 240;
 
@@ -316,6 +317,34 @@ export default function Sidenav() {
             <ListItemText primary="Settings" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
         </ListItem>
+
+        <ListItem
+          disablePadding
+          sx={{ display: "block" }}
+          onClick={() => {
+            navigate("/terms_and_conditions");
+          }}
+        >
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <MenuBookIcon />
+            </ListItemIcon>
+            <ListItemText primary="Terms & Conditions" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
+        
         <ListItem
           disablePadding
           sx={{ display: "block" }}
