@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "cypress": "^12.9.0",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.7",
     "firebase": "^9.15.0",
@@ -34,7 +35,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "npx cypress run",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
