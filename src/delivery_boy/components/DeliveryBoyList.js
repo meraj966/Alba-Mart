@@ -64,6 +64,12 @@ function DeliveryBoyList({ openModal }) {
               <TableCell align="left" style={{ minWidth: "100px" }}>
                 Date Of Join
               </TableCell>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
+                DL Image
+              </TableCell>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
+                Profile Pic
+              </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
                 Action
               </TableCell>
@@ -74,8 +80,26 @@ function DeliveryBoyList({ openModal }) {
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.name)}</TableCell>
                 <TableCell align="left">{String(row.phoneNumber)}</TableCell>
-                <TableCell align="left">{String(row.dlnum)}</TableCell>
-                <TableCell align="left">{String(row.doj)}</TableCell>
+                <TableCell align="left">{String(row.dlnumber)}</TableCell>
+                <TableCell align="left">{String(row.joinDate)}</TableCell>
+                <TableCell align="left">
+                  <img
+                    src={row.dlImage}
+                    height="70px"
+                    width="70px"
+                    style={{ borderRadius: "15px" }}
+                    loading="lazy"
+                  />
+                </TableCell>
+                <TableCell align="left">
+                  <img
+                    src={row.profilePic}
+                    height="70px"
+                    width="70px"
+                    style={{ borderRadius: "15px" }}
+                    loading="lazy"
+                  />
+                </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
                     <EditIcon
@@ -85,7 +109,7 @@ function DeliveryBoyList({ openModal }) {
                         cursor: "pointer",
                       }}
                       className="cursor-pointer"
-                      onClick={()=> openModal(row)}
+                      onClick={() => openModal(row)}
                     />
                     <DeleteIcon
                       style={{

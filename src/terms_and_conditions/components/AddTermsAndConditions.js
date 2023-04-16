@@ -22,29 +22,38 @@ import Swal from "sweetalert2";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-function AddTermsAndConditions({ data, isEditMode, refreshTermsAndConditions, handleClose }) {
-  const [userOrDeliveryBoy, setUserOrDeliveryBoy] = useState(isEditMode ? data.for : "");
-  const [description, setDescription] = useState(isEditMode ? data.description : "");
+function AddTermsAndConditions({
+  data,
+  isEditMode,
+  refreshTermsAndConditions,
+  handleClose,
+}) {
+  const [userOrDeliveryBoy, setUserOrDeliveryBoy] = useState(
+    isEditMode ? data.for : ""
+  );
+  const [description, setDescription] = useState(
+    isEditMode ? data.description : ""
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (isEditMode) {
-      await updateDoc(doc(db, 'TermsAndConditions', data.id), {
+      await updateDoc(doc(db, "TermsAndConditions", data.id), {
         for: userOrDeliveryBoy,
         description,
-      }).then(()=> {
-        Swal.fire('Succesfull!', 'Terms and conditions added', 'success')
-      })
+      }).then(() => {
+        Swal.fire("Succesfull!", "Terms and conditions added", "success");
+      });
     } else {
       await addDoc(collection(db, "TermsAndConditions"), {
         for: userOrDeliveryBoy,
         description,
-      }).then(()=> {
-        Swal.fire('Succesfull!', 'Terms and conditions added', 'success')
+      }).then(() => {
+        Swal.fire("Succesfull!", "Terms and conditions added", "success");
       });
     }
     refreshTermsAndConditions();
-    handleClose()
+    handleClose();
   };
 
   const handleUserOrDeliveryBoyChange = (event) => {
@@ -58,7 +67,7 @@ function AddTermsAndConditions({ data, isEditMode, refreshTermsAndConditions, ha
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
       <CardHeader title="Add Term&Condition" />
-      <CardContent>
+      <CardContent sx={{ overflowY: "scroll", maxHeight: "400px" }}>
         <Grid container spacing={2}>
           <Grid item xs={8}>
             <TextField
@@ -70,12 +79,9 @@ function AddTermsAndConditions({ data, isEditMode, refreshTermsAndConditions, ha
             />
           </Grid>
           <Grid item xs={4}>
-            <ReactQuill
-              value={description}
-              onChange={handleDescriptionChange}
-            />
+            <ReactQuill value={description} onChange={handleDescriptionChange} />
           </Grid>
-        
+
           <Grid item xs={12}>
             <Typography variant="h5" align="right">
               <Button variant="contained" onClick={handleSubmit}>

@@ -26,6 +26,9 @@ function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
         <Table aria-label="sticky table" stickyHeader>
           <TableHead>
             <TableRow>
+            <TableCell align="left" style={{ minWidth: "100px" }}>
+                Date
+              </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
                 Day
               </TableCell>
@@ -46,6 +49,7 @@ function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
           <TableBody>
             {deliveryslotData?.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                <TableCell align="left">{String(row.deliveryDate)}</TableCell>
                 <TableCell align="left">{String(row.day)}</TableCell>
                 <TableCell align="left">{String(row.timeFrom)}</TableCell>
                 <TableCell align="left">{String(row.timeTo)}</TableCell>
