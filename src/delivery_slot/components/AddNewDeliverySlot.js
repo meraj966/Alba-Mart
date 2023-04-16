@@ -26,7 +26,7 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
   const [timeFrom, setTimeFrom] = useState(isEditMode ? data.timeFrom : "");
   const [timeTo, setTimeTo] = useState(isEditMode ? data.timeTo : "");
   const [numDeliveries, setNumDeliveries] = useState(isEditMode ? data.numDeliveries : "");
-  const [deliveryDate, setDeliveryDate] = useState(isEditMode ? data.deliveryDate : "");
+  const [deliveryDate, setDeliveryDate] = useState(isEditMode ? data.deliveryDate : "dd-mm-yyyy");
   const [amPmFrom, setAmPmFrom] = useState(isEditMode ? data.amPmFrom : "am");
   const [amPmTo, setAmPmTo] = useState(isEditMode ? data.amPmTo : "am");
 
@@ -63,14 +63,14 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
       <CardHeader title="Add Delivery Slot" />
       <CardContent>
         <form onSubmit={handleSubmit}>
-          <Grid item xs={4}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Date Of Delivery"
-                value={deliveryDate}
-                onChange={(value) => setDeliveryDate(value)}
-              />
-            </LocalizationProvider>
+        <Grid item xs={4}>
+            <TextField
+              label="Date Of Delivery"
+              type="date"
+              value={deliveryDate}
+              onChange={(event) => setDeliveryDate(event.target.value)}
+              sx={{ mb: 2, display: "block" }}
+            />
           </Grid>
           <br>
           </br>
