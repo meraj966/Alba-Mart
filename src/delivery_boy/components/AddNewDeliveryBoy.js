@@ -29,7 +29,8 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
   const [address, setAddress] = useState("");
   const [dlnumber, setDlNumber] = useState("");
   const [file, setFile] = useState(null);
-  const [percent, setPercent] = useState("")
+  const [percent, setPercent] = useState("");
+  const [isActive, setIsActive] = useState(false);
   const formatDate = (obj) => {
     return `${obj.date()}/${obj.month()}/${obj.year()}`;
   };
@@ -45,6 +46,7 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
       phoneNumber: phoneNumber,
       alternateNumber: alternateNumber,
       joinDate: formatDate(joinDate),
+      isActive: isActive
     });
     const id = docData.id;
     Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
@@ -76,9 +78,28 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
     if (!name) Swal.fire("Validation Issue!", "Please add a Title", "error");
     else submitNewDeliveryBoy();
   };
+
+  const handleToggleChange = (event) => {
+    setIsActive(event.target.checked);
+  };
+
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
-      <CardHeader title="Delivery Boy Form" />
+      <CardHeader
+        title="Delivery Boy Form"
+        action={
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isActive}
+                onChange={handleToggleChange}
+                name="isActive"
+              />
+            }
+            label="Active/Deactive"
+          />
+        }
+      />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={8}>
