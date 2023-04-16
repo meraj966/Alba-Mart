@@ -82,7 +82,6 @@ function DeliveryBoyList({ openModal }) {
                 <TableCell align="left">{String(row.phoneNumber)}</TableCell>
                 <TableCell align="left">{String(row.dlnumber)}</TableCell>
                 <TableCell align="left">{String(row.joinDate)}</TableCell>
-                {/* <TableCell align="left">{String(row.dlImage)}</TableCell> */}
                 <TableCell align="left">
                   <img
                     src={row.dlImage}

@@ -52,7 +52,6 @@ export default function ProductsList({
                   <TableCell align="left">Name</TableCell>
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
-                  <TableCell align="left">Discount Price</TableCell>
                   <TableCell align="left">Discount</TableCell>
                   <TableCell align="left">Stock Value</TableCell>
                   <TableCell align="left">Quantity</TableCell>
