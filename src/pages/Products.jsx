@@ -117,6 +117,8 @@ export default function Products() {
           data={row}
           deleteProd={getMenuData}
           clearRow={handleClosePreviewModal}
+          setFormid={setFormid}
+          handleEditOpen={handleEditOpen}
         />
       </Box>
     </Modal>
