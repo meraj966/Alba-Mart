@@ -1,18 +1,20 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { PRODUCT_DATA_GRID_COLUMNS } from "./constants";
+import { getProductDataGridColumns } from "./constants";
 
-function ProductsGrid({data}) {
-  console.log(data, "data rows")
+function ProductsGrid({ data , open, openProductPreview, selectedProd, editData, deleteProduct }) {
+  console.log(openProductPreview)
+  console.log(data, "data rows");
   return (
     <Box sx={{ width: "100%" }}>
       <DataGrid
-        columns={PRODUCT_DATA_GRID_COLUMNS}
+        columns={getProductDataGridColumns(open, openProductPreview, selectedProd, editData, deleteProduct)}
         rows={data}
         autoHeight={true}
-        sx={{ overflowX: 'hidden' }}
+        sx={{ overflowX: "hidden" }}
         disableRowSelectionOnClick
+        disableSelectionOnClick
       />
     </Box>
   );

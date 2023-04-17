@@ -36,10 +36,11 @@ function TermsAndConditionsList({ openModal, termsAndConditionsData, handleDelet
               </TableRow>
             </TableHead>
             <TableBody>
-              {termsAndConditionsData?.map((row) => (
+              {termsAndConditionsData?.map((row) => {
+                return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                   <TableCell align="left">{String(row.for)}</TableCell>
-                  <TableCell align="left">{String(row.description)}</TableCell>
+                  <TableCell align="left"><div dangerouslySetInnerHTML={{__html: row.description}}></div></TableCell>
                   <TableCell align="left">
                     <Stack spacing={2} direction="row">
                       <EditIcon
@@ -62,7 +63,7 @@ function TermsAndConditionsList({ openModal, termsAndConditionsData, handleDelet
                     </Stack>
                   </TableCell>
                 </TableRow>
-              ))}
+              )})}
             </TableBody>
           </Table>
         </TableContainer>
