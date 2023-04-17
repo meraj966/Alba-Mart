@@ -4,8 +4,9 @@ import {
   uploadBytes,
   uploadBytesResumable,
 } from "firebase/storage";
-import { uuidv4 } from "@firebase/util";
-import { storage } from "../firebase-config";
+import { async, uuidv4 } from "@firebase/util";
+import { db, storage } from "../firebase-config";
+import { collection, getDocs } from "@firebase/firestore";
 
 async function uploadImage(image) {
   const storageRef = ref(storage, `images/${uuidv4()}-${image.name}`);
@@ -47,3 +48,16 @@ export const uploadImageAndSaveUrl = async (
     }
   );
 };
+
+export const getAll = async (type) => {
+  const ref = collection(db, type);
+  const data = await getDocs(ref)
+  return data.docs.map(data=>({...data.data(), id: data.id}))
+}
+
+export const getProductByIds = async (ids) => {
+  let data = await getAll("Menu")
+  console.log(data)
+  console.log(ids)
+  return data.filter(i=> ids.includes(i.id))
+}

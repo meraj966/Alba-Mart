@@ -6,7 +6,9 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import React from "react";
+import { Link } from "react-router-dom";
 
 function OrdersList({orders}) {
   return (
@@ -34,7 +36,15 @@ function OrdersList({orders}) {
               <TableCell align="left">{}</TableCell>
               <TableCell align="left">{order.orderStatus}</TableCell>
               <TableCell align="left">{}</TableCell>
-              <TableCell align="left">{}</TableCell>
+              <TableCell align="left">
+              <Link
+                    to={`/order-details/${order.orderId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                <OpenInNewIcon/>
+                </Link>
+                </TableCell>
             </TableRow>
           ))}
         </TableBody>
