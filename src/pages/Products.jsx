@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import ProductsList from "../products/ProductsList";
 import "../Dash.css";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
 import PageTemplate from "./reusable/PageTemplate";
 import {
@@ -13,7 +14,7 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import AddProducts from "../products/AddProducts";
 import EditForm from "../products/EditForm";
@@ -106,18 +107,62 @@ export default function Products() {
     setModalType("");
     setOpenProductPreview(false);
     setRow(null);
-  }
+  };
 
   const modalTypeProductPreview = () => (
-    <Modal
-      open={openProductPreview}
-      onClose={handleClosePreviewModal}
-    >
+    <Modal open={openProductPreview} onClose={handleClosePreviewModal}>
       <Box sx={style}>
-        <ProductPopup {...row} data={row} deleteProd={getMenuData} clearRow={handleClosePreviewModal} />
+        <ProductPopup
+          {...row}
+          data={row}
+          deleteProd={getMenuData}
+          clearRow={handleClosePreviewModal}
+        />
       </Box>
     </Modal>
   );
+
+  const editData = (row) => {
+    const newData = {
+      ...row,
+      date: new Date(),
+    };
+    console.log("EDIT DATA", row);
+    setFormid(newData);
+    handleEditOpen();
+  };
+
+  const deleteApi = async (id) => {
+    const userDoc = doc(db, "Menu", id);
+    let productData = (await getDoc(userDoc)).data();
+    console.log(productData, "product data")
+    if (productData.saleTag) {
+      const offerDocRef = doc(db, "Offers", productData.saleTag);
+      let offerData = (await getDoc(offerDocRef)).data();
+      let newProducts = [...offerData.products];
+      newProducts = newProducts.filter((i) => i != productData.saleTag);
+      await updateDoc(offerDocRef, { products: newProducts });
+    }
+    await deleteDoc(userDoc);
+    Swal.fire("Deleted!", "Your file has been deleted.", "success");
+    getMenuData();
+  };
+
+  const deleteProduct = (row) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.value) {
+        deleteApi(row.id);
+      }
+    });
+  };
 
   return (
     <>
@@ -163,7 +208,10 @@ export default function Products() {
             setModalType("PRODUCT_PREVIEW");
             setRow(row);
           }}
+          editData={editData}
           open={openProductPreview}
+          selectedProd={row}
+          deleteProduct={deleteProduct}
         />
         {/*         
         <ProductsList

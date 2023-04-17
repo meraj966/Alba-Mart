@@ -6,8 +6,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export const getProductDataGridColumns = (
   open,
   openProductPreview,
+  selectedProd,
   editData,
-  deleteProduct,
+  deleteProduct
 ) => {
   return [
     {
@@ -69,10 +70,10 @@ export const getProductDataGridColumns = (
             style={{
               fontSize: "20px",
               cursor: "pointer",
-              color: open ? "black" : "gray",
+              color: open && selectedProd.id === row.id ? "black" : "gray",
             }}
-            onClick = {() => openProductPreview(row)}
-            />
+            onClick={() => openProductPreview(row)}
+          />
           <EditIcon
             style={{
               fontSize: "20px",
@@ -81,13 +82,7 @@ export const getProductDataGridColumns = (
             }}
             className="cursor-pointer"
             onClick={() => {
-              editData(
-                row.id,
-                row.name,
-                row.price,
-                row.subCategory,
-                row.category
-              );
+              editData(row);
             }}
           />
           <DeleteIcon
@@ -97,7 +92,7 @@ export const getProductDataGridColumns = (
               cursor: "pointer",
             }}
             onClick={() => {
-              deleteProduct();
+              deleteProduct(row);
             }}
           />
         </Stack>
