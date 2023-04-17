@@ -80,21 +80,31 @@ function EditOffer() {
     let selectedProdIds = [];
     const currentOffer = doc(db, "Offers", id);
     for (let i = 0; i < newProds.length; i++) {
-      newProds[i]["saleTag"] = newProds[i].isSelected ? id : "";
-      newProds[i]["onSale"] = newProds[i].isSelected;
-      newProds[i]["saleType"] = "%";
-      newProds[i]["saleValue"] = discount;
-      newProds[i]["salePrice"] = getDiscountedPrice(
-        "%",
-        newProds[i]["price"],
-        discount
-      );
-      const prodDoc = doc(db, "Menu", newProds[i]["id"]);
-      await updateDoc(prodDoc, { ...newProds[i] });
-      if (newProds[i].isSelected) selectedProdIds.push(newProds[i]["id"]);
-      delete newProds[i].isSelected;
+      let product = newProds[i];
+      if (product.isSelected) {
+        product["saleTag"] = id;
+        product["onSale"] = product.isSelected;
+        product["saleType"] = "%";
+        product["saleValue"] = discount;
+        product["salePrice"] = getDiscountedPrice(
+          "%",
+          product["price"],
+          discount
+        );
+      } else {
+        if (product.saleTag === id) {
+          product["saleTag"] = "";
+          product["onSale"] = false;
+          product["saleType"] = "%";
+          product["saleValue"] = "";
+          product["salePrice"] = "";
+        }
+      }
+      const prodDoc = doc(db, "Menu", product["id"]);
+      await updateDoc(prodDoc, { ...product });
+      if (product.isSelected) selectedProdIds.push(product["id"]);
+      delete product.isSelected;
     }
-    console.log(selectedProdIds, "selectedproda");
     await updateDoc(currentOffer, {
       products: selectedProdIds,
       isOfferLive,
@@ -106,6 +116,7 @@ function EditOffer() {
     });
     getProductData();
   };
+
   return (
     <PageTemplate
       title={`Edit Offer | ${offerData?.title}`}
