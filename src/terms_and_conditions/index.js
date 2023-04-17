@@ -71,7 +71,7 @@ function TermsAndConditions() {
       <PageTemplate
         modal={modal()}
         actionBar={actionBar()}
-        title={"Promo Codes"}
+        title={"Terms And Conditions"}
       >
         <TermsAndConditionsList
           openModal={(row) => {

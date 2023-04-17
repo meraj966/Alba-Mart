@@ -66,10 +66,10 @@ function AddTermsAndConditions({
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
-      <CardHeader title="Add Term&Condition" />
+      <CardHeader title="Add Terms & Condition" />
       <CardContent sx={{ overflowY: "scroll", maxHeight: "400px" }}>
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
             <TextField
               label="User Or Delivery Boy"
               type="text"
@@ -78,10 +78,9 @@ function AddTermsAndConditions({
               sx={{ mb: 2 }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <ReactQuill value={description} onChange={handleDescriptionChange} />
           </Grid>
-
           <Grid item xs={12}>
             <Typography variant="h5" align="right">
               <Button variant="contained" onClick={handleSubmit}>
