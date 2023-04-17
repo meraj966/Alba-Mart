@@ -13,6 +13,7 @@ import DeliverySlots from './delivery_slot';
 import DeliveryBoys from './delivery_boy';
 import TermsAndConditions from './terms_and_conditions';
 import EditOffer from './offers/components/EditOffer';
+import OrderDetails from './orders/OrderDetails';
 
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/settings" exact element={<Settings/>}></Route>
         <Route path="/offer-settings" exact element={<OfferSettings/>}></Route>
         <Route path="/offer-details/:id" exact element={<OfferDetailView/>}></Route>
+        <Route path="/order-details/:id" exact element={<OrderDetails/>}></Route>
         <Route path="/edit-offer/:id" exact element={<EditOffer/>}></Route>
       </Routes>
     </BrowserRouter>
