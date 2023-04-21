@@ -37,6 +37,9 @@ function Product({
   isSelected,
   productSelected,
   isEditOffer,
+  isOrderDetailView,
+  amount,
+  rate
 }) {
   const [selected, setSelected] = useState(isSelected);
   const [open, setOpen] = useState(false);
@@ -140,13 +143,13 @@ function Product({
 
         <TableCell align="left">{name}</TableCell>
         <TableCell align="left">{price}</TableCell>
-        <TableCell align="left">{salePrice}</TableCell>
+        <TableCell align="left">{isOrderDetailView? amount: salePrice}</TableCell>
         <TableCell align="left">
-          {onSale ? `${saleValue} ${saleType}` : "-"}
+          {isOrderDetailView ? rate :(onSale ? `${saleValue} ${saleType}` : "-")}
         </TableCell>
-        <TableCell align="left">{stockValue}</TableCell>
+        {!isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
         <TableCell align="left">{quantity}</TableCell>
-        <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
+        {!isOrderDetailView && <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>}
         {isDetailView || isEditOffer ? null : (
           <TableCell align="left">
             <Stack spacing={2} direction="row">

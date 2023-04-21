@@ -19,6 +19,7 @@ export default function ProductsList({
   isDetailView,
   handleSelectedProducts,
   isEditOffer,
+  isOrderDetailView
 }) {
   const [selectAll, setSelectAll] = useState(false);
   const productSelected = (id, checked) => {
@@ -53,9 +54,9 @@ export default function ProductsList({
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Discount</TableCell>
-                  <TableCell align="left">Stock Value</TableCell>
+                  {!isOrderDetailView && <TableCell align="left">Stock Value</TableCell>}
                   <TableCell align="left">Quantity</TableCell>
-                  <TableCell align="left">Is Product Live</TableCell>
+                  {!isOrderDetailView && <TableCell align="left">Is Product Live</TableCell>}
                   {isDetailView || isEditOffer ? null : (
                     <TableCell align="left">Action</TableCell>
                   )}
@@ -76,6 +77,7 @@ export default function ProductsList({
                         productSelected={(checked) =>
                           productSelected(row.id, checked)
                         }
+                        isOrderDetailView
                       />
                     );
                   })}
