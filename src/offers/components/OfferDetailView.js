@@ -33,7 +33,7 @@ function OfferDetailView(props) {
   const subTitle = () => (
     <>
       {Object.keys(offerData).length
-        ? `- ${offerData.title} | ${offerData.startDate} | ${offerData.endDate} | Discount - ${offerData.discountPercent}`
+        ? `- ${offerData?.title} | ${offerData?.startDate} | ${offerData?.endDate} | Discount - ${offerData.discountPercent}`
         : ""}
       <Stack
         direction={"row"}

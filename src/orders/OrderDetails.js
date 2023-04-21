@@ -12,21 +12,36 @@ function OrderDetails() {
   const { id } = useParams();
   const [order, setOrder] = useState({});
   const [products, setProducts] = useState([]);
+  const [subTotal, setSubTotal] = useState(0)
   useEffect(() => {
     getOrderDetail();
   }, []);
   useEffect(() => {
-    if (Object.keys(order).length > 0) setOrderProducts();
+    if (order && Object.keys(order).length > 0) setOrderProducts();
   }, [order]);
   const setOrderProducts = async () => {
-    let products = [];
-    console.log(order, "order");
-    order.itemReciptData.forEach((o) => products.push(o.split("+")[0]));
-    console.log(products, "produ ids");
+    // let products = Object.keys(order.products);
+    // console.log(products)
+    let total = 0
+    let products = Object.keys(order.products).map((i) => {
+      let product = order.products[i]
+      total = (total + Number(product.amount))
+      return {
+      id: i,
+      price: product.mrp,
+      name: product.name,
+      amount: product.amount,
+      rate: product.rate,
+      quantity: product.quantity
+    }});
+    setSubTotal(total)
+    console.log(order.products);
+    // order.itemReciptData.forEach((o) => products.push(o.split("+")[0]));
+    // console.log(products, "produ ids");
     let data = await getProductByIds(products);
-    console.log(data);
-    setProducts(data);
+    setProducts(products);
   };
+  console.log(order);
   const getOrderDetail = async () => {
     const data = await getDoc(doc(db, "Order", id));
     setOrder(data.data());
@@ -81,52 +96,46 @@ function OrderDetails() {
           Delivery Date:
         </Grid>
         <Grid item xs={4}>
-          {order.date}
+          {order?.date}
         </Grid>
         <Grid item xs={2}>
           Delivery Slot:
         </Grid>
         <Grid item xs={4}>
-          {order.deleverySlot || "-"}
+          {order?.deleverySlot || "-"}
         </Grid>
-        <Card sx={{width: '100%', marginTop: '10px'}}>
-          <ProductsList rows={products} isDetailView={true} />
+        <Card sx={{ width: "100%", marginTop: "10px" }}>
+          <ProductsList
+            rows={products}
+            isDetailView={true}
+            isOrderDetailView={true}
+          />
         </Card>
         <Grid item xs={2}>
           Sub Total Price:
         </Grid>
-        <Grid item xs={8}/>
-        <Grid item>
-          {0}
-        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{subTotal}</Grid>
         <Grid item xs={2}>
           Tax:
         </Grid>
-        <Grid item xs={8}/>
-        <Grid item>
-          {0}
-        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{0}</Grid>
         <Grid item xs={2}>
           Delivery Charge:
         </Grid>
-        <Grid item xs={8}/>
-        <Grid item>
-          {0}
-        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{0}</Grid>
         <Grid item xs={2}>
           Net Amount:
         </Grid>
-        <Grid item xs={8}/>
-        <Grid item>
-          {0}
-        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{0}</Grid>
         <Grid item xs={2}>
           Order Status
         </Grid>
-        <Grid item xs={8}/>
-        <Grid item>
-          {order.orderStatus}
-        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{order?.orderStatus}</Grid>
       </Grid>
     </PageTemplate>
   );
