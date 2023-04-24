@@ -22,7 +22,7 @@ function OrdersList({orders}) {
             <TableCell align="left">Total Amount</TableCell>
             <TableCell align="left">Payment Mode</TableCell>
             <TableCell align="left">Status</TableCell>
-            <TableCell align="left">Others..</TableCell>
+            <TableCell align="left">Assign Delivery Boy</TableCell>
             <TableCell align="left">View</TableCell>
           </TableRow>
         </TableHead>

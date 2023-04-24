@@ -1,5 +1,5 @@
 import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -8,17 +8,18 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Settings from "@mui/icons-material/Settings";
-import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import BookOnlineOutlinedIcon from "@mui/icons-material/BookOnlineOutlined";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import GroupIcon from "@mui/icons-material/Group";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../appStore";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 const drawerWidth = 240;
 
@@ -70,307 +71,102 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Sidenav() {
-  const theme = useTheme();
-  // const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
   const open = useAppStore((state) => state.dopen);
+
+  const SideNavListItem = ({ navigationUrl, Icon, label }) => (
+    <ListItem
+      disablePadding
+      sx={{ display: "block" }}
+      onClick={() => {
+        navigate(navigationUrl);
+      }}
+    >
+      <ListItemButton
+        sx={{
+          minHeight: 48,
+          justifyContent: open ? "initial" : "center",
+          px: 2.5,
+        }}
+      >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : "auto",
+            justifyContent: "center",
+          }}
+        >
+          {Icon}
+        </ListItemIcon>
+        <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </ListItem>
+  );
 
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader></DrawerHeader>
       <List>
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/dashboard");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/products");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Products" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/users");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <GroupIcon />
-            </ListItemIcon>
-            <ListItemText primary="Users" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/orders");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <ListAltIcon />
-            </ListItemIcon>
-            <ListItemText primary="Orders" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/promo-codes");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <BookOnlineOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Promo Code" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/delivery_slot");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <LocalShippingIcon />
-            </ListItemIcon>
-            <ListItemText primary="Delivery Slot" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/delivery_boy");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <PersonAddIcon />
-            </ListItemIcon>
-            <ListItemText primary="Delivery Boy" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/offer-settings");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <LocalOfferIcon />
-            </ListItemIcon>
-            <ListItemText primary="Offer Settings" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/settings");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <Settings />
-            </ListItemIcon>
-            <ListItemText primary="Settings" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/terms_and_conditions");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <MenuBookIcon />
-            </ListItemIcon>
-            <ListItemText primary="Terms & Conditions" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        
-        <ListItem
-          disablePadding
-          sx={{ display: "block" }}
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
+        <SideNavListItem
+          label={"Dashboard"}
+          Icon={<DashboardIcon />}
+          navigationUrl={"/Dashboard"}
+        />
+        <SideNavListItem
+          label={"Products"}
+          Icon={<ShoppingCartIcon />}
+          navigationUrl={"/products"}
+        />
+        <SideNavListItem
+          label={"Users"}
+          Icon={<GroupIcon />}
+          navigationUrl={"/users"}
+        />
+        <SideNavListItem
+          label={"Orders"}
+          Icon={<ListAltIcon />}
+          navigationUrl={"/orders"}
+        />
+        <SideNavListItem
+          label={"Promo Code"}
+          Icon={<BookOnlineOutlinedIcon />}
+          navigationUrl={"/promo-codes"}
+        />
+        <SideNavListItem
+          label={"Delivery Slot"}
+          Icon={<LocalShippingIcon />}
+          navigationUrl={"/delivery_slot"}
+        />
+        <SideNavListItem
+          label={"Delivery Boy"}
+          Icon={<PersonAddIcon />}
+          navigationUrl={"/delivery_boy"}
+        />
+        <SideNavListItem
+          label={"Offer Settings"}
+          Icon={<LocalOfferIcon />}
+          navigationUrl={"/offer-settings"}
+        />
+        <SideNavListItem
+          label={"Delivery Charges"}
+          Icon={<CurrencyRupeeIcon />}
+          navigationUrl={"/delivery_charge"}
+        />
+        <SideNavListItem
+          label={"Settings"}
+          Icon={<Settings />}
+          navigationUrl={"/settings"}
+        />
+        <SideNavListItem
+          label={"Terms & Conditions"}
+          Icon={<MenuBookIcon />}
+          navigationUrl={"/terms_and_conditions"}
+        />
+        <SideNavListItem
+          label={"Logout"}
+          Icon={<LogoutIcon />}
+          navigationUrl={"/"}
+        />
       </List>
     </Drawer>
   );

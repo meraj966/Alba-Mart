@@ -1,3 +1,5 @@
+import { DELIVERY_CHARGE_TABLE_HEADERS } from "./Constants"
+
 export const splitText = (text) => {
     let str = "", res = []
     for (let i = 0; i < text.length; i++) {
