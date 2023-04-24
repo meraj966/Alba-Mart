@@ -1,7 +1,7 @@
 import { MenuItem, TextField } from "@mui/material";
 import React from "react";
 
-function SelectInput({
+const SelectInput = ({
   error,
   id,
   label,
@@ -11,7 +11,8 @@ function SelectInput({
   onChange,
   size,
   sx,
-}) {
+  required
+}) => {
   return (
     <TextField
       id={id}
@@ -23,6 +24,7 @@ function SelectInput({
       size={size}
       sx={sx}
       select
+      required
     >
       {data &&
         data.map((option) => (
@@ -32,6 +34,6 @@ function SelectInput({
         ))}
     </TextField>
   );
-}
+};
 
 export default SelectInput;

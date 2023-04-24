@@ -14,6 +14,7 @@ import DeliveryBoys from './delivery_boy';
 import TermsAndConditions from './terms_and_conditions';
 import EditOffer from './offers/components/EditOffer';
 import OrderDetails from './orders/OrderDetails';
+import DeliveryCharge from './delivery_charge';
 
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/promo-codes" exact element={<PromoCodes />}></Route>
         <Route path="/delivery_slot" exact element={<DeliverySlots />}></Route>
         <Route path="/delivery_boy" exact element={<DeliveryBoys />}></Route>
+        <Route path='/delivery_charge' exact element={<DeliveryCharge/>}></Route>
         <Route path="/terms_and_conditions" exact element={<TermsAndConditions />}></Route>
         <Route path="/dashboard" exact element={<Dashboard />}></Route>
         <Route path="/products" exact element={<Products />}></Route>
