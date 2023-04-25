@@ -21,6 +21,7 @@ import { db, storage } from "../../firebase-config";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
+import { uploadImages } from "../../firebase_utils";
 function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
   const [name, setName] = useState("");
   const [phoneNumber, SetPhoneNumber] = useState("")
@@ -28,19 +29,20 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
   const [joinDate, setJoinDate] = useState(dayjs(new Date()));
   const [address, setAddress] = useState("");
   const [dlnumber, setDlNumber] = useState("");
-  const [file, setFile] = useState(null);
+  const [dlImage, setDlImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [percent, setPercent] = useState("");
   const [isActive, setIsActive] = useState(false);
   const formatDate = (obj) => {
     return `${obj.date()}/${obj.month()}/${obj.year()}`;
   };
-  const saveBoy = async (url) => {
+  const saveBoy = async (urls) => {
     console.log(joinDate,  dayjs(joinDate));
     const offerRef = collection(db, "DeliveryBoy");
     const docData = await addDoc(offerRef, {
       name,
-      dlImage: url,
-      profilePic: url,
+      dlImage: urls[0],
+      profilePic: urls[1],
       address: address,
       dlnumber: dlnumber,
       phoneNumber: phoneNumber,
@@ -54,25 +56,8 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
     closeModal();
   };
   const submitNewDeliveryBoy = async () => {
-    const storageRef = ref(storage, `/images/${Math.random() + file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = String(
-          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100) +
-          "%"
-        );
-        // update progress
-        setPercent(percent);
-      },
-      (err) => console.log(err),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (url) => {
-          await saveBoy(url);
-        });
-      }
-    );
+    const res = await uploadImages([dlImage, profileImage]);
+    await saveBoy(res);
   };
   const handleSubmit = () => {
     if (!name) Swal.fire("Validation Issue!", "Please add a Title", "error");
@@ -171,7 +156,7 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
             <input
               type="file"
               style={{ marginTop: "10px" }}
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={(e) => setDlImage(e.target.files[0])}
               accept="/image/*"
             />
           </Grid>
@@ -185,7 +170,7 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
             <input
               type="file"
               style={{ marginTop: "10px" }}
-              onChange={(e) => setFile(e.target.files[1])}
+              onChange={(e) => setProfileImage(e.target.files[0])}
               accept="/image/*"
             />
           </Grid>
