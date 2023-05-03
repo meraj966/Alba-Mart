@@ -12,6 +12,7 @@ function OrderDetails() {
   const { id } = useParams();
   const [order, setOrder] = useState({});
   const [products, setProducts] = useState([]);
+  const [user, setUser] = useState({})
   const [subTotal, setSubTotal] = useState(0)
   useEffect(() => {
     getOrderDetail();
@@ -35,10 +36,9 @@ function OrderDetails() {
       quantity: product.quantity
     }});
     setSubTotal(total)
-    console.log(order.products);
-    // order.itemReciptData.forEach((o) => products.push(o.split("+")[0]));
-    // console.log(products, "produ ids");
-    let data = await getProductByIds(products);
+    const userData = await getDoc(doc(db, "UserProfile", order.userID));
+    setUser(userData.data())
+    console.log(userData.data());
     setProducts(products);
   };
   console.log(order);
@@ -72,25 +72,25 @@ function OrderDetails() {
           Customer Name:
         </Grid>
         <Grid item xs={4}>
-          Test customer nameXXXXXXXXXXXXX
+          {user?.name}
         </Grid>
         <Grid item xs={2}>
           Customer Contact:
         </Grid>
         <Grid item xs={4}>
-          XXXXXXXXXX
+          {user?.phoneNo}
         </Grid>
         <Grid item xs={2}>
           Address:
         </Grid>
         <Grid item xs={4}>
-          Test address XXXXXXXXXXXXX
+          {user?.address}
         </Grid>
         <Grid item xs={2}>
-          Test Landmark
+          Landmark:
         </Grid>
         <Grid item xs={4}>
-          LandmarkXXXXXXXXXXXXX
+          {user?.landmark}
         </Grid>
         <Grid item xs={2}>
           Delivery Date:

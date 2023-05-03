@@ -1,24 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { TextField } from "@mui/material";
+import { TextField, Button } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import OrdersList from "../orders/OrdersList";
 import PageTemplate from "./reusable/PageTemplate";
 import Dropdown from "../components/reusable/Dropdown";
 import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
 import { collection, getDocs } from "@firebase/firestore";
 import { db } from "../firebase-config";
+import UndoIcon from "@mui/icons-material/Undo";
+import { cloneDeep } from "lodash";
 
 export default function Orders() {
-  const [orderType, setOrderType] = useState(0);
+  const [orderType, setOrderType] = useState("All Orders");
   const [orders, setOrders] = useState([]);
-
+  const [filteredOrder, setFilteredOrders] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
+  
   useEffect(() => {
     getOrders();
   }, []);
 
+  useEffect(() => {
+    if (orderType === "All Orders") {
+      setFilteredOrders(null);
+    } else {
+      setFilteredOrders(orders.filter(o=>o.orderStatus === orderType))
+    }
+  }, [orderType]);
+
   const getOrders = async () => {
     const ref = collection(db, "Order");
     const data = await getDocs(ref);
-    setOrders(data.docs.map((data) => ({ ...data.data(), id: data.id })))
+    setOrders(data.docs.map((data) => ({ ...data.data(), id: data.id })));
+  };
+
+  const refreshOrders = async () => {
+    console.log("refreshhhhhhhhhhhhhhhhhhh");
+    await getOrders();
   };
 
   const toolbar = () => (
@@ -39,12 +57,21 @@ export default function Orders() {
         />
       </div>
       <div style={{ float: "right" }}>
-        <TextField
-          id="outlined-search"
-          sx={{ minWidth: "280px" }}
-          label="Search"
-          type="search"
-        />
+        <Button>
+          {isEdit ? (
+            <UndoIcon
+              style={{ marginLeft: "5px", fontSize: "20px", color: "black" }}
+              onClick={() => {
+                setIsEdit(false);
+              }}
+            />
+          ) : (
+            <EditIcon
+              style={{ marginLeft: "5px", fontSize: "20px" }}
+              onClick={() => setIsEdit(!isEdit)}
+            />
+          )}{" "}
+        </Button>
       </div>
     </div>
   );
@@ -52,7 +79,14 @@ export default function Orders() {
   return (
     <>
       <PageTemplate title="Orders" toolbar={toolbar()}>
-        <OrdersList orders={orders}/>
+        <OrdersList
+          orderData={
+            filteredOrder ? cloneDeep(filteredOrder) : cloneDeep(orders)
+          }
+          isEdit={isEdit}
+          setIsEdit={setIsEdit}
+          refreshOrders={refreshOrders}
+        />
       </PageTemplate>
     </>
   );

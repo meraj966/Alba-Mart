@@ -7,39 +7,39 @@ export const PRODUCTS_UNAVAILABLE = "PRODUCTS_UNAVAILABLE";
 export const ORDER_TYPE_DROPDOWN_VALUES = [
   {
     label: "All Orders",
-    value: 0,
+    value: "All Orders",
   },
   {
     label: "Awaiting",
-    value: 1,
+    value: "Awaiting",
   },
   {
     label: "Received",
-    value: 2,
+    value: "Received",
   },
   {
     label: "Processed",
-    value: 3,
+    value: "Processed",
   },
   {
     label: "Shipped",
-    value: 4,
+    value: "Shipped",
   },
   {
     label: "Ready to Pickup",
-    value: 5,
+    value: "Ready to Pickup",
   },
   {
     label: "Delivered",
-    value: 6,
+    value: "Delivered",
   },
   {
     label: "Cancelled",
-    value: 7,
+    value: "Cancelled",
   },
   {
     label: "Returned",
-    value: 8,
+    value: "Returned",
   },
 ];
 export const CONDITION = {
@@ -52,5 +52,9 @@ export const CONDITION = {
   IN_RANGE: "IN RANGE",
 };
 export const DELIVERY_CHARGE_TABLE_HEADERS = [
-    'No.', 'Criteria', 'Condition', 'Value', 'Delivery Charge'
-]
+  "No.",
+  "Criteria",
+  "Condition",
+  "Value",
+  "Delivery Charge",
+];

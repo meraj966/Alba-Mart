@@ -57,7 +57,5 @@ export const getAll = async (type) => {
 
 export const getProductByIds = async (ids) => {
   let data = await getAll("Menu")
-  console.log(data)
-  console.log(ids)
   return data.filter(i=> ids.includes(i.id))
 }
