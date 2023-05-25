@@ -148,10 +148,11 @@ export default function Navbar() {
             Alba Mart
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-        </Toolbar>
-      </AppBar>
+          
       {renderMobileMenu}
       {renderMenu}
+        </Toolbar>
+      </AppBar>
     </Box>
   );
 }

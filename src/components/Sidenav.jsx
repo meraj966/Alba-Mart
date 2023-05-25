@@ -10,7 +10,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Settings from "@mui/icons-material/Settings";
 import BookOnlineOutlinedIcon from "@mui/icons-material/BookOnlineOutlined";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import GroupIcon from "@mui/icons-material/Group";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +20,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 const drawerWidth = 240;
 
@@ -75,13 +75,16 @@ export default function Sidenav() {
   const navigate = useNavigate();
   const open = useAppStore((state) => state.dopen);
 
-  const SideNavListItem = ({ navigationUrl, Icon, label }) => (
+  const SideNavListItem = ({
+    navigationUrl,
+    Icon,
+    label,
+    onClick = () => navigate(navigationUrl),
+  }) => (
     <ListItem
       disablePadding
       sx={{ display: "block" }}
-      onClick={() => {
-        navigate(navigationUrl);
-      }}
+      onClick={onClick}
     >
       <ListItemButton
         sx={{
@@ -103,6 +106,11 @@ export default function Sidenav() {
       </ListItemButton>
     </ListItem>
   );
+
+  const handleLogout = async () => {
+    window.sessionStorage.setItem("token", "")
+      navigate("/")
+  }
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -172,6 +180,7 @@ export default function Sidenav() {
           label={"Logout"}
           Icon={<LogoutIcon />}
           navigationUrl={"/"}
+          onClick={handleLogout}
         />
       </List>
     </Drawer>
