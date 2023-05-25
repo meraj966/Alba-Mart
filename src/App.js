@@ -17,6 +17,8 @@ import OrderDetails from './orders/OrderDetails';
 import DeliveryCharge from './delivery_charge';
 import Register from './authentication/Register';
 import ForgotPassword from './authentication/ForgotPassword';
+import FAndQ from './f_and_q';
+
 
 export default function App() {
   return (
@@ -31,6 +33,7 @@ export default function App() {
         <Route path="/delivery_boy" exact element={<DeliveryBoys />}></Route>
         <Route path='/delivery_charge' exact element={<DeliveryCharge/>}></Route>
         <Route path="/terms_and_conditions" exact element={<TermsAndConditions />}></Route>
+        <Route path="/f_and_q" exact element={<FAndQ />}></Route>
         <Route path="/dashboard" exact element={<Dashboard />}></Route>
         <Route path="/products" exact element={<Products />}></Route>
         <Route path="/users" exact element={<Users />}></Route>
