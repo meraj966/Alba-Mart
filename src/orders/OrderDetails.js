@@ -7,13 +7,19 @@ import { getProductByIds } from "../firebase_utils";
 import { doc, getDoc } from "@firebase/firestore";
 import { db } from "../firebase-config";
 import ProductsList from "../products/ProductsList";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
 
 function OrderDetails() {
+  const refp = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => refp.current,
+  });
   const { id } = useParams();
   const [order, setOrder] = useState({});
   const [products, setProducts] = useState([]);
-  const [user, setUser] = useState({})
-  const [subTotal, setSubTotal] = useState(0)
+  const [user, setUser] = useState({});
+  const [subTotal, setSubTotal] = useState(0);
   useEffect(() => {
     getOrderDetail();
   }, []);
@@ -23,21 +29,22 @@ function OrderDetails() {
   const setOrderProducts = async () => {
     // let products = Object.keys(order.products);
     // console.log(products)
-    let total = 0
+    let total = 0;
     let products = Object.keys(order.products).map((i) => {
-      let product = order.products[i]
-      total = (total + Number(product.amount))
+      let product = order.products[i];
+      total = total + Number(product.amount);
       return {
-      id: i,
-      price: product.mrp,
-      name: product.name,
-      amount: product.amount,
-      rate: product.rate,
-      quantity: product.quantity
-    }});
-    setSubTotal(total)
+        id: i,
+        price: product.mrp,
+        name: product.name,
+        amount: product.amount,
+        rate: product.rate,
+        quantity: product.quantity,
+      };
+    });
+    setSubTotal(total);
     const userData = await getDoc(doc(db, "UserProfile", order.userID));
-    setUser(userData.data())
+    setUser(userData.data());
     console.log(userData.data());
     setProducts(products);
   };
@@ -46,21 +53,8 @@ function OrderDetails() {
     const data = await getDoc(doc(db, "Order", id));
     setOrder(data.data());
   };
-  return (
-    <PageTemplate
-      title={
-        <div>
-          <span>Order Details</span>
-          <Button
-            variant="contained"
-            endIcon={<PrintIcon />}
-            sx={{ float: "right" }}
-          >
-            Print
-          </Button>
-        </div>
-      }
-    >
+  const OrderBill = ({ ref }) => (
+    <div ref={ref}>
       <Grid container spacing={2} sx={{ padding: "10px" }}>
         <Grid item xs={2}>
           Order ID:
@@ -137,6 +131,25 @@ function OrderDetails() {
         <Grid item xs={8} />
         <Grid item>{order?.orderStatus}</Grid>
       </Grid>
+    </div>
+  );
+  return (
+    <PageTemplate
+      title={
+        <div>
+          <span>Order Details</span>
+          <Button
+            variant="contained"
+            endIcon={<PrintIcon />}
+            sx={{ float: "right" }}
+            onClick={handlePrint}
+          >
+            Print
+          </Button>
+        </div>
+      }
+    >
+      <OrderBill ref={refp} />
     </PageTemplate>
   );
 }

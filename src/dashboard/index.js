@@ -10,10 +10,11 @@ import { useState } from "react";
 import { PRODUCTS_UNAVAILABLE, PRODUCTS_LOW_STOCK } from "../Constants";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase-config";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageTemplate from "../pages/reusable/PageTemplate";
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [customers, setCustomers] = useState("");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -91,6 +92,8 @@ export default function Dashboard() {
       </>
     </Modal>
   );
+  if (!window.sessionStorage.getItem("token")) 
+      navigate("/")
   return (
     <>
       <PageTemplate modal={modal()} title="Dashboard">

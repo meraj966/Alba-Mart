@@ -9,10 +9,21 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useState, useEffect } from "react";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import { useState, forwardRef } from "react";
+import Snackbar from "@mui/material/Snackbar";
+import Stack from "@mui/material/Stack";
+import MuiAlert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
 import { useNavigate } from "react-router-dom";
-// import Swal from "sweetalert2";
-import { useAppStore } from "./appStore";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebase-config";
+
+
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const darkTheme = createTheme({
   palette: {
@@ -38,47 +49,56 @@ const center = {
 };
 
 export default function Login() {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const vertical = "top";
+  const horizontal = "right";
   const navigate = useNavigate();
-  const updateUsername = useAppStore((state) => state.updateUsername);
-  const updatePassword = useAppStore((state) => state.updatePassword);
-
-  useEffect(() => {
-    updateUsername('');
-    updatePassword('');
-  }, []);
 
   const handleSubmit = async (event) => {
+    if(!email && !password) setError("Invalid email or password");
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    navigate("/products");
-    // if (
-    //   name == "animess.food@gmail.com" &&
-    //   password == "animess.food@gmail.com"
-    // ) {
-    //   updateUsername(name);
-    //   updatePassword(password);
-    //   navigate("/products");
-    // } else {
-    //   Swal.fire(
-    //     "Failed!",
-    //     "Please enter correct username and password!",
-    //     "error"
-    //   );
-    // }
+    signInWithEmailAndPassword(auth, email, password).then(cred=>{
+      const user = cred.user;
+      // navigate("/dashboard")
+      console.log(user);
+      window.sessionStorage.setItem("token", user.accessToken)
+      window.sessionStorage.setItem("userId", user.uid)
+      window.sessionStorage.setItem("email", user.email)
+      navigate("/dashboard")
+    }).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      setError(errorMessage)
+  });
   };
 
-  const handleNameChange = (event) => {
-    setName(event.target.value);
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setError(false);
   };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+ 
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
 
   return (
     <>
+      <Snackbar
+        open={Boolean(error)}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          {error}
+        </Alert>
+      </Snackbar>
       <div
         style={{
           backgroundImage: `url(${bgimg})`,
@@ -107,6 +127,7 @@ export default function Login() {
                 style={{
                   backgroundSize: "cover",
                   height: "70vh",
+                  minHeight: "500px",
                   backgroundColor: "#3b33d5",
                 }}
               >
@@ -136,10 +157,9 @@ export default function Login() {
                             fullWidth
                             id="email"
                             label="Username"
-                            value={name}
-                            onChange={handleNameChange}
                             name="email"
                             autoComplete="email"
+                            onChange={e=>setEmail(e.target.value)}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -148,19 +168,38 @@ export default function Login() {
                             fullWidth
                             name="password"
                             label="Password"
-                            value={password}
-                            onChange={handlePasswordChange}
                             type="password"
                             id="password"
                             autoComplete="new-password"
+                            onChange={e=>setPassword(e.target.value)}
                           />
+                        </Grid>
+                        <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                          <Stack direction="row" spacing={2}>
+                            <FormControlLabel
+                              sx={{ width: "60%" }}
+                              onClick={() => setRemember(!remember)}
+                              control={<Checkbox checked={remember} />}
+                              label="Remember me"
+                            />
+                            <Typography
+                              variant="body1"
+                              component="span"
+                              onClick={() => {
+                                navigate("/reset-password");
+                              }}
+                              style={{ marginTop: "10px", cursor: "pointer" }}
+                            >
+                              Forgot password?
+                            </Typography>
+                          </Stack>
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
                           <Button
                             type="submit"
                             variant="contained"
-                            size="large"
                             fullWidth="true"
+                            size="large"
                             sx={{
                               mt: "10px",
                               mr: "20px",
@@ -172,18 +211,25 @@ export default function Login() {
                           >
                             Sign in
                           </Button>
-                          {/* <Button
-                            type="submit"
-                            variant="outlined"
-                            size="large"
-                            sx={{
-                              mt: "10px",
-                              borderRadius: 28,
-                              minWidth: "170px",
-                            }}
-                          >
-                            Create Account
-                          </Button> */}
+                        </Grid>
+                        <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                          <Stack direction="row" spacing={2}>
+                            <Typography
+                              variant="body1"
+                              component="span"
+                              style={{ marginTop: "10px" }}
+                            >
+                              Not registered yet?{" "}
+                              <span
+                                style={{ color: "#beb4fb", cursor: "pointer" }}
+                                onClick={() => {
+                                  navigate("/register");
+                                }}
+                              >
+                                Create an Account
+                              </span>
+                            </Typography>
+                          </Stack>
                         </Grid>
                       </Grid>
                     </Box>
