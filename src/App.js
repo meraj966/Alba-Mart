@@ -15,6 +15,8 @@ import TermsAndConditions from './terms_and_conditions';
 import EditOffer from './offers/components/EditOffer';
 import OrderDetails from './orders/OrderDetails';
 import DeliveryCharge from './delivery_charge';
+import Register from './authentication/Register';
+import ForgotPassword from './authentication/ForgotPassword';
 import FAndQ from './f_and_q';
 
 
@@ -24,6 +26,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" exact element={<Login />}></Route>
+        <Route path="/register" exact element={<Register />}></Route>
+        <Route path="/reset-password" exact element={<ForgotPassword />}></Route>
         <Route path="/promo-codes" exact element={<PromoCodes />}></Route>
         <Route path="/delivery_slot" exact element={<DeliverySlots />}></Route>
         <Route path="/delivery_boy" exact element={<DeliveryBoys />}></Route>
