@@ -2,7 +2,7 @@ import React from 'react'
 import {Navigate, useLocation} from "react-router-dom"
 
 const ProtectedRoute = ({children}) => {
-    const user = window.sessionStorage.getItem("token");
+    const user = window.localStorage.getItem("token");
     let location = useLocation();
     console.log("is User logged in =>", user)
     if(!user) {

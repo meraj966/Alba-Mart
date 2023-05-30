@@ -22,10 +22,12 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { map, sum } from "lodash";
-import { Stack } from "@mui/system";
+import Box from "@mui/material/Box";
 import Dropdown from "../components/reusable/Dropdown";
 import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
 import Swal from "sweetalert2";
+import { DataGrid } from "@mui/x-data-grid";
+import { getOrdersGridColumns } from "../products/constants";
 
 function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   const [users, setUser] = useState([]);
@@ -83,84 +85,104 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   const handleSave = () => {
     updatedOrders.forEach(async (id) => {
       await updateDoc(doc(db, "Order", id), {
-        ...orders.find((i) => i.id === id)
+        ...orders.find((i) => i.id === id),
       });
     });
     setIsEdit(false);
     setUpdatedOrders([]);
     refreshOrders();
   };
-
+  console.log(orders, "orders");
   return (
-    <TableContainer>
-      <Table stickyHeader>
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Order ID</TableCell>
-            <TableCell align="left">Cust Name</TableCell>
-            <TableCell align="left">Cust Contact</TableCell>
-            <TableCell align="left">Total Amount</TableCell>
-            <TableCell align="left">Payment Mode</TableCell>
-            <TableCell align="left">Status</TableCell>
-            <TableCell align="left">
-              {isEdit ? "Assign Delivery Boy" : "Delivery Boy"}
-            </TableCell>
-            <TableCell align="left">Options</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {orders &&
-            orders.map((order, index) => {
-              const user = users.find((i) => i.user === order.userID);
-              return (
-                <TableRow hover tabIndex={-1} key={order.id}>
-                  <TableCell align="left">{order.orderId}</TableCell>
-                  <TableCell align="left">{user?.name}</TableCell>
-                  <TableCell align="left">{user?.phoneNo}</TableCell>
-                  <TableCell align="left">
-                    {sum(map(Object.values(order.products), "amount"))}
-                  </TableCell>
-                  <TableCell align="left">{order.paymentMode || "-"}</TableCell>
-                  <TableCell align="left">
-                    {isEdit ? statusDropdown(index, order) : order.orderStatus}
-                  </TableCell>
-                  <TableCell align="left">
-                    {isEdit
-                      ? deliveryBoyDropdown(index, order)
-                      : deliveryBoy.find((i) => i.id === order.deliveryBoy)
-                          ?.name || "-"}
-                  </TableCell>
-                  <TableCell align="left">
-                    <Link
-                      to={`/order-details/${order.orderId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <OpenInNewIcon />
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
+    <Box sx={{ width: "100%" }}>
+      {isEdit ? (
+        <TableContainer>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">Order ID</TableCell>
+                <TableCell align="left">Cust Name</TableCell>
+                <TableCell align="left">Cust Contact</TableCell>
+                <TableCell align="left">Total Amount</TableCell>
+                <TableCell align="left">Payment Mode</TableCell>
+                <TableCell align="left">Status</TableCell>
+                <TableCell align="left">
+                  {isEdit ? "Assign Delivery Boy" : "Delivery Boy"}
+                </TableCell>
+                <TableCell align="left">Options</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orders &&
+                orders.map((order, index) => {
+                  const user = users.find((i) => i.user === order.userID);
+                  return (
+                    <TableRow hover tabIndex={-1} key={order.id}>
+                      <TableCell align="left">{order.orderId}</TableCell>
+                      <TableCell align="left">{user?.name}</TableCell>
+                      <TableCell align="left">{user?.phoneNo}</TableCell>
+                      <TableCell align="left">
+                        {sum(map(Object.values(order.products), "amount"))}
+                      </TableCell>
 
-      {isEdit && (
-        <Grid item xs={12}>
-          <Button
-            style={{
-              float: "right",
-              margin: "10px 10px 0",
-              background: "#1976d2",
-              color: "white",
-            }}
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-        </Grid>
+                      <TableCell align="left">
+                        {order.paymentMode || "-"}
+                      </TableCell>
+                      <TableCell align="left">
+                        {isEdit
+                          ? statusDropdown(index, order)
+                          : order.orderStatus}
+                      </TableCell>
+                      <TableCell align="left">
+                        {isEdit
+                          ? deliveryBoyDropdown(index, order)
+                          : deliveryBoy.find((i) => i.id === order.deliveryBoy)
+                              ?.name || "-"}
+                      </TableCell>
+                      <TableCell align="left">
+                        <Link
+                          to={`/order-details/${order.orderId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <OpenInNewIcon />
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+
+          {isEdit && (
+            <Grid item xs={12}>
+              <Button
+                style={{
+                  float: "right",
+                  margin: "10px 10px 0",
+                  background: "#1976d2",
+                  color: "white",
+                }}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+            </Grid>
+          )}
+        </TableContainer>
+      ) : (
+        <DataGrid
+          rows={orders}
+          columns={getOrdersGridColumns(
+            users,
+            isEdit,
+            statusDropdown,
+            deliveryBoy
+          )}
+          autoHeight={true}
+        ></DataGrid>
       )}
-    </TableContainer>
+    </Box>
   );
 }
 

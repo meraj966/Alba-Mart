@@ -16,7 +16,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { doc, setDoc } from "firebase/firestore";
@@ -56,6 +56,14 @@ export default function Register() {
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
+
+  // If already logged in send to dashboard -
+  const user = window.localStorage.getItem("token");
+  let location = useLocation();
+  console.log("is User logged in =>", user);
+  if (user) {
+    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();

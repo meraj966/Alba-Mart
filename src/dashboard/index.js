@@ -66,7 +66,7 @@ export default function Dashboard() {
     }, 60 * 3 * 1000);
     return () => clearInterval(interval);
   }, []);
-
+  console.log(orders, "ORDERSSSSSSSSSSSSSS")
   console.log(customers, orders, products);
   const modal = () => (
     <Modal
@@ -92,7 +92,7 @@ export default function Dashboard() {
       </>
     </Modal>
   );
-  if (!window.sessionStorage.getItem("token")) 
+  if (!window.localStorage.getItem("token")) 
       navigate("/")
   return (
     <>

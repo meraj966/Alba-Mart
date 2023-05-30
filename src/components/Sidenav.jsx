@@ -108,7 +108,7 @@ export default function Sidenav() {
   );
 
   const handleLogout = async () => {
-    window.sessionStorage.setItem("token", "")
+    window.localStorage.setItem("token", "")
       navigate("/")
   }
 

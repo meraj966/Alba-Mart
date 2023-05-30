@@ -16,10 +16,9 @@ import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase-config";
-
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -51,28 +50,38 @@ const center = {
 export default function Login() {
   const [error, setError] = useState(false);
   const [remember, setRemember] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
 
+  // If already logged in send to dashboard -
+  const user = window.localStorage.getItem("token");
+  let location = useLocation();
+  console.log("is User logged in =>", user);
+  if (user) {
+    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+  }
+
   const handleSubmit = async (event) => {
-    if(!email && !password) setError("Invalid email or password");
+    if (!email && !password) setError("Invalid email or password");
     event.preventDefault();
-    signInWithEmailAndPassword(auth, email, password).then(cred=>{
-      const user = cred.user;
-      // navigate("/dashboard")
-      console.log(user);
-      window.sessionStorage.setItem("token", user.accessToken)
-      window.sessionStorage.setItem("userId", user.uid)
-      window.sessionStorage.setItem("email", user.email)
-      navigate("/dashboard")
-    }).catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      setError(errorMessage)
-  });
+    signInWithEmailAndPassword(auth, email, password)
+      .then((cred) => {
+        const user = cred.user;
+        // navigate("/dashboard")
+        console.log(user);
+        window.localStorage.setItem("token", user.accessToken);
+        window.localStorage.setItem("userId", user.uid);
+        window.localStorage.setItem("email", user.email);
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setError(errorMessage);
+      });
   };
 
   const handleClose = (event, reason) => {
@@ -81,7 +90,7 @@ export default function Login() {
     }
     setError(false);
   };
- 
+
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
@@ -159,7 +168,7 @@ export default function Login() {
                             label="Username"
                             name="email"
                             autoComplete="email"
-                            onChange={e=>setEmail(e.target.value)}
+                            onChange={(e) => setEmail(e.target.value)}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -171,7 +180,7 @@ export default function Login() {
                             type="password"
                             id="password"
                             autoComplete="new-password"
-                            onChange={e=>setPassword(e.target.value)}
+                            onChange={(e) => setPassword(e.target.value)}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
