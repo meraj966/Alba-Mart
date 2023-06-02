@@ -7,9 +7,9 @@ import {
   CardContent,
   TextField,
   FormControlLabel,
-  Checkbox,
   Typography,
   Button,
+  Switch,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -22,69 +22,75 @@ import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { uploadImages } from "../../firebase_utils";
-function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
-  const [name, setName] = useState("");
-  const [phoneNumber, SetPhoneNumber] = useState("")
-  const [alternateNumber, SetAlternateNumber] = useState("")
+
+function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }) {
+  const [name, setName] = useState(isEditMode ? data.name : "");
+  const [phoneNumber, SetPhoneNumber] = useState(isEditMode ? data.phoneNumber : "");
+  const [alternateNumber, SetAlternateNumber] = useState(isEditMode ? data.alternateNumber : "");
   const [joinDate, setJoinDate] = useState(dayjs(new Date()));
-  const [address, setAddress] = useState("");
-  const [dlnumber, setDlNumber] = useState("");
+  const [address, setAddress] = useState(isEditMode ? data.address : "");
+  const [dlnumber, setDlNumber] = useState(isEditMode ? data.dlnumber : "");
   const [dlImage, setDlImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [percent, setPercent] = useState("");
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(isEditMode ? data.isActive : false);
+
   const formatDate = (obj) => {
     return `${obj.date()}/${obj.month()}/${obj.year()}`;
   };
+
   const saveBoy = async (urls) => {
-    console.log(joinDate,  dayjs(joinDate));
-    const offerRef = collection(db, "DeliveryBoy");
-    const docData = await addDoc(offerRef, {
-      name,
-      dlImage: urls[0],
-      profilePic: urls[1],
-      address: address,
-      dlnumber: dlnumber,
-      phoneNumber: phoneNumber,
-      alternateNumber: alternateNumber,
-      joinDate: formatDate(joinDate),
-      isActive: isActive
-    });
-    const id = docData.id;
-    Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
-    getDeliveryBoyData()
+    console.log(joinDate, dayjs(joinDate));
+    if (isEditMode) {
+      await updateDoc(doc(db, 'DeliveryBoy', data.id), {
+        name,
+        dlImage: urls[0],
+        profilePic: urls[1],
+        address: address,
+        dlnumber: dlnumber,
+        phoneNumber: phoneNumber,
+        alternateNumber: alternateNumber,
+        joinDate: formatDate(joinDate),
+        isActive: isActive,
+      }).then(() => {
+        Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
+      })
+    } else {
+      await addDoc(collection(db, 'DeliveryBoy'), {
+        name,
+        dlImage: urls[0],
+        profilePic: urls[1],
+        address: address,
+        dlnumber: dlnumber,
+        phoneNumber: phoneNumber,
+        alternateNumber: alternateNumber,
+        joinDate: formatDate(joinDate),
+        isActive: isActive,
+      }).then(() => {
+        Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
+      });
+    }
+    refreshDeliveryBoys();
     closeModal();
   };
+
   const submitNewDeliveryBoy = async () => {
     const res = await uploadImages([dlImage, profileImage]);
     await saveBoy(res);
   };
+
   const handleSubmit = () => {
     if (!name) Swal.fire("Validation Issue!", "Please add a Title", "error");
     else submitNewDeliveryBoy();
   };
 
-  const handleToggleChange = (event) => {
-    setIsActive(event.target.checked);
+  const handleToggleChange = () => {
+    setIsActive(!isActive);
   };
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
-      <CardHeader
-        title="Delivery Boy Form"
-        action={
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={isActive}
-                onChange={handleToggleChange}
-                name="isActive"
-              />
-            }
-            label="Active/Deactive"
-          />
-        }
-      />
+      <CardHeader title="Delivery Boy Form" />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={8}>
@@ -150,9 +156,9 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
               />
             </LocalizationProvider>
           </Grid>
-          
+
           <Grid item>
-          <h4>Upload DL Image</h4>
+            <h4>Upload DL Image</h4>
             <input
               type="file"
               style={{ marginTop: "10px" }}
@@ -166,7 +172,7 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
             </Grid>
           )}
           <Grid item>
-          <h4>Upload Profile Pic</h4>
+            <h4>Upload Profile Pic</h4>
             <input
               type="file"
               style={{ marginTop: "10px" }}
@@ -185,6 +191,21 @@ function AddNewDeliveryBoy({ closeModal, getDeliveryBoyData, data }) {
                 Submit
               </Button>
             </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" sx={{ ml: 1 }}>
+              Window Toggle:
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isActive}
+                  onChange={handleToggleChange}
+                  name="isActive"
+                />
+              }
+              label="Active/Deactive"
+            />
           </Grid>
         </Grid>
       </CardContent>

@@ -104,16 +104,16 @@ function ProductPopup({
         }
       />
       {/* <CardMedia component="img" height={"194"} image={url[0]} alt={name} /> */}
-      <CardMedia className="cardMedia" height={"194"} ><Carousel images={url}/> </CardMedia>
+      <CardMedia className="cardMedia" height={"194"} ><Carousel images={url} /> </CardMedia>
 
       <CardContent>
-        <Typography>{description}</Typography>
+        <Typography dangerouslySetInnerHTML={{ __html: description }}></Typography>
         <div style={{ display: "flex" }}>
           <Typography style={{ width: "70%" }}>
             {brandName} | {category} | {subCategory} | {quantity} {measureUnit}
           </Typography>
           <Tooltip
-            title={onSale && `Actual Price:  ${price} | Discount: ${discount}`}
+            title={onSale && `Actual Price: ${price} | Discount: ${discount}`}
           >
             <Typography style={{ textAlignLast: "right", width: "30%" }}>
               <>

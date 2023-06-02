@@ -8,21 +8,16 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useAppStore } from "../appStore";
 import { db } from "../firebase-config";
-import {
-    collection,
-    getDocs,
-} from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 
-function DeliverySlots() {
+function DeliveryBoys() {
     const [addNewDeliveryBoy, setAddNewDeliveryBoy] = useState(false);
     const [deliveryBoyModalData, setDeliveryBoyModalData] = useState(null)
+    const [openInEditMode, setOpenInEditMode] = useState(false);
     const handleOpen = () => setAddNewDeliveryBoy(true);
     const handleClose = () => setAddNewDeliveryBoy(false);
-    const [options, setOptions] = useState([]);
-    const rows = useAppStore((state) => state.rows);
-    const setRows = useAppStore((state) => state.setRows);
+    const [deliveryboyData, setDeliveryBoyData] = useState([]);
     const deliveryBoyCollectionRef = collection(db, "DeliveryBoy");
-
 
     useEffect(() => {
         getBoys();
@@ -30,43 +25,32 @@ function DeliverySlots() {
 
     const getBoys = async () => {
         const data = await getDocs(deliveryBoyCollectionRef);
-        const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
-        setOptions(uniqueValues);
-        setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        setDeliveryBoyData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+
     };
 
-    const filterData = (v) => {
-        if (v) {
-            const filteredRows = rows.filter(row => Object.values(row).includes(v));
-            setRows(filteredRows);
-        } else {
-            getBoys();
-        }
+    const handleDelete = async (id) => {
+        await deleteDoc(doc(deliveryBoyCollectionRef, id));
+        setDeliveryBoyData(deliveryboyData.filter((row) => row.id !== id));
     };
 
     const modal = () => (
         <Modal onClose={() => setAddNewDeliveryBoy(false)} open={addNewDeliveryBoy}>
-          <Box sx={{ width: '50%', margin: '0 auto', top: '50%' }}>
-            <AddNewDeliveryBoy closeModal={()=>setAddNewDeliveryBoy(false)} data={deliveryBoyModalData} />
-          </Box>
+            <Box sx={{ width: "50%", margin: "0 auto", top: "50%" }}>
+                <AddNewDeliveryBoy
+                    closeModal={() => setAddNewDeliveryBoy(false)}
+                    isEditMode={openInEditMode}
+                    data={deliveryBoyModalData}
+                    refreshDeliveryBoys={getBoys}
+                    handleClose={handleClose}
+                />
+            </Box>
         </Modal>
-      );
-
+    );
 
     const actionBar = () => (
         <>
             <Stack direction="row" spacing={2} className="my-2 mb-2">
-                <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
-                    options={options}
-                    sx={{ width: 300 }}
-                    onChange={(e, v) => filterData(v)}
-                    renderInput={(params) => (
-                        <TextField {...params} size="small" label="Search Boy" />
-                    )}
-                />
-                {/* must have some filters */}
                 <Typography
                     variant="h6"
                     component="div"
@@ -75,7 +59,10 @@ function DeliverySlots() {
                 <Button
                     variant="contained"
                     endIcon={<AddCircleIcon />}
-                    onClick={handleOpen}
+                    onClick={() => {
+                        handleOpen();
+                        setOpenInEditMode(false);
+                    }}
                 >
                     Add Delivery Boy
                 </Button>
@@ -84,12 +71,24 @@ function DeliverySlots() {
     );
     return (
         <>
-            <PageTemplate modal={modal()} actionBar={actionBar()} title={"Delivery Boys"}>
-                <DeliveryBoyList openModal={(row)=> {setDeliveryBoyModalData(row)
-                handleOpen()}}/>
+            <PageTemplate
+                modal={modal()}
+                actionBar={actionBar()}
+                title={"Delivery Boys List"}
+            >
+                <DeliveryBoyList
+                    openModal={(row) => {
+                        setOpenInEditMode(true);
+                        setDeliveryBoyModalData(row);
+                        handleOpen();
+                    }}
+                    deliveryboyData={deliveryboyData}
+                    handleDelete={handleDelete}
+                />
             </PageTemplate>
+
         </>
     );
 }
 
-export default DeliverySlots;
+export default DeliveryBoys;

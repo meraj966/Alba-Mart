@@ -9,8 +9,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  ToggleButton,
-  ToggleButtonGroup,
+  Switch,
   Card,
   Grid,
   Box,
@@ -45,7 +44,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (isEditMode) {
-      await updateDoc(doc(db, 'PromoCode', data.id), {
+      await updateDoc(doc(db, 'PromoCode', promoCode), { // Use promoCode as the document ID
         code: promoCode,
         message,
         numUsers,
@@ -107,8 +106,8 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
     setMinOrderAmount(parseInt(event.target.value));
   };
 
-  const handleDiscountStatusChange = (event, newValue) => {
-    setDiscountStatus(newValue);
+  const handleDiscountStatusChange = (event) => {
+    setDiscountStatus(event.target.checked);
   };
 
   const handleStartDateChange = (event) => {
@@ -206,15 +205,14 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
             />
           </Grid>
           <div>
-            <ToggleButtonGroup
-              value={discountStatus}
-              exclusive
+            <Typography variant="h6">Discount Status</Typography>
+            <Switch
+              checked={discountStatus}
               onChange={handleDiscountStatusChange}
-              sx={{ mb: 2 }}
-            >
-              <ToggleButton value={true}>Enabled</ToggleButton>
-              <ToggleButton value={false}>Dissabled</ToggleButton>
-            </ToggleButtonGroup>
+              color="primary"
+              name="discountStatus"
+              inputProps={{ "aria-label": "Discount Status" }}
+            />
           </div>
           <Grid item xs={12}>
             <Typography variant="h5" align="right">

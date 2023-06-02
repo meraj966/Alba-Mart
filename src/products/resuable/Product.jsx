@@ -142,13 +142,23 @@ function Product({
         )}
 
         <TableCell align="left">{name}</TableCell>
+        <TableCell align="left">{category}</TableCell>
+        <TableCell align="left">
+                  <img
+                    src={url[0]}
+                    height="70px"
+                    width="70px"
+                    style={{ borderRadius: "15px" }}
+                    loading="lazy"
+                  />
+                </TableCell>
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">{isOrderDetailView? amount: salePrice}</TableCell>
         <TableCell align="left">
           {isOrderDetailView ? rate :(onSale ? `${saleValue} ${saleType}` : "-")}
         </TableCell>
         {!isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
-        <TableCell align="left">{quantity}</TableCell>
+        <TableCell align="left">{`${quantity} ${measureUnit}`}</TableCell>
         {!isOrderDetailView && <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>}
         {isDetailView || isEditOffer ? null : (
           <TableCell align="left">
