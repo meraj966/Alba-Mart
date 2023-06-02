@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   Switch,
   TextField,
+  Box,
 } from "@mui/material";
 import {
   collection,
@@ -37,12 +38,14 @@ function EditOffer() {
   const [discount, setDiscount] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
   const formatDate = (obj) => {
     return !isNaN(obj?.date())
       ? `${obj.month() + 1}/${obj.date()}/${obj.year()}`
       : "";
   };
-  console.log(selectedProducts);
+
   useEffect(() => {
     getOfferData();
     getProductData();
@@ -56,7 +59,7 @@ function EditOffer() {
       setEndDate(dayjs(offerData.endDate));
     }
   }, [offerData]);
-  console.log(offerData);
+
   const getOfferData = async () => {
     const offerData = await getDoc(doc(db, "Offers", id));
     setOfferData(offerData.data());
@@ -65,7 +68,6 @@ function EditOffer() {
   const getProductData = async () => {
     const data = await getDocs(productsRef);
     let products = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    console.log(products, "productssssssssssss");
     products = products.filter((i) => ["", id].includes(i.saleTag));
     products.map((prod) => (prod.isSelected = prod.saleTag === id));
     setSelectedProducts(products);
@@ -117,16 +119,34 @@ function EditOffer() {
     getProductData();
   };
 
+  const filteredProducts = selectedProducts.filter((product) => {
+    const productName = product.name.toLowerCase();
+    const search = searchQuery.toLowerCase();
+    return productName.includes(search);
+  });
+
   return (
     <PageTemplate
       title={`Edit Offer | ${offerData?.title}`}
       subTitle={
         <Stack
-          direction={"row"}
-          sx={{ float: "right" }}
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
           spacing={1}
           className="my-4 mb-4"
         >
+          <TextField
+            type="text"
+            id="search"
+            name="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            label="Search by Product Name"
+            size="small"
+            sx={{ width: "250px" }}
+          />
+          <Box sx={{ width: "16px" }} /> {/* Add space between search bar and title */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Start Date"
@@ -158,40 +178,42 @@ function EditOffer() {
           />
           <FormGroup>
             <FormControlLabel
-              label={"Is offer Live"}
+              label="Is offer Live"
               control={
                 <Switch
                   checked={isOfferLive}
                   onChange={(e) => setIsOfferLive(e.target.checked)}
                 />
               }
-            ></FormControlLabel>
+            />
           </FormGroup>
         </Stack>
       }
     >
-      <Grid spacing={2}>
+      <Grid container spacing={2}>
         <Grid item xs={12}>
-          {selectedProducts.length ? (
+          {filteredProducts.length ? (
             <ProductsList
-              rows={selectedProducts}
+              rows={filteredProducts}
               isEditOffer={true}
               handleSelectedProducts={handleSelectedProducts}
               saleValue={discount}
             />
           ) : null}
         </Grid>
-        <Typography variant="h5" align="right">
-          <Button
-            sx={{ marginTop: "5px" }}
-            disabled={selectedProducts.length === 0}
-            onClick={save}
-            type="submit"
-            variant="contained"
-          >
-            Save
-          </Button>
-        </Typography>
+        <Grid item xs={12}>
+          <Typography variant="h5" align="right">
+            <Button
+              sx={{ marginTop: "5px" }}
+              disabled={selectedProducts.length === 0}
+              onClick={save}
+              type="submit"
+              variant="contained"
+            >
+              Save
+            </Button>
+          </Typography>
+        </Grid>
       </Grid>
     </PageTemplate>
   );

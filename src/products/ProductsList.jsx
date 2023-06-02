@@ -51,6 +51,8 @@ export default function ProductsList({
                     </TableCell>
                   )}
                   <TableCell align="left">Name</TableCell>
+                  <TableCell align="left">Category</TableCell>
+                  <TableCell align="left">Prod Img</TableCell>
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Discount</TableCell>

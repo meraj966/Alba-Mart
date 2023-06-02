@@ -18,6 +18,7 @@ import { uuidv4 } from "@firebase/util";
 import { uploadImages } from "../../firebase_utils";
 import { getDiscountedPrice } from "../../utils";
 import SelectInput from "../../components/reusable/SelectInput";
+import ReactQuill from "react-quill";
 
 function AddProductRow({
   saveDone,
@@ -52,6 +53,10 @@ function AddProductRow({
   const [category, setCategory] = useState("");
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+
+  const handleDescriptionChange = (value) => {
+    setDescription(value);
+  };
 
   const saveRowData = async (url) => {
     const menuRef = collection(db, "Menu");
@@ -194,19 +199,6 @@ function AddProductRow({
           value={name}
           onChange={(e) => setName(e.target.value)}
           label="Name"
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={3.2}>
-        <TextField
-          error={false}
-          multiline
-          id="description"
-          name="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          label="Description"
           size="small"
           sx={{ minWidth: "100%" }}
         />
@@ -357,6 +349,9 @@ function AddProductRow({
           name="file"
           style={{ marginTop: "10px" }}
         />
+      </Grid>
+      <Grid item xs={12}>
+        <ReactQuill value={description} onChange={handleDescriptionChange} />
       </Grid>
     </Grid>
   );

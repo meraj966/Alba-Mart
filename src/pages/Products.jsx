@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import ProductsList from "../products/ProductsList";
 import "../Dash.css";
-import { useEffect } from "react";
 import Swal from "sweetalert2";
 import { useAppStore } from "../appStore";
 import PageTemplate from "./reusable/PageTemplate";
@@ -24,7 +23,7 @@ import ProductsGrid from "../products";
 import ProductPopup from "../products/resuable/ProductPopup";
 
 export default function Products() {
-  const [options, setOptions] = useState([]);
+  const [categories, setCategories] = useState([]);
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
   const menuRef = collection(db, "Menu");
@@ -34,15 +33,19 @@ export default function Products() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
   const [modalType, setModalType] = useState("");
+
   const handleBulkOpen = () => {
     setBulkOpen(true);
     setModalType("EDIT_OPEN");
   };
+
   const handleBulkClose = () => setBulkOpen(false);
+
   const handleEditOpen = () => {
     setEditOpen(true);
     setModalType("EDIT_OPEN");
   };
+
   const handleEditClose = () => {
     setEditOpen(false);
     setModalType("");
@@ -54,21 +57,22 @@ export default function Products() {
 
   const getMenuData = async () => {
     const data = await getDocs(menuRef);
-    const uniqueValues = [
-      ...new Set(data.docs.flatMap((doc) => Object.values(doc.data()))),
+    const uniqueCategories = [
+      ...new Set(data.docs.flatMap((doc) => doc.data().category)),
     ];
-    setOptions(uniqueValues);
+    setCategories(uniqueCategories);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
   const filterData = (v) => {
     if (v) {
-      const filteredRows = rows.filter((row) => Object.values(row).includes(v));
+      const filteredRows = rows.filter((row) => row.category === v);
       setRows(filteredRows);
     } else {
       getMenuData();
     }
   };
+
   const modalTypeEditOpen = () => (
     <div>
       <Modal open={bulkOpen} sx={{ margin: "auto" }}>
@@ -94,6 +98,7 @@ export default function Products() {
       </Modal>
     </div>
   );
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -103,6 +108,7 @@ export default function Products() {
     boxShadow: 24,
     borderRadius: "20px",
   };
+
   const handleClosePreviewModal = () => {
     setModalType("");
     setOpenProductPreview(false);
@@ -142,7 +148,7 @@ export default function Products() {
       const offerDocRef = doc(db, "Offers", productData.saleTag);
       let offerData = (await getDoc(offerDocRef)).data();
       let newProducts = [...offerData.products];
-      newProducts = newProducts.filter((i) => i != productData.saleTag);
+      newProducts = newProducts.filter((i) => i !== productData.saleTag);
       await updateDoc(offerDocRef, { products: newProducts });
     }
     await deleteDoc(userDoc);
@@ -180,11 +186,11 @@ export default function Products() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={options}
+              options={categories}
               sx={{ width: 300 }}
               onChange={(e, v) => filterData(v)}
               renderInput={(params) => (
-                <TextField {...params} size="small" label="Search Products" />
+                <TextField {...params} size="small" label="Select Category" />
               )}
             />
             <Typography
@@ -205,7 +211,7 @@ export default function Products() {
         <ProductsGrid
           data={rows}
           openProductPreview={(row) => {
-            console.log("prodcut preview", row);
+            console.log("product preview", row);
             setOpenProductPreview(true);
             setModalType("PRODUCT_PREVIEW");
             setRow(row);
@@ -215,13 +221,6 @@ export default function Products() {
           selectedProd={row}
           deleteProduct={deleteProduct}
         />
-        {/*         
-        <ProductsList
-          rows={rows}
-          setFormid={setFormid}
-          handleEditOpen={handleEditOpen}
-          getMenuData={getMenuData}
-        /> */}
       </PageTemplate>
     </>
   );

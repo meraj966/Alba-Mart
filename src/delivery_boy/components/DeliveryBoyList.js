@@ -17,34 +17,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function DeliveryBoyList({ openModal }) {
-  const [deliveryboyData, setDeliveryBoyData] = useState([]);
-  const ref = collection(db, "DeliveryBoy");
-
-  useEffect(() => {
-    getDeliveryBoyData();
-    listenForChanges();
-  }, []);
-
-  const getDeliveryBoyData = async () => {
-    const data = await getDocs(ref);
-    setDeliveryBoyData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  };
-
-  const listenForChanges = () => {
-    onSnapshot(ref, (querySnapshot) => {
-      const updatedData = [];
-      querySnapshot.forEach((doc) => {
-        updatedData.push({ ...doc.data(), id: doc.id });
-      });
-      setDeliveryBoyData(updatedData);
-    });
-  };
-
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(ref, id));
-    setDeliveryBoyData(deliveryboyData.filter((row) => row.id !== id));
-  };
+function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
+  
 
   return (
     <>

@@ -1,0 +1,33 @@
+@media print {
+    /* hide the side navigation */
+    .MuiDrawer-root {
+      display: none;
+    }
+
+    /* hide order details while print recipt */
+    .order-details-heading {
+        display: none;
+    }
+
+    /* set the size of the page to thermal size */
+  @page {
+    size: 100mm 297mm; /* width height */
+  }
+
+  /* adjust the margins */
+  body {
+    margin: 0;
+  }
+
+  /* adjust the font size */
+  * {
+    font-size: 12px;
+  }
+
+  /* hide unwanted elements */
+  .no-print {
+    display: none;
+  }
+
+  }
+  

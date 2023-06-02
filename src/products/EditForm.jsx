@@ -17,6 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { getDiscountedPrice } from "../utils";
 import SelectInput from "../components/reusable/SelectInput";
+import ReactQuill from "react-quill";
 
 // import uuid from 'uuid/package.json';
 const { v4: uuidv4 } = require("uuid");
@@ -107,9 +108,9 @@ export default function EditForm({ fid, closeEvent }) {
       price: Number(price),
       subCategory,
       category,
-      stockValue:parseInt(stockValue),
+      stockValue: parseInt(stockValue),
       showProduct,
-      saleValue:parseInt(saleValue),
+      saleValue: parseInt(saleValue),
       onSale,
       saleType,
       quantity,
@@ -131,11 +132,11 @@ export default function EditForm({ fid, closeEvent }) {
       price: Number(price),
       subCategory: subCategory,
       category: category,
-      stockValue:parseInt(stockValue),
+      stockValue: parseInt(stockValue),
       quantity,
       file: url,
       showProduct,
-      saleValue:parseInt(saleValue),
+      saleValue: parseInt(saleValue),
       onSale,
       saleType,
       brandName,
@@ -189,9 +190,10 @@ export default function EditForm({ fid, closeEvent }) {
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
+  const handleDescriptionChange = (value) => {
+    setDescription(value);
   };
+
   const handlePriceChange = (event) => {
     setPrice(event.target.value);
   };
@@ -253,18 +255,6 @@ export default function EditForm({ fid, closeEvent }) {
             value={name}
             onChange={handleNameChange}
             label="Name"
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            error={false}
-            id="description"
-            name="description"
-            value={description}
-            onChange={handleDescriptionChange}
-            label="Description"
             size="small"
             sx={{ minWidth: "100%" }}
           />
@@ -406,15 +396,15 @@ export default function EditForm({ fid, closeEvent }) {
             sx={{ minWidth: "100%" }}
           />
         </Grid>
-        <Grid item xs= {3}>
-          <SelectInput 
-          id="brandName"
-          label={'Brand Name'}
-          size={'small'}
-          sx={{minWidth: '100%'}}
-          data={brandNameList}
-          value={brandName}
-          onChange={e=>setBrandName(e.target.value)}
+        <Grid item xs={3}>
+          <SelectInput
+            id="brandName"
+            label={'Brand Name'}
+            size={'small'}
+            sx={{ minWidth: '100%' }}
+            data={brandNameList}
+            value={brandName}
+            onChange={e => setBrandName(e.target.value)}
           />
         </Grid>
         <Grid item xs={3}>
@@ -433,6 +423,9 @@ export default function EditForm({ fid, closeEvent }) {
         <Grid item xs={12}>
           <input type="file" onChange={handlePicChange} accept="/image/*" />
           <p>{percent}% completed</p>
+        </Grid>
+        <Grid item xs={12}>
+          <ReactQuill value={description} onChange={handleDescriptionChange} />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" align="center">

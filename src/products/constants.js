@@ -22,6 +22,20 @@ export const getProductDataGridColumns = (
     },
 
     {
+      field: "category",
+      headerName: "Category",
+      minWidth: 200,
+      flex: 1,
+    },
+
+    {
+      field: "url",
+      headerName: "Prod Img",
+      minWidth: 200,
+      flex: 1,
+    },
+
+    {
       field: "price",
       headerName: "MRP",
       minWidth: 100,
@@ -54,6 +68,7 @@ export const getProductDataGridColumns = (
       headerName: "Quantity",
       minWidth: 100,
       flex: 1,
+      valueGetter: ({ row }) => `${row.quantity} ${row.measureUnit}`
     },
     {
       field: "isProductLive",
