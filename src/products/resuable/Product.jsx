@@ -145,7 +145,7 @@ function Product({
         <TableCell align="left">{category}</TableCell>
         <TableCell align="left">
                   <img
-                    src={url[0]}
+                    src={url && url[0]}
                     height="70px"
                     width="70px"
                     style={{ borderRadius: "15px" }}
