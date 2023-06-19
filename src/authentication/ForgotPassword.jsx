@@ -17,6 +17,7 @@ import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 import { useNavigate } from "react-router-dom";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -46,23 +47,43 @@ const center = {
 };
 
 export default function ForgotPassword() {
-  const [open, setOpen] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [alert, setAlert] = useState("");
+  const [email, setEmail] = useState("");
+  const [type, setType] = useState("error")
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
 
+  const auth = getAuth();
+
+  const triggerResetEmail = async () => {
+    await sendPasswordResetEmail(auth, email)
+      .then((i) => {
+        console.log("Password reset email sent");
+        setAlert("Password Reset Email Sent!!");
+        setType("info")
+        
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setAlert(errorMessage);
+      });
+  };
+
   const handleSubmit = async (event) => {
-    setOpen(true);
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    console.log(email);
+    if (email.includes(".") && email.includes("@")) {
+      triggerResetEmail();
+      navigate("/")
+    } else setAlert("Failed! Enter valid Email Id");
   };
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setOpen(false);
   };
 
   function TransitionLeft(props) {
@@ -72,14 +93,14 @@ export default function ForgotPassword() {
   return (
     <>
       <Snackbar
-        open={open}
+        open={Boolean(alert)}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
         anchorOrigin={{ vertical, horizontal }}
       >
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-          Failed! Enter correct username and password.
+        <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
+          {alert}
         </Alert>
       </Snackbar>
       <div
@@ -142,6 +163,7 @@ export default function ForgotPassword() {
                             label="Email"
                             name="email"
                             autoComplete="email"
+                            onChange={(e) => setEmail(e.target.value)}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
@@ -176,7 +198,8 @@ export default function ForgotPassword() {
                                   navigate("/");
                                 }}
                               >
-                                {" "}Sign In
+                                {" "}
+                                Sign In
                               </span>
                             </Typography>
                           </Stack>
