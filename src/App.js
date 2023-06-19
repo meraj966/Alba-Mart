@@ -77,7 +77,7 @@ export default function App() {
             exact
             element={protectedElement(<OrderDetails />)}
           ></Route>
-          <Route path="/edit-offer/:id" exact element={protectedElement(<EditOffer />)}></Route>
+          <Route path="/edit-offer/:id" exact element={protectedElement(<EditOffer isOrderDetailView={true}/>)}></Route>
         </Routes>
       </BrowserRouter>
     </>
