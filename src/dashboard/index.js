@@ -12,12 +12,15 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageTemplate from "../pages/reusable/PageTemplate";
+import { sum } from "lodash";
 
 export default function Dashboard() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState("");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [todayOrder, setTodayOrder] = useState([]);
+  const [pendingOrder, setPendingOrder] = useState([]);
   const [unavailableProd, setUnavailableProd] = useState("");
   const [lowStockProd, setLowStockProd] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -49,10 +52,19 @@ export default function Dashboard() {
   };
 
   const getOrders = async () => {
-    const data = await getDocs(collection(db, "Orders"));
-    setOrders(data.docs.map((doc) => ({ ...doc.data() })));
+    const data = await getDocs(collection(db, "Order"));
+    const orderData = data.docs.map((doc) => ({ ...doc.data() }));
+    setTodayOrder(
+      orderData?.filter(
+        (i) => new Date(i.date).toDateString() === new Date().toDateString()
+      )
+    );
+    setPendingOrder(
+      orderData.filter((i) => ["placed"].includes(i.orderStatus))
+    );
+    setOrders(orderData);
   };
-
+  console.log(todayOrder, "todayOrder", orders);
   const refreshPage = () => {
     getCustomers();
     getProducts();
@@ -66,8 +78,7 @@ export default function Dashboard() {
     }, 60 * 3 * 1000);
     return () => clearInterval(interval);
   }, []);
-  console.log(orders, "ORDERSSSSSSSSSSSSSS")
-  console.log(customers, orders, products);
+
   const modal = () => (
     <Modal
       open={open}
@@ -92,8 +103,7 @@ export default function Dashboard() {
       </>
     </Modal>
   );
-  if (!window.localStorage.getItem("token")) 
-      navigate("/")
+  if (!window.localStorage.getItem("token")) navigate("/");
   return (
     <>
       <PageTemplate modal={modal()} title="Dashboard">
@@ -120,53 +130,48 @@ export default function Dashboard() {
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm Today's earnings.");
-              }}
-            >
-              <DashboardCard header="Today earn" value={`Rs. ${1000}`} />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard header="Today earn" value={`Rs. ${1000}`} />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm Today's order.");
-              }}
-            >
-              <DashboardCard header="Today order" value="0" />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard header="Today order" value={todayOrder.length} />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm pending order.");
-              }}
-            >
-              <DashboardCard header="Pending order" value="2" />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard
+                  header="Pending order"
+                  value={pendingOrder.length}
+                />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm today declined.");
-              }}
-            >
-              <DashboardCard header="Today Declined" value="4" />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard
+                  header="Today Declined"
+                  value={
+                    orders.filter((i) => ["Cancelled"].includes(i.orderStatus))
+                      .length
+                  }
+                />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm today's sale.");
-              }}
-            >
-              <DashboardCard header="Today Sale" value="35" />
+            <Link underline="none">
+              <DashboardCard
+                header="Today Sale"
+                value={sum(todayOrder.map((i) => i.totalRate))}
+              />
             </Link>
           </Grid>
           <Grid item xs={6}>

@@ -24,7 +24,7 @@ function OrderDetails() {
     // let products = Object.keys(order.products);
     // console.log(products)
     let total = 0
-    let products = Object.keys(order.products).map((i) => {
+    let products = Object.keys(order.products)?.map((i) => {
       let product = order.products[i]
       total = (total + Number(product.amount))
       return {
