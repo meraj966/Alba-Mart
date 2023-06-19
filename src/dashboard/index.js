@@ -8,23 +8,68 @@ import Modal from "@mui/material/Modal";
 import ProductsAvailability from "./reusable/ProductsAvailability";
 import { useState } from "react";
 import { PRODUCTS_UNAVAILABLE, PRODUCTS_LOW_STOCK } from "../Constants";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import { sum } from "lodash";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState("");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [orderLength, setOrderLength] = useState(0);
+  const [info, setInfo] = useState("");
   const [todayOrder, setTodayOrder] = useState([]);
   const [pendingOrder, setPendingOrder] = useState([]);
   const [unavailableProd, setUnavailableProd] = useState("");
   const [lowStockProd, setLowStockProd] = useState("");
   const [open, setOpen] = React.useState(false);
   const [modalType, setModalType] = useState("");
+
+  const offersPastDue = (offers) =>
+    offers.filter(
+      (i) =>
+        !(
+          new Date().getMonth() + 1 <= new Date(i.endDate).getMonth() + 1 &&
+          new Date().getDate() <= new Date(i.endDate).getDate() &&
+          new Date().getFullYear() <= new Date(i.endDate).getFullYear()
+        )
+    );
+
+  const removePastDueSaleData = async () => {
+    let isUpdated = 0;
+    const offersRef = collection(db, "Offers");
+    let data = await getDocs(offersRef);
+    const offerData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    const offersPastDueDate = offersPastDue(offerData);
+    if (offersPastDueDate?.length) {
+      offersPastDueDate.forEach(async (i) => {
+        const id = i.id; // sale tags that are past due
+        products.forEach(async (data) => {
+          if (data.saleTag === id) {
+            await updateDoc(doc(db, "Menu", data.id), { saleTag: "" });
+            isUpdated++;
+          }
+        });
+        // Uncomment below line if you also want to flush the products added in offer once due date is passed
+        // await updateDoc(doc(db, "Offers", id), { products: [] })
+      });
+    }
+    if (isUpdated) refreshPage();
+  };
+
+  useEffect(() => {
+    // Remove all products sale values where sale date is past due
+    removePastDueSaleData();
+  }, [products]);
+
   const handleClose = () => setOpen(false);
   const handleProductUnavailable = () => {
     setModalType(PRODUCTS_UNAVAILABLE);
@@ -64,7 +109,7 @@ export default function Dashboard() {
     );
     setOrders(orderData);
   };
-  console.log(todayOrder, "todayOrder", orders);
+
   const refreshPage = () => {
     getCustomers();
     getProducts();
@@ -72,10 +117,13 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    refreshPage();
+    refreshPage()
     const interval = setInterval(() => {
       refreshPage();
-    }, 60 * 3 * 1000);
+      if (orders.length != orderLength) {
+        setTimeout(() => setInfo("Update in Orders"), 3000);
+      }
+    }, 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -107,7 +155,8 @@ export default function Dashboard() {
   return (
     <>
       <PageTemplate modal={modal()} title="Dashboard">
-        <Grid container spacing={2}>
+        {info && <Alert severity="info">{info}</Alert>}
+        <Grid container spacing={2} style={{ marginTop: "5px" }}>
           <Grid item xs={3}>
             <Link underline="none">
               <RouterLink to={"/Users"} style={{ textDecoration: "none" }}>
