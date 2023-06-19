@@ -53,7 +53,7 @@ function OfferDetailView(props) {
   return (
     <PageTemplate title="Offer Details" subTitle={subTitle()}>
       {rows.length ? (
-        <ProductsList rows={rows} isDetailView={true} />
+        <ProductsList rows={rows} isDetailView={true} isOrderDetailView={props.isOrderDetailView} />
       ) : (
         "No Products Added to this offer"
       )}

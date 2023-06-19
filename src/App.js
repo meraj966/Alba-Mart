@@ -70,7 +70,7 @@ export default function App() {
           <Route
             path="/offer-details/:id"
             exact
-            element={protectedElement(<OfferDetailView />)}
+            element={protectedElement(<OfferDetailView isOrderDetailView={true}/>)}
           ></Route>
           <Route
             path="/order-details/:id"

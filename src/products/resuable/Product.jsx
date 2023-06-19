@@ -172,9 +172,9 @@ function Product({
             ? `${saleValue} ${saleType}`
             : "-"}
         </TableCell>
-        {!isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
+        {isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
         <TableCell align="left">{`${quantity} ${measureUnit}`}</TableCell>
-        {!isOrderDetailView && (
+        {isOrderDetailView && (
           <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
         )}
         {isDetailView || isEditOffer ? null : (
