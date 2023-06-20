@@ -12,7 +12,7 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, setDoc, updateDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -21,59 +21,64 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
 function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose }) {
-  console.log("data", data)
+  console.log("data", data);
+
+  const extractTimeFromSlot1 = (slot1Time) => {
+    const parts = slot1Time.split(" ");
+    return parts[0];
+  };
+
+  const extractTimeToSlot1 = (slot1Time) => {
+    const parts = slot1Time.split(" ");
+    return parts[3];
+  };
+
+  const extractAmPmFromSlot1 = (slot1Time) => {
+    const parts = slot1Time.split(" ");
+    return parts[1];
+  };
+
+  const extractAmPmToSlot1 = (slot1Time) => {
+    const parts = slot1Time.split(" ");
+    return parts[4];
+  };
+
   const [day, setDay] = useState(isEditMode ? data.day : "");
-  const [timeFrom, setTimeFrom] = useState(isEditMode ? data.timeFrom : "");
-  const [timeTo, setTimeTo] = useState(isEditMode ? data.timeTo : "");
-  const [numDeliveries, setNumDeliveries] = useState(isEditMode ? data.numDeliveries : "");
-  const [deliveryDate, setDeliveryDate] = useState(isEditMode ? data.deliveryDate : "dd-mm-yyyy");
-  const [amPmFrom, setAmPmFrom] = useState(isEditMode ? data.amPmFrom : "am");
-  const [amPmTo, setAmPmTo] = useState(isEditMode ? data.amPmTo : "am");
+  const [timeFromSlot1, setTimeFromSlot1] = useState(isEditMode ? extractTimeFromSlot1(data.slot1Time) : "");
+  const [timeToSlot1, setTimeToSlot1] = useState(isEditMode ? extractTimeToSlot1(data.slot1Time) : "");
+  const [numDeliveriesSlot1, setNumDeliveriesSlot1] = useState(isEditMode ? data.slot1 : "");
+  const [amPmFromSlot1, setAmPmFromSlot1] = useState(isEditMode ? extractAmPmFromSlot1(data.slot1Time) : "am");
+  const [amPmToSlot1, setAmPmToSlot1] = useState(isEditMode ? extractAmPmToSlot1(data.slot1Time) : "am");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (isEditMode) {
-      await updateDoc(doc(db, 'DeliverySlot', data.id), {
+      await updateDoc(doc(db, "DeliverySlot", data.id), {
         day,
-        timeFrom: timeFrom + " " + amPmFrom,
-        timeTo: timeTo + " " + amPmTo,
-        numDeliveries,
-        deliveryDate,
+        slot1: numDeliveriesSlot1,
+        slot1Time: timeFromSlot1 + " " + amPmFromSlot1 + " " + "to" + " " + timeToSlot1 + " " + amPmToSlot1,
       }).then(() => {
-        Swal.fire('Succesfull!', 'Delivery Slot added', 'success')
-      })
+        Swal.fire("Succesfull!", "Delivery Slot added", "success");
+      });
     } else {
-      await addDoc(collection(db, "DeliverySlot"), {
+      await setDoc(doc(collection(db, "DeliverySlot"), day), {
         day,
-        timeFrom: timeFrom + " " + amPmFrom,
-        timeTo: timeTo + " " + amPmTo,
-        numDeliveries,
-        deliveryDate,
+        slot1: numDeliveriesSlot1,
+        slot1Time: timeFromSlot1 + " " + amPmFromSlot1 + " " + "to" + " " + timeToSlot1 + " " + amPmToSlot1,
       }).then(() => {
-        Swal.fire('Succesfull!', 'Delivery Slot added', 'success')
+        Swal.fire("Succesfull!", "Delivery Slot added", "success");
       });
     }
-    refreshDeliverySlot()
-    handleClose()
-  }
+    refreshDeliverySlot();
+    handleClose();
+  };
 
   return (
-    <Card sx={{ marginTop: "25px", border: "1px solid" }}>
+    <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "80vh", overflow: "auto" }}>
       <CardHeader title="Add Delivery Slot" />
       <CardContent>
         <form onSubmit={handleSubmit}>
-        <Grid item xs={4}>
-            <TextField
-              label="Date Of Delivery"
-              type="date"
-              value={deliveryDate}
-              onChange={(event) => setDeliveryDate(event.target.value)}
-              sx={{ mb: 2, display: "block" }}
-            />
-          </Grid>
-          <br>
-          </br>
           <FormControl sx={{ minWidth: 120 }}>
             <InputLabel id="day-label">Day</InputLabel>
             <Select
@@ -93,14 +98,13 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
               <MenuItem value="Sunday">Sunday</MenuItem>
             </Select>
           </FormControl>
-          <br />
-          <br />
+          <h3>Slot 1</h3>
           <TextField
-            id="timeFrom"
+            id="timeFromSlot1"
             label="Time From"
             type="time"
-            value={timeFrom}
-            onChange={(event) => setTimeFrom(event.target.value)}
+            value={timeFromSlot1}
+            onChange={(event) => setTimeFromSlot1(event.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
@@ -111,10 +115,10 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
           <Select
             labelId="am-pm-from-label"
             id="am-pm-from"
-            value={amPmFrom}
+            value={amPmFromSlot1}
             label="AM/PM"
             sx={{ mb: 2 }}
-            onChange={(event) => setAmPmFrom(event.target.value)}
+            onChange={(event) => setAmPmFromSlot1(event.target.value)}
           >
             <MenuItem value="am">AM</MenuItem>
             <MenuItem value="pm">PM</MenuItem>
@@ -122,11 +126,11 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
           <br />
           <br />
           <TextField
-            id="timeTo"
+            id="timeToSlot1"
             label="Time To"
             type="time"
-            value={timeTo}
-            onChange={(event) => setTimeTo(event.target.value)}
+            value={timeToSlot1}
+            onChange={(event) => setTimeToSlot1(event.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
@@ -137,10 +141,10 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
           <Select
             labelId="am-pm-from-label"
             id="am-pm-from"
-            value={amPmTo}
+            value={amPmToSlot1}
             label="AM/PM"
             sx={{ mb: 2 }}
-            onChange={(event) => setAmPmTo(event.target.value)}
+            onChange={(event) => setAmPmToSlot1(event.target.value)}
           >
             <MenuItem value="am">AM</MenuItem>
             <MenuItem value="pm">PM</MenuItem>
@@ -148,11 +152,11 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
           <br />
           <br />
           <TextField
-            id="numDeliveries"
+            id="numDeliveriesSlot1"
             label="Number of Deliveries"
             type="number"
-            value={numDeliveries}
-            onChange={(event) => setNumDeliveries(event.target.value)}
+            value={numDeliveriesSlot1}
+            onChange={(event) => setNumDeliveriesSlot1(event.target.value)}
             InputLabelProps={{
               shrink: true,
             }}

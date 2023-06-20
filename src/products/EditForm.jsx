@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Switch } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -233,7 +233,7 @@ export default function EditForm({ fid, closeEvent }) {
         <CloseIcon />
       </IconButton>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <FormControlLabel
             control={
               <Checkbox
@@ -246,7 +246,7 @@ export default function EditForm({ fid, closeEvent }) {
             sx={{ minWidth: "100%" }}
             label="Show Product"
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={6}>
           <TextField
             error={false}
@@ -427,6 +427,20 @@ export default function EditForm({ fid, closeEvent }) {
         <Grid item xs={12}>
           <ReactQuill value={description} onChange={handleDescriptionChange} />
         </Grid>
+        <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showProduct}
+                  onChange={handleChangeShowProduct}
+                  name="showProduct"
+                />
+              }
+              name="showProduct"
+              sx={{ minWidth: "100%" }}
+              label="Show Product"
+            />
+          </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" align="center">
             <Button variant="contained" onClick={handleUpload}>

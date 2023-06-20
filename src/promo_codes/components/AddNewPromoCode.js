@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, updateDoc,setDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -59,7 +59,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         Swal.fire('Succesfull!', 'Promo code added', 'success')
       })
     } else {
-      await addDoc(collection(db, "PromoCode"), {
+      await setDoc(doc(collection(db, "PromoCode"), promoCode), {
         code: promoCode,
         message,
         numUsers,

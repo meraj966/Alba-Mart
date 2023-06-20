@@ -10,6 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import { Skeleton } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import { useState } from "react";
+import "../orders/OrderDetails.css";
 
 export default function ProductsList({
   rows,
@@ -31,12 +32,14 @@ export default function ProductsList({
     });
     handleSelectedProducts([...products]);
   };
+
   const handleSelectAll = (e) => {
-    let products = [...rows]
-    products.map(prod=> prod['isSelected'] = e.target.checked)
-    handleSelectedProducts([...products])
-    setSelectAll(e.target.checked)
-  }
+    let products = [...rows];
+    products.map((prod) => (prod["isSelected"] = e.target.checked));
+    handleSelectedProducts([...products]);
+    setSelectAll(e.target.checked);
+  };
+
   return (
     <>
       {rows.length > 0 && (
@@ -47,15 +50,27 @@ export default function ProductsList({
                 <TableRow>
                   {isEditOffer && (
                     <TableCell align="left">
-                      <Checkbox checked={selectAll} onChange={handleSelectAll}></Checkbox>
+                      <Checkbox
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                      ></Checkbox>
                     </TableCell>
                   )}
                   <TableCell align="left">Name</TableCell>
-                  <TableCell align="left">Category</TableCell>
-                  <TableCell align="left">Prod Img</TableCell>
+                  <TableCell align="left">
+                    <span className="hide-on-print">Prod Img</span>
+                  </TableCell>
+
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Discount</TableCell>
+                  {!isOrderDetailView && (
+                    <TableCell align="left">Stock Value</TableCell>
+                  )}
+                  <TableCell align="left">Quantity</TableCell>
+                  {!isOrderDetailView && (
+                    <TableCell align="left">Is Product Live</TableCell>
+                  )}
                   {isOrderDetailView && <TableCell align="left">Stock Value</TableCell>}
                   <TableCell align="left">Quantity</TableCell>
                   {isOrderDetailView && <TableCell align="left">Is Product Live</TableCell>}
@@ -79,7 +94,7 @@ export default function ProductsList({
                         productSelected={(checked) =>
                           productSelected(row.id, checked)
                         }
-                        isOrderDetailView
+                        isOrderDetailView={isOrderDetailView}
                       />
                     );
                   })}
@@ -89,7 +104,7 @@ export default function ProductsList({
         </>
       )}
 
-      {rows.length == 0 && (
+      {rows.length === 0 && (
         <>
           <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
             <Box height={20} />

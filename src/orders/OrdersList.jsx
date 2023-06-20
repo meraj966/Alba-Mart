@@ -104,6 +104,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                 <TableCell align="left">Cust Name</TableCell>
                 <TableCell align="left">Cust Contact</TableCell>
                 <TableCell align="left">Total Amount</TableCell>
+                <TableCell align="left">Order Date</TableCell>
                 <TableCell align="left">Payment Mode</TableCell>
                 <TableCell align="left">Status</TableCell>
                 <TableCell align="left">
@@ -124,9 +125,11 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                       <TableCell align="left">
                         {sum(map(Object.values(order.products), "amount"))}
                       </TableCell>
-
                       <TableCell align="left">
-                        {order.paymentMode || "-"}
+                        {user && user.date ? user.date.split(" ")[0] : ""}
+                      </TableCell>
+                      <TableCell align="left">
+                        {order.paymentType || "-"}
                       </TableCell>
                       <TableCell align="left">
                         {isEdit
@@ -137,7 +140,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                         {isEdit
                           ? deliveryBoyDropdown(index, order)
                           : deliveryBoy.find((i) => i.id === order.deliveryBoy)
-                              ?.name || "-"}
+                            ?.name || "-"}
                       </TableCell>
                       <TableCell align="left">
                         <Link

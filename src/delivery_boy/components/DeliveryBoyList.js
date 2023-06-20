@@ -39,13 +39,19 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 Date Of Join
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                DL Image
+                DL Image(Front)
+              </TableCell>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
+                DL Image(Back)
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
                 Profile Pic
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
                 Action
+              </TableCell>
+              <TableCell align="left" style={{ width: "100px" }}>
+                View Details
               </TableCell>
             </TableRow>
           </TableHead>
@@ -58,7 +64,16 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 <TableCell align="left">{String(row.joinDate)}</TableCell>
                 <TableCell align="left">
                   <img
-                    src={row.dlImage}
+                    src={row.dlImageFront}
+                    height="70px"
+                    width="70px"
+                    style={{ borderRadius: "15px" }}
+                    loading="lazy"
+                  />
+                </TableCell>
+                <TableCell align="left">
+                  <img
+                    src={row.dlImageBack}
                     height="70px"
                     width="70px"
                     style={{ borderRadius: "15px" }}
@@ -94,6 +109,15 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                       onClick={() => handleDelete(row.id)}
                     />
                   </Stack>
+                </TableCell>
+                <TableCell align="center">
+                  <Link
+                    to={`/deliveryboy-details/${row.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <OpenInNewIcon color="primary" />
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

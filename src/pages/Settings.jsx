@@ -19,7 +19,7 @@ import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
-import { BRAND_NAME, CATEGORY, DELIVERY_CHARGE_CRITERIA, SUBCATEGORY } from "../Constants";
+import { BRAND_NAME, CATEGORY, SUBCATEGORY } from "../Constants";
 import Swal from "sweetalert2";
 import CategoryEditForm from "../products/settings_forms/CategoryEditForm";
 import Tooltip from "@mui/material/Tooltip";
@@ -40,8 +40,6 @@ export default function Settings() {
   const [brandName, setBrandName] = useState("");
   const [defaultBrandName, setDefaultBrandName] = useState("");
   const [brandNameList, setBrandNameList] = useState([]);
-  const [deliveryChargeCriteria, setDeliveryChargeCriteria] = useState("")
-  const [deliveryChargeCriteriaList, setDeliveryChargeCriteriaList] = useState([])
   const [saleType, setSaleType] = useState("");
   const [saleTypeList, setSaleTypeList] = useState([]);
   const [category, setCategory] = useState("");
@@ -75,7 +73,6 @@ export default function Settings() {
       setSaleType(data.defaultSaleType);
       setSaleTypeList(data.saleType);
       setCategory(data.defaultCategory);
-      setDeliveryChargeCriteriaList(data.chargeCriteriaList || [])
     }
   }, [settings]);
   useEffect(() => {
@@ -139,7 +136,6 @@ export default function Settings() {
 
   const handleBulkAddChange = (e) => {
     if (e.target.name === "brandName") setBrandName(e.target.value);
-    if (e.target.name === 'chargeCriteriaList') setDeliveryChargeCriteria(e.target.value)
     if (e.target.value.includes(",")) setIsBulkAdd(true);
     else setIsBulkAdd(false);
   };
@@ -193,24 +189,6 @@ export default function Settings() {
       isBulkAdd(false)
     });
   };
-  
-  const handleDeliveryChargeCriteriaSave = async () => {
-    const chargeCriteria = deliveryChargeCriteria.split(",").map((i) => i.trim());
-    let chargeCriteriaList = settings[0]?.chargeCriteriaList
-      ? union(chargeCriteria, settings[0]?.chargeCriteriaList): [...chargeCriteria]
-    const settingsDoc = doc(db, 'Settings', 'UserSettings')
-    await updateDoc(settingsDoc, {chargeCriteriaList}).then(()=> {
-      getDataFromFirestore()
-      Swal.fire(
-        "Updated!",
-        'You have successfully added charge criteria in delivery charge options',
-        'success'
-      )
-      setEditOpen(!editOpen)
-      setDeliveryChargeCriteria('')
-      isBulkAdd(false)
-    })
-  }
   
   return (
     <>
@@ -280,34 +258,6 @@ export default function Settings() {
                         isBulkAdd={isBulkAdd}
                         bulkAddAlert={
                           "Tip: By adding commas, you can add multiple brands in bulk. For e.g., Dove, Loreal, Wow, Mamaearth"
-                        }
-                      />
-                    </Grid>
-                  </Grid>
-                </SettingsEditForm>
-              )}
-              {editType === DELIVERY_CHARGE_CRITERIA && (
-                <SettingsEditForm
-                  title={"Add Delivery Charge Criteria"}
-                  onClose={closeSettingsForm}
-                  submitButtonText={"SAVE"}
-                  onSave={handleDeliveryChargeCriteriaSave}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} />
-                    <Grid item xs={12}>
-                      <TextFieldBulkAdd
-                        id="chargeCriteriaList"
-                        name="chargeCriteriaList"
-                        value={deliveryChargeCriteria}
-                        onChange={handleBulkAddChange}
-                        label={"Delivery charge criteria"}
-                        size="small"
-                        placeholder={`Add an option by which you want to modify delivery charges. For eg., Radius, Amount, Area, Membership, etc`}
-                        sx={{ minWidth: "100%" }}
-                        isBulkAdd={isBulkAdd}
-                        bulkAddAlert={
-                          "Tip: By adding commas, you can add multiple criteria in bulk. For eg., Radius, Amount, Area, Membership, etc"
                         }
                       />
                     </Grid>
@@ -454,30 +404,6 @@ export default function Settings() {
               <IconButton
                 aria-label="edit"
                 onClick={() => handleEditForm(BRAND_NAME, "edit")}
-                sx={{ marginTop: "30px" }}
-              >
-                 <AddCircle />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
-            <SelectInput
-              id="deliveryChargeCriteria"
-              label="Delivery Charge Criteria"
-              size="small"
-              sx={{ marginTop: "30px", minWidth: "100%" }}
-              name="deliveryChargeCriteria"
-              value={''}
-              onChange={(e) => setDeliveryChargeCriteria(e.target.value)}
-              data={deliveryChargeCriteriaList}
-            />
-          </Grid>
-          <Grid item>
-            <Tooltip title="Add Delivery Charge Criteria">
-              <IconButton
-                aria-label="edit"
-                onClick={() => handleEditForm(DELIVERY_CHARGE_CRITERIA, "edit")}
                 sx={{ marginTop: "30px" }}
               >
                  <AddCircle />

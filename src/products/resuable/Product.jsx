@@ -12,6 +12,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { Box, Modal } from "@mui/material";
 import ProductPopup from "./ProductPopup";
 import { getDiscountedPrice } from "../../utils";
+import "../../orders/OrderDetails.css";
 function Product({
   id,
   name,
@@ -52,6 +53,10 @@ function Product({
     let productData = (await getDoc(userDoc)).data();
     if (productData.saleTag) {
       const offerDocRef = doc(db, "Offers", productData.saleTag);
+      let offerData = (await getDoc(offerDocRef)).data()
+      let newProducts = [...offerData.products]
+      newProducts = newProducts.filter(i => i != productData.saleTag)
+      await updateDoc(offerDocRef, { products: newProducts })
       let offerData = (await getDoc(offerDocRef)).data();
       let newProducts = [...offerData.products];
       newProducts = newProducts.filter((i) => i != productData.saleTag);
@@ -141,8 +146,22 @@ function Product({
         )}
 
         <TableCell align="left">{name}</TableCell>
-        <TableCell align="left">{category}</TableCell>
         <TableCell align="left">
+          {url && url.length > 0 && (
+            <img
+              src={url}
+              height="70px"
+              width="70px"
+              style={{ borderRadius: "15px" }}
+              loading="lazy"
+              className={isOrderDetailView ? "hide-on-print" : ""}
+            />
+          )}
+        </TableCell>
+        <TableCell align="left">{price}</TableCell>
+        <TableCell align="left">{isOrderDetailView ? amount : salePrice}</TableCell>
+        <TableCell align="left">
+          {isOrderDetailView ? rate : (onSale ? `${saleValue} ${saleType}` : "-")}
           <img
             src={url && url[0]}
             height="70px"

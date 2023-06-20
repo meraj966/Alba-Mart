@@ -24,15 +24,23 @@ export const getProductDataGridColumns = (
     {
       field: "category",
       headerName: "Category",
-      minWidth: 200,
+      minWidth: 150,
       flex: 1,
     },
 
     {
       field: "url",
       headerName: "Prod Img",
-      minWidth: 200,
+      minWidth: 150,
       flex: 1,
+      valueGetter: (params) => params.row.url[0], // Get the URL of the first image in the `url` array
+      renderCell: (params) => (
+        <img
+          src={params.value}
+          alt="Product"
+          style={{ maxWidth: "90px", maxHeight: "50px" }}
+          />
+      ),
     },
 
     {
@@ -149,13 +157,42 @@ export const getOrdersGridColumns = (
       field: "amount",
       headerName: "Total Amount",
       flex: 1,
-      valueGetter: ({ row }) => sum(map(Object.values(row.products), "amount")),
+      // valueGetter: ({ row }) => sum(map(Object.values(row.products), "amount")),
+      valueGetter: ({ row }) => {
+        if (!row || !row.products) {
+          return 0; // Return a default value or handle the error appropriately
+        }
+      
+        const productValues = Object.values(row.products);
+      
+        if (!productValues) {
+          return 0; // Return a default value or handle the error appropriately
+        }
+      
+        const amounts = productValues.map(product => product.amount);
+        const totalAmount = amounts.reduce((total, amount) => total + amount, 0);
+        
+        return totalAmount;
+      }      
+    },
+    {
+      field: "date",
+      headerName: "Order Date",
+      flex: 1,
+      valueGetter: ({ row }) => {
+        const databaseValue = getUserByOrder(row)?.date;
+        if (databaseValue) {
+          const datePart = databaseValue.split(" ")[0];
+          return datePart;
+        }
+        return "";
+      },
     },
     {
       field: "paymentMode",
       headerName: "Payment Mode",
       flex: 1,
-      valueGetter: ({ row }) => row.paymentMode || "--",
+      valueGetter: ({ row }) => row.paymentType || "--",
     },
     {
       field: "status",
