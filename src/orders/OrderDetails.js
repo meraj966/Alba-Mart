@@ -27,8 +27,6 @@ function OrderDetails() {
     if (order && Object.keys(order).length > 0) setOrderProducts();
   }, [order]);
   const setOrderProducts = async () => {
-    // let products = Object.keys(order.products);
-    // console.log(products)
     let total = 0
     let products = Object.keys(order.products)?.map((i) => {
       let product = order.products[i]
@@ -92,14 +90,6 @@ function OrderDetails() {
     } catch (error) {
       console.log("Error fetching order details:", error);
     }
-  };
-
-  const setOrderProducts = () => {
-    let total = 0;
-    products.forEach((product) => {
-      total += Number(product.amount);
-    });
-    setSubTotal(total);
   };
 
   useEffect(() => {
@@ -215,11 +205,6 @@ function OrderDetails() {
           </Grid>
           <Grid item xs={8} />
           <Grid item>{order?.totalMrp - order?.totalRate}</Grid>
-          {/* <Grid item xs={2}>
-            Order Status
-          </Grid>
-          <Grid item xs={8} />
-          <Grid item>{order?.orderStatus}</Grid> */}
         </Grid>
       </div>
     </PageTemplate>
