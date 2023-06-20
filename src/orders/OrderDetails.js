@@ -20,6 +20,34 @@ function OrderDetails() {
 
   const componentRef = useRef();
 
+  useEffect(() => {
+    getOrderDetail();
+  }, []);
+  useEffect(() => {
+    if (order && Object.keys(order).length > 0) setOrderProducts();
+  }, [order]);
+  const setOrderProducts = async () => {
+    // let products = Object.keys(order.products);
+    // console.log(products)
+    let total = 0
+    let products = Object.keys(order.products)?.map((i) => {
+      let product = order.products[i]
+      total = (total + Number(product.amount))
+      return {
+      id: i,
+      price: product.mrp,
+      name: product.name,
+      amount: product.amount,
+      rate: product.rate,
+      quantity: product.quantity
+    }});
+    setSubTotal(total)
+    const userData = await getDoc(doc(db, "UserProfile", order.userID));
+    setUser(userData.data())
+    console.log(userData.data());
+    setProducts(products);
+  };
+  console.log(order);
   const getOrderDetail = async () => {
     try {
       const orderData = await getDoc(doc(db, "Order", id));

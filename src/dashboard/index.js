@@ -8,20 +8,68 @@ import Modal from "@mui/material/Modal";
 import ProductsAvailability from "./reusable/ProductsAvailability";
 import { useState } from "react";
 import { PRODUCTS_UNAVAILABLE, PRODUCTS_LOW_STOCK } from "../Constants";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageTemplate from "../pages/reusable/PageTemplate";
+import { sum } from "lodash";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export default function Dashboard() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState("");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [orderLength, setOrderLength] = useState(0);
+  const [info, setInfo] = useState("");
+  const [todayOrder, setTodayOrder] = useState([]);
+  const [pendingOrder, setPendingOrder] = useState([]);
   const [unavailableProd, setUnavailableProd] = useState("");
   const [lowStockProd, setLowStockProd] = useState("");
   const [open, setOpen] = React.useState(false);
   const [modalType, setModalType] = useState("");
+
+  const offersPastDue = (offers) =>
+    offers.filter(
+      (i) =>
+        !(
+          new Date().getMonth() + 1 <= new Date(i.endDate).getMonth() + 1 &&
+          new Date().getDate() <= new Date(i.endDate).getDate() &&
+          new Date().getFullYear() <= new Date(i.endDate).getFullYear()
+        )
+    );
+
+  const removePastDueSaleData = async () => {
+    let isUpdated = 0;
+    const offersRef = collection(db, "Offers");
+    let data = await getDocs(offersRef);
+    const offerData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    const offersPastDueDate = offersPastDue(offerData);
+    if (offersPastDueDate?.length) {
+      offersPastDueDate.forEach(async (i) => {
+        const id = i.id; // sale tags that are past due
+        products.forEach(async (data) => {
+          if (data.saleTag === id) {
+            await updateDoc(doc(db, "Menu", data.id), { saleTag: "" });
+            isUpdated++;
+          }
+        });
+        // Uncomment below line if you also want to flush the products added in offer once due date is passed
+        // await updateDoc(doc(db, "Offers", id), { products: [] })
+      });
+    }
+    if (isUpdated) refreshPage();
+  };
+
+  useEffect(() => {
+    // Remove all products sale values where sale date is past due
+    removePastDueSaleData();
+  }, [products]);
+
   const handleClose = () => setOpen(false);
   const handleProductUnavailable = () => {
     setModalType(PRODUCTS_UNAVAILABLE);
@@ -49,8 +97,17 @@ export default function Dashboard() {
   };
 
   const getOrders = async () => {
-    const data = await getDocs(collection(db, "Orders"));
-    setOrders(data.docs.map((doc) => ({ ...doc.data() })));
+    const data = await getDocs(collection(db, "Order"));
+    const orderData = data.docs.map((doc) => ({ ...doc.data() }));
+    setTodayOrder(
+      orderData?.filter(
+        (i) => new Date(i.date).toDateString() === new Date().toDateString()
+      )
+    );
+    setPendingOrder(
+      orderData.filter((i) => ["placed"].includes(i.orderStatus))
+    );
+    setOrders(orderData);
   };
 
   const refreshPage = () => {
@@ -60,14 +117,16 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    refreshPage();
+    refreshPage()
     const interval = setInterval(() => {
       refreshPage();
-    }, 60 * 3 * 1000);
+      if (orders.length != orderLength) {
+        setTimeout(() => setInfo("Update in Orders"), 3000);
+      }
+    }, 60 * 1000);
     return () => clearInterval(interval);
   }, []);
-  console.log(orders, "ORDERSSSSSSSSSSSSSS")
-  console.log(customers, orders, products);
+
   const modal = () => (
     <Modal
       open={open}
@@ -92,12 +151,12 @@ export default function Dashboard() {
       </>
     </Modal>
   );
-  if (!window.localStorage.getItem("token")) 
-      navigate("/")
+  if (!window.localStorage.getItem("token")) navigate("/");
   return (
     <>
       <PageTemplate modal={modal()} title="Dashboard">
-        <Grid container spacing={2}>
+        {info && <Alert severity="info">{info}</Alert>}
+        <Grid container spacing={2} style={{ marginTop: "5px" }}>
           <Grid item xs={3}>
             <Link underline="none">
               <RouterLink to={"/Users"} style={{ textDecoration: "none" }}>
@@ -120,53 +179,48 @@ export default function Dashboard() {
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm Today's earnings.");
-              }}
-            >
-              <DashboardCard header="Today earn" value={`Rs. ${1000}`} />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard header="Today earn" value={`Rs. ${1000}`} />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm Today's order.");
-              }}
-            >
-              <DashboardCard header="Today order" value="0" />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard header="Today order" value={todayOrder.length} />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm pending order.");
-              }}
-            >
-              <DashboardCard header="Pending order" value="2" />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard
+                  header="Pending order"
+                  value={pendingOrder.length}
+                />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm today declined.");
-              }}
-            >
-              <DashboardCard header="Today Declined" value="4" />
+            <Link underline="none">
+              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+                <DashboardCard
+                  header="Today Declined"
+                  value={
+                    orders.filter((i) => ["Cancelled"].includes(i.orderStatus))
+                      .length
+                  }
+                />
+              </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
-            <Link
-              underline="none"
-              onClick={() => {
-                console.info("I'm today's sale.");
-              }}
-            >
-              <DashboardCard header="Today Sale" value="35" />
+            <Link underline="none">
+              <DashboardCard
+                header="Today Sale"
+                value={sum(todayOrder.map((i) => i.totalRate))}
+              />
             </Link>
           </Grid>
           <Grid item xs={6}>

@@ -40,7 +40,7 @@ function Product({
   isEditOffer,
   isOrderDetailView,
   amount,
-  rate
+  rate,
 }) {
   const [selected, setSelected] = useState(isSelected);
   const [open, setOpen] = useState(false);
@@ -57,6 +57,10 @@ function Product({
       let newProducts = [...offerData.products]
       newProducts = newProducts.filter(i => i != productData.saleTag)
       await updateDoc(offerDocRef, { products: newProducts })
+      let offerData = (await getDoc(offerDocRef)).data();
+      let newProducts = [...offerData.products];
+      newProducts = newProducts.filter((i) => i != productData.saleTag);
+      await updateDoc(offerDocRef, { products: newProducts });
     }
     await deleteDoc(userDoc);
     Swal.fire("Deleted!", "Your file has been deleted.", "success");
@@ -84,7 +88,6 @@ function Product({
       ...data,
       date: new Date(),
     };
-    console.log("EDIT DATA", data);
     setFormid(newData);
     handleEditOpen();
   };
@@ -159,10 +162,40 @@ function Product({
         <TableCell align="left">{isOrderDetailView ? amount : salePrice}</TableCell>
         <TableCell align="left">
           {isOrderDetailView ? rate : (onSale ? `${saleValue} ${saleType}` : "-")}
+          <img
+            src={url && url[0]}
+            height="70px"
+            width="70px"
+            style={{ borderRadius: "15px" }}
+            loading="lazy"
+          />
         </TableCell>
-        {!isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
+        <TableCell align="left">{price}</TableCell>
+        <TableCell align="left">
+          {isOrderDetailView
+            ? amount
+              ? amount
+              : salePrice
+              ? salePrice
+              : "-"
+            : salePrice}
+        </TableCell>
+        <TableCell align="left">
+          {isOrderDetailView
+            ? rate
+              ? rate
+              : onSale
+              ? `${saleValue} ${saleType}`
+              : "-"
+            : onSale
+            ? `${saleValue} ${saleType}`
+            : "-"}
+        </TableCell>
+        {isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
         <TableCell align="left">{`${quantity} ${measureUnit}`}</TableCell>
-        {!isOrderDetailView && <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>}
+        {isOrderDetailView && (
+          <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
+        )}
         {isDetailView || isEditOffer ? null : (
           <TableCell align="left">
             <Stack spacing={2} direction="row">

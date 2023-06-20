@@ -29,7 +29,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { getDiscountedPrice } from "../../utils";
 
-function EditOffer() {
+function EditOffer(props) {
   const { id } = useParams();
   const [offerData, setOfferData] = useState([]);
   const productsRef = collection(db, "Menu");
@@ -196,6 +196,8 @@ function EditOffer() {
             <ProductsList
               rows={filteredProducts}
               isEditOffer={true}
+              isDetailView={true}
+              isOrderDetailView={true}
               handleSelectedProducts={handleSelectedProducts}
               saleValue={discount}
             />
