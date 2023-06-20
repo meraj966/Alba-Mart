@@ -14,6 +14,7 @@ import DeliveryBoys from "./delivery_boy";
 import TermsAndConditions from "./terms_and_conditions";
 import EditOffer from "./offers/components/EditOffer";
 import OrderDetails from "./orders/OrderDetails";
+import DeliveryBoyDetails from "./delivery_boy/components/DeliveryBoyDetails";
 import DeliveryCharge from "./delivery_charge";
 import Register from "./authentication/Register";
 import ForgotPassword from "./authentication/ForgotPassword";
@@ -78,6 +79,11 @@ export default function App() {
             element={protectedElement(<OrderDetails />)}
           ></Route>
           <Route path="/edit-offer/:id" exact element={protectedElement(<EditOffer />)}></Route>
+          <Route
+            path="/deliveryboy-details/:id"
+            exact
+            element={protectedElement(<DeliveryBoyDetails />)}
+          ></Route>
         </Routes>
       </BrowserRouter>
     </>

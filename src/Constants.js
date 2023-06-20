@@ -1,7 +1,6 @@
 export const CATEGORY = "CATEGORY";
 export const SUBCATEGORY = "SUBCATEGORY";
 export const BRAND_NAME = "BRAND_NAME";
-export const DELIVERY_CHARGE_CRITERIA = "DELIVERY_CHARGE_CRITERIA";
 export const PRODUCTS_LOW_STOCK = "PRODUCTS_LOW_STOCK";
 export const PRODUCTS_UNAVAILABLE = "PRODUCTS_UNAVAILABLE";
 export const ORDER_TYPE_DROPDOWN_VALUES = [
@@ -51,10 +50,3 @@ export const CONDITION = {
   GREATER_THAN_OR_EQUALS: "GREATER THAN OR EQUALS",
   IN_RANGE: "IN RANGE",
 };
-export const DELIVERY_CHARGE_TABLE_HEADERS = [
-  "No.",
-  "Criteria",
-  "Condition",
-  "Value",
-  "Delivery Charge",
-];

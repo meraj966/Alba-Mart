@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ac8978cc-c438-4ce3-89cd-ae699a2c431c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_boy/components/AddNewDeliveryBoy.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/delivery_boy/components/AddNewDeliveryBoy.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_boy/components/DeliveryBoyList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/delivery_boy/components/DeliveryBoyList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_charge/AddCharge.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_charge/ChargeList.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_charge/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/delivery_charge/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_slot/components/AddNewDeliverySlot.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/delivery_slot/components/AddNewDeliverySlot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/delivery_slot/components/DeliverySlotList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/delivery_slot/components/DeliverySlotList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/orders/OrderDetails.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/orders/OrderDetails.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/orders/OrderDetails.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/orders/OrderDetails.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/orders/OrdersList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/orders/OrdersList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Settings.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Settings.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/products/EditForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/products/EditForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/products/ProductsList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/products/ProductsList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/products/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/products/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/products/resuable/AddProductRow.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/products/resuable/AddProductRow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/products/resuable/Product.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/products/resuable/Product.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/promo_codes/components/AddNewPromoCode.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/promo_codes/components/AddNewPromoCode.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/terms_and_conditions/components/AddTermsAndConditions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/terms_and_conditions/components/AddTermsAndConditions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2RGj97iygGFp7dqbxxiEk3eKfdq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "changes"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ac8978cc-c438-4ce3-89cd-ae699a2c431c" name="Changes" comment="" />
+      <created>1686883159083</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1686883159083</updated>
+    </task>
+    <servers />
+  </component>
+</project>

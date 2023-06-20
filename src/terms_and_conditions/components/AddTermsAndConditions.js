@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, setDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -22,18 +22,9 @@ import Swal from "sweetalert2";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-function AddTermsAndConditions({
-  data,
-  isEditMode,
-  refreshTermsAndConditions,
-  handleClose,
-}) {
-  const [userOrDeliveryBoy, setUserOrDeliveryBoy] = useState(
-    isEditMode ? data.for : ""
-  );
-  const [description, setDescription] = useState(
-    isEditMode ? data.description : ""
-  );
+function AddTermsAndConditions({ data, isEditMode, refreshTermsAndConditions, handleClose }) {
+  const [userOrDeliveryBoy, setUserOrDeliveryBoy] = useState(isEditMode ? data.for : "");
+  const [description, setDescription] = useState(isEditMode ? data.description : "");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -45,7 +36,7 @@ function AddTermsAndConditions({
         Swal.fire("Succesfull!", "Terms and conditions added", "success");
       });
     } else {
-      await addDoc(collection(db, "TermsAndConditions"), {
+      await setDoc(doc(collection(db, "TermsAndConditions"), userOrDeliveryBoy), {
         for: userOrDeliveryBoy,
         description,
       }).then(() => {
@@ -70,13 +61,18 @@ function AddTermsAndConditions({
       <CardContent sx={{ overflowY: "scroll", maxHeight: "400px" }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
-              label="User Or Delivery Boy"
-              type="text"
-              value={userOrDeliveryBoy}
-              onChange={handleUserOrDeliveryBoyChange}
-              sx={{ mb: 2 }}
-            />
+            <FormControl sx={{ minWidth: 190 }}>
+              <InputLabel id="userOrDeliveryBoy-label">User Or Delivery Boy</InputLabel>
+              <Select
+                labelId="userOrDeliveryBoy-label"
+                id="userOrDeliveryBoy"
+                value={userOrDeliveryBoy}
+                onChange={handleUserOrDeliveryBoyChange}
+              >
+                <MenuItem value="User">User</MenuItem>
+                <MenuItem value="Delivery Boy">Delivery Boy</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <ReactQuill value={description} onChange={handleDescriptionChange} />

@@ -1,53 +1,94 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Stack, Typography, Button, Modal, Box } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import AddNewDeliveryCharge from "../delivery_charge/components/AddNewDeliveryCharge";
+import DeliveryChargeList from "../delivery_charge/components/DeliveryChargeList";
 import PageTemplate from "../pages/reusable/PageTemplate";
-import ActionBarOnlyAddButton from "../components/reusable/ActionBarOnlyAddButton";
-import { useState } from "react";
-import ModalPopup from "../components/reusable/ModalPopup";
-import ChargeList from "./ChargeList";
-import AddCharge from "./AddCharge";
-import { collection, getDocs } from "firebase/firestore";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Autocomplete from "@mui/material/Autocomplete";
+import { useAppStore } from "../appStore";
 import { db } from "../firebase-config";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 
-function DeliveryCharge() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [chargeList, setChargeList] = useState([]);
+function DeliveryBoys() {
+    const [addNewDeliveryCharge, setAddNewDeliveryCharge] = useState(false);
+    const [deliveryChargeModalData, setDeliveryChargeModalData] = useState(null)
+    const [openInEditMode, setOpenInEditMode] = useState(false);
+    const handleOpen = () => setAddNewDeliveryCharge(true);
+    const handleClose = () => setAddNewDeliveryCharge(false);
+    const [deliveryChargeData, setDeliveryChargeData] = useState([]);
+    const deliveryChargeCollectionRef = collection(db, "DeliveryCharge");
 
-  useEffect(() => {
-    getDeliveryCharges();
-  }, []);
+    useEffect(() => {
+        getBoys();
+    }, []);
 
-  const getDeliveryCharges = async () => {
-    const data = await getDocs(collection(db, "DeliveryCharge"));
-    setChargeList(data.docs.map((i) => i.data()));
-  };
+    const getBoys = async () => {
+        const data = await getDocs(deliveryChargeCollectionRef);
+        setDeliveryChargeData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
 
-  return (
-    <PageTemplate
-      title="Delivery Charge Settings"
-      modal={
-        <ModalPopup
-          title={"Add New Delivery Charge"}
-          open={isOpen}
-          onClose={() => setIsOpen(false)}
-        >
-          <AddCharge
-            onClose={() => {
-              setIsOpen(false);
-              getDeliveryCharges();
-            }}
-          />
-        </ModalPopup>
-      }
-      actionBar={
-        <ActionBarOnlyAddButton
-          buttonLabel={"Add Charge"}
-          onClick={() => setIsOpen(true)}
-        />
-      }
-    >
-      <ChargeList data={chargeList} />
-    </PageTemplate>
-  );
+    };
+
+    const handleDelete = async (id) => {
+        await deleteDoc(doc(deliveryChargeCollectionRef, id));
+        setDeliveryChargeData(deliveryChargeData.filter((row) => row.id !== id));
+    };
+
+    const modal = () => (
+        <Modal onClose={() => setAddNewDeliveryCharge(false)} open={addNewDeliveryCharge}>
+            <Box sx={{ width: "50%", margin: "0 auto", top: "50%" }}>
+                <AddNewDeliveryCharge
+                    closeModal={() => setAddNewDeliveryCharge(false)}
+                    isEditMode={openInEditMode}
+                    data={deliveryChargeModalData}
+                    refreshDeliveryBoys={getBoys}
+                    handleClose={handleClose}
+                />
+            </Box>
+        </Modal>
+    );
+
+    const actionBar = () => (
+        <>
+            <Stack direction="row" spacing={2} className="my-2 mb-2">
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ flexGrow: 1 }}
+                ></Typography>
+                <Button
+                    variant="contained"
+                    endIcon={<AddCircleIcon />}
+                    onClick={() => {
+                        handleOpen();
+                        setOpenInEditMode(false);
+                    }}
+                >
+                    Add Delivery Boy
+                </Button>
+            </Stack>
+        </>
+    );
+    return (
+        <>
+            <PageTemplate
+                modal={modal()}
+                actionBar={actionBar()}
+                title={"Delivery Boys List"}
+            >
+                <DeliveryChargeList
+                    openModal={(row) => {
+                        setOpenInEditMode(true);
+                        setDeliveryChargeModalData(row);
+                        handleOpen();
+                    }}
+                    deliveryChargeData={deliveryChargeData}
+                    handleDelete={handleDelete}
+                />
+            </PageTemplate>
+
+        </>
+    );
 }
 
-export default DeliveryCharge;
+export default DeliveryBoys;

@@ -1,4 +1,8 @@
 @media print {
+
+    .print-mode .product-image {
+      display: none !important;
+    }
     /* hide the side navigation */
     .MuiDrawer-root {
       display: none;
@@ -24,8 +28,16 @@
     font-size: 12px;
   }
 
+  * {
+    font-family: monospace;
+  }
+
   /* hide unwanted elements */
   .no-print {
+    display: none;
+  }
+
+  .hide-on-print {
     display: none;
   }
 

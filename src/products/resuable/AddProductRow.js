@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CurrencyRupee } from "@mui/icons-material";
-import { Grid, InputAdornment, TextField } from "@mui/material";
+import { Grid, InputAdornment, TextField, Switch } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -176,7 +176,7 @@ function AddProductRow({
 
   return (
     <Grid container direction="row" spacing={0.8}>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <FormControlLabel
           control={
             <Checkbox
@@ -189,7 +189,7 @@ function AddProductRow({
           sx={{ minWidth: "100%" }}
           label="Show Product"
         />
-      </Grid>
+      </Grid> */}
       <Grid item xs={3}>
         <TextField
           error={false}
@@ -352,6 +352,20 @@ function AddProductRow({
       </Grid>
       <Grid item xs={12}>
         <ReactQuill value={description} onChange={handleDescriptionChange} />
+      </Grid>
+      <Grid item xs={12}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showProduct}
+              onChange={(e) => setShowProduct(e.target.checked)}
+              name="showProduct"
+            />
+          }
+          name="showProduct"
+          sx={{ minWidth: "100%" }}
+          label="Show Product"
+        />
       </Grid>
     </Grid>
   );
