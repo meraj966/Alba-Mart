@@ -53,10 +53,6 @@ function Product({
     let productData = (await getDoc(userDoc)).data();
     if (productData.saleTag) {
       const offerDocRef = doc(db, "Offers", productData.saleTag);
-      let offerData = (await getDoc(offerDocRef)).data()
-      let newProducts = [...offerData.products]
-      newProducts = newProducts.filter(i => i != productData.saleTag)
-      await updateDoc(offerDocRef, { products: newProducts })
       let offerData = (await getDoc(offerDocRef)).data();
       let newProducts = [...offerData.products];
       newProducts = newProducts.filter((i) => i != productData.saleTag);
