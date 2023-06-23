@@ -176,19 +176,6 @@ export const getOrdersGridColumns = (
       }      
     },
     {
-      field: "date",
-      headerName: "Order Date",
-      flex: 1,
-      valueGetter: ({ row }) => {
-        const databaseValue = getUserByOrder(row)?.date;
-        if (databaseValue) {
-          const datePart = databaseValue.split(" ")[0];
-          return datePart;
-        }
-        return "";
-      },
-    },
-    {
       field: "paymentMode",
       headerName: "Payment Mode",
       flex: 1,

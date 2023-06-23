@@ -155,18 +155,6 @@ function Product({
           )}
         </TableCell>
         <TableCell align="left">{price}</TableCell>
-        <TableCell align="left">{isOrderDetailView ? amount : salePrice}</TableCell>
-        <TableCell align="left">
-          {isOrderDetailView ? rate : (onSale ? `${saleValue} ${saleType}` : "-")}
-          <img
-            src={url && url[0]}
-            height="70px"
-            width="70px"
-            style={{ borderRadius: "15px" }}
-            loading="lazy"
-          />
-        </TableCell>
-        <TableCell align="left">{price}</TableCell>
         <TableCell align="left">
           {isOrderDetailView
             ? amount

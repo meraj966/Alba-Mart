@@ -64,13 +64,6 @@ export default function ProductsList({
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Discount</TableCell>
-                  {!isOrderDetailView && (
-                    <TableCell align="left">Stock Value</TableCell>
-                  )}
-                  <TableCell align="left">Quantity</TableCell>
-                  {!isOrderDetailView && (
-                    <TableCell align="left">Is Product Live</TableCell>
-                  )}
                   {isOrderDetailView && <TableCell align="left">Stock Value</TableCell>}
                   <TableCell align="left">Quantity</TableCell>
                   {isOrderDetailView && <TableCell align="left">Is Product Live</TableCell>}
