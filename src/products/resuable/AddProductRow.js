@@ -176,20 +176,6 @@ function AddProductRow({
 
   return (
     <Grid container direction="row" spacing={0.8}>
-      {/* <Grid item xs={12}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showProduct}
-              onChange={(e) => setShowProduct(e.target.checked)}
-              name="showProduct"
-            />
-          }
-          name="showProduct"
-          sx={{ minWidth: "100%" }}
-          label="Show Product"
-        />
-      </Grid> */}
       <Grid item xs={3}>
         <TextField
           error={false}

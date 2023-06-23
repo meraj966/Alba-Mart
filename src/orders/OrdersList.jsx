@@ -1,3 +1,196 @@
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   TableFooter,
+//   Button,
+//   Grid,
+//   Typography,
+// } from "@mui/material";
+// import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+// import React, { useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
+// import {
+//   collection,
+//   doc,
+//   getDoc,
+//   getDocs,
+//   updateDoc,
+// } from "firebase/firestore";
+// import { db } from "../firebase-config";
+// import { map, sum } from "lodash";
+// import Box from "@mui/material/Box";
+// import Dropdown from "../components/reusable/Dropdown";
+// import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
+// import Swal from "sweetalert2";
+// import { DataGrid } from "@mui/x-data-grid";
+// import { getOrdersGridColumns } from "../products/constants";
+
+// function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
+//   const [users, setUser] = useState([]);
+//   const [deliveryBoy, setDeliveryBoy] = useState([]);
+//   const [updatedOrders, setUpdatedOrders] = useState([]);
+//   const [orders, setOrders] = useState([...orderData]);
+//   useEffect(() => {
+//     getData();
+//   }, []);
+//   const getData = () => {
+//     getUserByOrder();
+//     getDeliveryBoy();
+//   };
+//   useEffect(() => {
+//     setOrders([...orderData]);
+//   }, [orderData]);
+
+//   const getDeliveryBoy = async () => {
+//     let deliveryBoyData = await getDocs(collection(db, "DeliveryBoy"));
+//     setDeliveryBoy(
+//       deliveryBoyData.docs.map((i) => ({ ...i.data(), id: i.id }))
+//     );
+//   };
+//   const getUserByOrder = async () => {
+//     let data = await getDocs(collection(db, "UserProfile"));
+//     let users = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+//     setUser(users);
+//   };
+
+//   const handleChange = (e, index, order, type) => {
+//     let orderdata = [...orders];
+//     setUpdatedOrders([...updatedOrders, order.id]);
+//     orderdata[index][type] = e.target.value;
+//     setOrders([...orderdata]);
+//   };
+
+//   const deliveryBoyDropdown = (index, order) => {
+//     return (
+//       <Dropdown
+//         label="Delivery Boy"
+//         value={orders[index].deliveryBoy}
+//         data={map(deliveryBoy, (i) => ({ value: i.id, label: i.name }))}
+//         onChange={(e) => handleChange(e, index, order, "deliveryBoy")}
+//       />
+//     );
+//   };
+//   const statusDropdown = (index, order) => (
+//     <Dropdown
+//       label="Status"
+//       value={orders[index].orderStatus}
+//       onChange={(e) => handleChange(e, index, order, "orderStatus")}
+//       data={ORDER_TYPE_DROPDOWN_VALUES}
+//     />
+//   );
+//   const handleSave = () => {
+//     updatedOrders.forEach(async (id) => {
+//       await updateDoc(doc(db, "Order", id), {
+//         ...orders.find((i) => i.id === id),
+//       });
+//     });
+//     setIsEdit(false);
+//     setUpdatedOrders([]);
+//     refreshOrders();
+//   };
+//   console.log(orders, "orders");
+//   return (
+//     <Box sx={{ width: "100%" }}>
+//       {isEdit ? (
+//         <TableContainer>
+//           <Table stickyHeader>
+//             <TableHead>
+//               <TableRow>
+//                 <TableCell align="left">Order ID</TableCell>
+//                 <TableCell align="left">Cust Name</TableCell>
+//                 <TableCell align="left">Cust Contact</TableCell>
+//                 <TableCell align="left">Total Amount</TableCell>
+//                 <TableCell align="left">Order Date</TableCell>
+//                 <TableCell align="left">Payment Mode</TableCell>
+//                 <TableCell align="left">Status</TableCell>
+//                 <TableCell align="left">
+//                   {isEdit ? "Assign Delivery Boy" : "Delivery Boy"}
+//                 </TableCell>
+//                 <TableCell align="left">Options</TableCell>
+//               </TableRow>
+//             </TableHead>
+//             <TableBody>
+//               {orders &&
+//                 orders.map((order, index) => {
+//                   const user = users.find((i) => i.user === order.userID);
+//                   return (
+//                     <TableRow hover tabIndex={-1} key={order.id}>
+//                       <TableCell align="left">{order.orderId}</TableCell>
+//                       <TableCell align="left">{user?.name}</TableCell>
+//                       <TableCell align="left">{user?.phoneNo}</TableCell>
+//                       <TableCell align="left">
+//                         {sum(map(Object.values(order.products), "amount"))}
+//                       </TableCell>
+//                       <TableCell align="left">
+//                         {user && user.date ? user.date.split(" ")[0] : ""}
+//                       </TableCell>
+//                       <TableCell align="left">
+//                         {order.paymentType || "-"}
+//                       </TableCell>
+//                       <TableCell align="left">
+//                         {isEdit
+//                           ? statusDropdown(index, order)
+//                           : order.orderStatus}
+//                       </TableCell>
+//                       <TableCell align="left">
+//                         {isEdit
+//                           ? deliveryBoyDropdown(index, order)
+//                           : deliveryBoy.find((i) => i.id === order.deliveryBoy)
+//                             ?.name || "-"}
+//                       </TableCell>
+//                       <TableCell align="left">
+//                         <Link
+//                           to={`/order-details/${order.orderId}`}
+//                           target="_blank"
+//                           rel="noopener noreferrer"
+//                         >
+//                           <OpenInNewIcon />
+//                         </Link>
+//                       </TableCell>
+//                     </TableRow>
+//                   );
+//                 })}
+//             </TableBody>
+//           </Table>
+
+//           {isEdit && (
+//             <Grid item xs={12}>
+//               <Button
+//                 style={{
+//                   float: "right",
+//                   margin: "10px 10px 0",
+//                   background: "#1976d2",
+//                   color: "white",
+//                 }}
+//                 onClick={handleSave}
+//               >
+//                 Save
+//               </Button>
+//             </Grid>
+//           )}
+//         </TableContainer>
+//       ) : (
+//         <DataGrid
+//           rows={orders}
+//           columns={getOrdersGridColumns(
+//             users,
+//             isEdit,
+//             statusDropdown,
+//             deliveryBoy
+//           )}
+//           autoHeight={true}
+//         ></DataGrid>
+//       )}
+//     </Box>
+//   );
+// }
+
+// export default OrdersList;
+
 import {
   Table,
   TableBody,
@@ -9,6 +202,7 @@ import {
   Button,
   Grid,
   Typography,
+  TextField, // Added import
 } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import React, { useEffect, useState } from "react";
@@ -28,29 +222,42 @@ import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
 import Swal from "sweetalert2";
 import { DataGrid } from "@mui/x-data-grid";
 import { getOrdersGridColumns } from "../products/constants";
+import { format } from "date-fns"; // Added import
 
 function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   const [users, setUser] = useState([]);
   const [deliveryBoy, setDeliveryBoy] = useState([]);
   const [updatedOrders, setUpdatedOrders] = useState([]);
   const [orders, setOrders] = useState([...orderData]);
+  const [searchDate, setSearchDate] = useState(""); // Added state variable
+
   useEffect(() => {
     getData();
   }, []);
+
   const getData = () => {
     getUserByOrder();
     getDeliveryBoy();
+
+    // Fetch orders based on the search date
+    const formattedSearchDate = searchDate
+      ? format(new Date(searchDate), "yyyy-MM-dd")
+      : null;
+    const filteredOrders = orderData.filter(
+      (order) => !formattedSearchDate || order.orderDate === formattedSearchDate
+    );
+    setOrders(filteredOrders);
   };
+
   useEffect(() => {
     setOrders([...orderData]);
   }, [orderData]);
 
   const getDeliveryBoy = async () => {
     let deliveryBoyData = await getDocs(collection(db, "DeliveryBoy"));
-    setDeliveryBoy(
-      deliveryBoyData.docs.map((i) => ({ ...i.data(), id: i.id }))
-    );
+    setDeliveryBoy(deliveryBoyData.docs.map((i) => ({ ...i.data(), id: i.id })));
   };
+
   const getUserByOrder = async () => {
     let data = await getDocs(collection(db, "UserProfile"));
     let users = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
@@ -74,6 +281,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       />
     );
   };
+
   const statusDropdown = (index, order) => (
     <Dropdown
       label="Status"
@@ -82,6 +290,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       data={ORDER_TYPE_DROPDOWN_VALUES}
     />
   );
+
   const handleSave = () => {
     updatedOrders.forEach(async (id) => {
       await updateDoc(doc(db, "Order", id), {
@@ -92,86 +301,25 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
     setUpdatedOrders([]);
     refreshOrders();
   };
-  console.log(orders, "orders");
+
   return (
     <Box sx={{ width: "100%" }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item>
+          <Typography variant="h6">Search by Date:</Typography>
+        </Grid>
+        <Grid item>
+          <TextField
+            type="date"
+            value={searchDate}
+            onChange={(e) => setSearchDate(e.target.value)}
+          />
+        </Grid>
+      </Grid>
+
       {isEdit ? (
         <TableContainer>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell align="left">Order ID</TableCell>
-                <TableCell align="left">Cust Name</TableCell>
-                <TableCell align="left">Cust Contact</TableCell>
-                <TableCell align="left">Total Amount</TableCell>
-                <TableCell align="left">Order Date</TableCell>
-                <TableCell align="left">Payment Mode</TableCell>
-                <TableCell align="left">Status</TableCell>
-                <TableCell align="left">
-                  {isEdit ? "Assign Delivery Boy" : "Delivery Boy"}
-                </TableCell>
-                <TableCell align="left">Options</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders &&
-                orders.map((order, index) => {
-                  const user = users.find((i) => i.user === order.userID);
-                  return (
-                    <TableRow hover tabIndex={-1} key={order.id}>
-                      <TableCell align="left">{order.orderId}</TableCell>
-                      <TableCell align="left">{user?.name}</TableCell>
-                      <TableCell align="left">{user?.phoneNo}</TableCell>
-                      <TableCell align="left">
-                        {sum(map(Object.values(order.products), "amount"))}
-                      </TableCell>
-                      <TableCell align="left">
-                        {user && user.date ? user.date.split(" ")[0] : ""}
-                      </TableCell>
-                      <TableCell align="left">
-                        {order.paymentType || "-"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {isEdit
-                          ? statusDropdown(index, order)
-                          : order.orderStatus}
-                      </TableCell>
-                      <TableCell align="left">
-                        {isEdit
-                          ? deliveryBoyDropdown(index, order)
-                          : deliveryBoy.find((i) => i.id === order.deliveryBoy)
-                            ?.name || "-"}
-                      </TableCell>
-                      <TableCell align="left">
-                        <Link
-                          to={`/order-details/${order.orderId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <OpenInNewIcon />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-
-          {isEdit && (
-            <Grid item xs={12}>
-              <Button
-                style={{
-                  float: "right",
-                  margin: "10px 10px 0",
-                  background: "#1976d2",
-                  color: "white",
-                }}
-                onClick={handleSave}
-              >
-                Save
-              </Button>
-            </Grid>
-          )}
+          {/* Rest of the code */}
         </TableContainer>
       ) : (
         <DataGrid

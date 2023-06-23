@@ -233,20 +233,6 @@ export default function EditForm({ fid, closeEvent }) {
         <CloseIcon />
       </IconButton>
       <Grid container spacing={2}>
-        {/* <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showProduct}
-                onChange={handleChangeShowProduct}
-                name="showProduct"
-              />
-            }
-            name="showProduct"
-            sx={{ minWidth: "100%" }}
-            label="Show Product"
-          />
-        </Grid> */}
         <Grid item xs={6}>
           <TextField
             error={false}
