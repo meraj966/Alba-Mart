@@ -35,7 +35,12 @@ code {
 .editForm {
   width: 80% !important;
 }
-
+img.img_carousel {
+  background-size: contain;
+  /* height: 350px; */
+  margin: auto;
+  max-width: 90px;
+}
 .img_carousel{
   /* display: block; */
   -webkit-background-size: cover;

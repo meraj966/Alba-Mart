@@ -31,7 +31,7 @@ function ProductsAvailability({ title, data }) {
         <Grid item xs={2}> <b>Unit</b> </Grid>
         <Grid item xs={2}> <b>Price</b> </Grid>
         <Grid item xs={2}> <b>Stock Quantity</b> </Grid>
-        {data.map((row) => (
+        {data && data?.map((row) => (
           <>
             <Grid item xs={2}> {row.name} </Grid>
             <Grid item xs={2}> {row.category} </Grid>
