@@ -57,24 +57,25 @@ export default function ProductsList({
                     </TableCell>
                   )}
                   <TableCell align="left">Name</TableCell>
+                  {!isOrderDetailView &&
                   <TableCell align="left">
                     <span className="hide-on-print">Prod Img</span>
-                  </TableCell>
+                  </TableCell>}
 
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Discount</TableCell>
-                  {isOrderDetailView && <TableCell align="left">Stock Value</TableCell>}
+                  {!isOrderDetailView && <TableCell align="left">Stock Value</TableCell>}
                   <TableCell align="left">Quantity</TableCell>
-                  {isOrderDetailView && <TableCell align="left">Is Product Live</TableCell>}
+                  {!isOrderDetailView && <TableCell align="left">Is Product Live</TableCell>}
                   {isDetailView || isEditOffer ? null : (
                     <TableCell align="left">Action</TableCell>
                   )}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.length > 0 &&
-                  rows.map((row) => {
+                {rows?.length > 0 &&
+                  rows?.map((row) => {
                     return (
                       <Product
                         data={row}

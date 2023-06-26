@@ -42,6 +42,7 @@ function Product({
   amount,
   rate,
 }) {
+  console.log("measureUnit", measureUnit, data)
   const [selected, setSelected] = useState(isSelected);
   const [open, setOpen] = useState(false);
   let salePrice = onSale ? getDiscountedPrice(saleType, price, saleValue) : "-";
@@ -142,6 +143,7 @@ function Product({
         )}
 
         <TableCell align="left">{name}</TableCell>
+        {!isOrderDetailView &&
         <TableCell align="left">
           {url && url.length > 0 && (
             <img
@@ -153,33 +155,17 @@ function Product({
               className={isOrderDetailView ? "hide-on-print" : ""}
             />
           )}
-        </TableCell>
+        </TableCell>}
         <TableCell align="left">{price}</TableCell>
         <TableCell align="left">
-          {isOrderDetailView
-            ? amount
-              ? amount
-              : salePrice
-              ? salePrice
-              : "-"
-            : salePrice}
+          {isOrderDetailView ? amount : salePrice}
         </TableCell>
         <TableCell align="left">
-          {isOrderDetailView
-            ? rate
-              ? rate
-              : onSale
-              ? `${saleValue} ${saleType}`
-              : "-"
-            : onSale
-            ? `${saleValue} ${saleType}`
-            : "-"}
+          {isOrderDetailView ? rate : onSale ? `${saleValue} ${saleType}` : "-"}
         </TableCell>
-        {isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
-        <TableCell align="left">{`${quantity} ${measureUnit}`}</TableCell>
-        {isOrderDetailView && (
-          <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>
-        )}
+        {!isOrderDetailView && <TableCell align="left">{stockValue}</TableCell>}
+        <TableCell align="left">{measureUnit ? `${quantity} ${measureUnit}`:`${quantity}` }</TableCell>
+        {!isOrderDetailView && <TableCell align="left">{showProduct ? "Yes" : "No"}</TableCell>}
         {isDetailView || isEditOffer ? null : (
           <TableCell align="left">
             <Stack spacing={2} direction="row">

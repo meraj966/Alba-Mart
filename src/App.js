@@ -71,7 +71,7 @@ export default function App() {
           <Route
             path="/offer-details/:id"
             exact
-            element={protectedElement(<OfferDetailView isOrderDetailView={true}/>)}
+            element={protectedElement(<OfferDetailView />)}
           ></Route>
           <Route
             path="/order-details/:id"
@@ -84,7 +84,7 @@ export default function App() {
             exact
             element={protectedElement(<DeliveryBoyDetails />)}
           ></Route>
-          <Route path="/edit-offer/:id" exact element={protectedElement(<EditOffer isOrderDetailView={true}/>)}></Route>
+          <Route path="/edit-offer/:id" exact element={protectedElement(<EditOffer />)}></Route>
         </Routes>
       </BrowserRouter>
     </>
