@@ -1,0 +1,123 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "Menu",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "brandName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showProduct",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stockValue",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Menu",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showProduct",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stockValue",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Menu",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "onSale",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showProduct",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stockValue",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Menu",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "saleTag",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showProduct",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stockValue",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Menu",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "showProduct",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "subCategory",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stockValue",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "orderStatus",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "PromoCode",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discountStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startDate",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
