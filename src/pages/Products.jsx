@@ -25,6 +25,7 @@ import ProductPopup from "../products/resuable/ProductPopup";
 export default function Products() {
   const [categories, setCategories] = useState([]);
   const rows = useAppStore((state) => state.rows);
+  const [searchQuery, setSearchQuery] = useState("");
   const setRows = useAppStore((state) => state.setRows);
   const menuRef = collection(db, "Menu");
   const [row, setRow] = useState(null);
@@ -56,12 +57,16 @@ export default function Products() {
   }, []);
 
   const getMenuData = async () => {
-    const data = await getDocs(menuRef);
+    const menuData = await getDocs(menuRef);
+    const categoryData = await getDocs(collection(db, "category")); // Fetch all categories from "category" database
     const uniqueCategories = [
-      ...new Set(data.docs.flatMap((doc) => doc.data().category)),
+      ...new Set([
+        ...menuData.docs.flatMap((doc) => doc.data().category),
+        ...categoryData.docs.map((doc) => doc.data().name), // Include categories from "category" database
+      ]),
     ];
     setCategories(uniqueCategories);
-    setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setRows(menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
   const filterData = (v) => {
@@ -71,6 +76,18 @@ export default function Products() {
     } else {
       getMenuData();
     }
+  };
+
+  const filterBySearchQuery = () => {
+    const filteredRows = rows.filter((row) =>
+      row.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setRows(filteredRows);
+  };
+
+  const clearSearchQuery = () => {
+    setSearchQuery("");
+    getMenuData();
   };
 
   const modalTypeEditOpen = () => (
@@ -193,6 +210,25 @@ export default function Products() {
                 <TextField {...params} size="small" label="Select Category" />
               )}
             />
+            <TextField
+              type="text"
+              id="search"
+              name="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              label="Search by Product Name"
+              size="small"
+            />
+            <Button
+              variant="contained"
+              onClick={filterBySearchQuery}
+              disabled={!searchQuery}
+            >
+              Search
+            </Button>
+            <Button variant="contained" onClick={clearSearchQuery}>
+              Clear
+            </Button>
             <Typography
               variant="h6"
               component="div"
@@ -221,7 +257,7 @@ export default function Products() {
           selectedProd={row}
           deleteProduct={deleteProduct}
         />
-      </PageTemplate>
+      </PageTemplate >
     </>
   );
 }

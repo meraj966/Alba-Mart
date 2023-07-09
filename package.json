@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/runtime": "^7.22.6",
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -65,5 +66,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.22.7",
+    "@babel/preset-react": "^7.22.5"
   }
 }

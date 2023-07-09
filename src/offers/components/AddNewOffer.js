@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "../../firebase-config";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+
 function AddNewOffer({ closeModal, getOfferData }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -28,9 +29,22 @@ function AddNewOffer({ closeModal, getOfferData }) {
   const [discount, setDiscount] = useState(0);
   const [file, setFile] = useState(null);
   const [percent, setPercent] = useState("");
+
   const formatDate = (obj) => {
-    return obj && !isNaN(obj.date()) ? `${obj.month() + 1}/${obj.date()}/${obj.year()}` : "";
+    if (obj && !isNaN(obj.date())) {
+      const year = obj.year();
+      const month = obj.month() + 1;
+      const date = obj.date();
+
+      // Add leading zero if necessary
+      const formattedMonth = month < 10 ? `0${month}` : month;
+      const formattedDate = date < 10 ? `0${date}` : date;
+
+      return `${year}-${formattedMonth}-${formattedDate}`;
+    }
+    return "";
   };
+
   const saveOffer = async (url) => {
     const offerRef = collection(db, "Offers");
     const docData = await addDoc(offerRef, {
@@ -44,16 +58,20 @@ function AddNewOffer({ closeModal, getOfferData }) {
       isOfferLive,
       products: [],
     });
+
     const id = docData.id;
     await updateDoc(doc(db, "Offers", id), { saleTag: id });
+
     Swal.fire("Submitted!", "New Offer has been added", "success");
     getOfferData();
     closeModal();
   };
+
   const submitNewOffer = async () => {
     if (file) {
       const storageRef = ref(storage, `/images/${Math.random() + file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
+
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -72,12 +90,19 @@ function AddNewOffer({ closeModal, getOfferData }) {
           });
         }
       );
-    } else saveOffer("");
+    } else {
+      saveOffer("");
+    }
   };
+
   const handleSubmit = () => {
-    if (!title) Swal.fire("Validation Issue!", "Please add a Title", "error");
-    else submitNewOffer();
+    if (!title) {
+      Swal.fire("Validation Issue!", "Please add a Title", "error");
+    } else {
+      submitNewOffer();
+    }
   };
+
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
       <CardHeader title="Add New Offer" />
@@ -126,7 +151,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
                 label="Start Date"
                 value={startDate}
                 onChange={(value) => setStartDate(value)}
-                format="DD/MM/YYYY"
+                format="YYYY-MM-DD"
               />
             </LocalizationProvider>
           </Grid>
@@ -136,7 +161,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
                 label="End Date"
                 value={endDate}
                 onChange={(value) => setEndDate(value)}
-                format="DD/MM/YYYY"
+                format="YYYY-MM-DD"
               />
             </LocalizationProvider>
           </Grid>
@@ -162,11 +187,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
               accept="/image/*"
             />
           </Grid>
-          {percent && (
-            <Grid item xs={12}>
-              {percent}
-            </Grid>
-          )}
+          {percent && <Grid item xs={12}>{percent}</Grid>}
           <Grid item xs={12}>
             <Typography variant="h5" align="right">
               <Button variant="contained" onClick={handleSubmit}>
