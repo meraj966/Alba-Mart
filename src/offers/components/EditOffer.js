@@ -42,7 +42,7 @@ function EditOffer() {
 
   const formatDate = (obj) => {
     return !isNaN(obj?.date())
-      ? `${obj.month() + 1}/${obj.date()}/${obj.year()}`
+      ? `${obj.year()}-${obj.month() + 1 < 10 ? "0" + (obj.month() + 1) : obj.month() + 1}-${obj.date() < 10 ? "0" + obj.date() : obj.date()}`
       : "";
   };
 
@@ -153,7 +153,7 @@ function EditOffer() {
               value={startDate}
               onChange={(value) => setStartDate(value)}
               className="date-picker"
-              format="DD/MM/YYYY"
+              format="YYYY-MM-DD"
             />
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -162,7 +162,7 @@ function EditOffer() {
               value={endDate}
               className="date-picker"
               onChange={(value) => setEndDate(value)}
-              format="DD/MM/YYYY"
+              format="YYYY-MM-DD"
             />
           </LocalizationProvider>
           <TextField

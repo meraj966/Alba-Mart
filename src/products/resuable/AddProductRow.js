@@ -35,6 +35,7 @@ function AddProductRow({
   const categoryRef = collection(db, "category");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [maxLimit, setMaxLimit] = useState("");
   const [price, setPrice] = useState("");
   const [onSale, setOnSale] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
@@ -72,6 +73,7 @@ function AddProductRow({
       measureUnit,
       quantity,
       stockValue:parseInt(stockValue),
+      maxLimit:parseInt(maxLimit),
       url,
       showProduct,
       saleTag: "",
@@ -252,7 +254,7 @@ function AddProductRow({
           />
         )}
       </Grid>
-      <Grid item xs={2.5}>
+      <Grid item xs={3}>
         <SelectInput
           id="category"
           label="Category"
@@ -264,7 +266,7 @@ function AddProductRow({
           data={categoryList}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={3}>
         <SelectInput
           id="subCategory"
           label="Sub Category"
@@ -276,7 +278,7 @@ function AddProductRow({
           data={subCategoryList}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={3}>
         <SelectInput
           id="brandName"
           label="Brand Name"
@@ -322,6 +324,19 @@ function AddProductRow({
           name="stockValue"
           value={stockValue}
           onChange={(e) => setStockValue(e.target.value)}
+          size="small"
+          sx={{ minWidth: "100%" }}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <TextField
+          error={false}
+          id="maxLimit"
+          label="Max Limit On product"
+          type="number"
+          name="maxLimit"
+          value={maxLimit}
+          onChange={(e) => setMaxLimit(e.target.value)}
           size="small"
           sx={{ minWidth: "100%" }}
         />
