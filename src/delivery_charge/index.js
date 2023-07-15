@@ -64,7 +64,7 @@ function DeliveryBoys() {
                         setOpenInEditMode(false);
                     }}
                 >
-                    Add Delivery Boy
+                    Add Delivery Charges
                 </Button>
             </Stack>
         </>
