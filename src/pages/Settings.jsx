@@ -189,7 +189,7 @@ export default function Settings() {
       isBulkAdd(false)
     });
   };
-  
+
   return (
     <>
       <PageTemplate

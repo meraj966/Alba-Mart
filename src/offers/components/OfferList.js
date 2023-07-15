@@ -36,10 +36,10 @@ function OfferList({ offerData, getOfferData }) {
         const selectedDoc = doc(db, "Offers", id);
         await deleteDoc(selectedDoc);
         Swal.fire("Deleted!", "Selected offer has been deleted", "success");
-        const menuData = data.docs.map(doc=>({...doc.data(), id: doc.id}))
+        const menuData = data.docs.map(doc => ({ ...doc.data(), id: doc.id }))
         menuData.forEach(async data => {
           if (data.saleTag === id)
-            await updateDoc(doc(db,"Menu", data.id), {saleTag: ''})
+            await updateDoc(doc(db, "Menu", data.id), { saleTag: '' })
         })
         getOfferData();
       }
@@ -84,8 +84,20 @@ function OfferList({ offerData, getOfferData }) {
                 <TableCell align="left">
                   {String(row.discountPercent)}
                 </TableCell>
-                <TableCell align="left">
+                {/* <TableCell align="left">
                   {String(row.isOfferLive ? "Yes" : "No")}
+                </TableCell> */}
+                <TableCell align="left">
+                  <span
+                    style={{
+                      color: row.isOfferLive ? "green" : "red",
+                      border: "1px solid",
+                      padding: "4px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    {row.isOfferLive ? "Yes" : "No"}
+                  </span>
                 </TableCell>
                 <TableCell sx={{ paddingLeft: "5px" }}>
                   <Stack direction="row">

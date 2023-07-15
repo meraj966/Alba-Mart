@@ -24,9 +24,9 @@ import ProductPopup from "../products/resuable/ProductPopup";
 
 export default function Products() {
   const [categories, setCategories] = useState([]);
-  const rows = useAppStore((state) => state.rows);
+  const [originalRows, setOriginalRows] = useState([]);
+  const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const setRows = useAppStore((state) => state.setRows);
   const menuRef = collection(db, "Menu");
   const [row, setRow] = useState(null);
   const [formid, setFormid] = useState("");
@@ -66,28 +66,34 @@ export default function Products() {
       ]),
     ];
     setCategories(uniqueCategories);
-    setRows(menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    const rowsData = menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setOriginalRows(rowsData);
+    setRows(rowsData);
   };
 
   const filterData = (v) => {
     if (v) {
-      const filteredRows = rows.filter((row) => row.category === v);
+      const filteredRows = originalRows.filter((row) => row.category === v);
       setRows(filteredRows);
     } else {
-      getMenuData();
+      setRows(originalRows);
     }
   };
 
   const filterBySearchQuery = () => {
-    const filteredRows = rows.filter((row) =>
-      row.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setRows(filteredRows);
+    if (searchQuery === "") {
+      setRows(originalRows);
+    } else {
+      const filteredRows = originalRows.filter((row) =>
+        row.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setRows(filteredRows);
+    }
   };
 
   const clearSearchQuery = () => {
     setSearchQuery("");
-    getMenuData();
+    setRows(originalRows);
   };
 
   const modalTypeEditOpen = () => (
@@ -215,25 +221,15 @@ export default function Products() {
               id="search"
               name="search"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                filterBySearchQuery();
+              }}
               label="Search by Product Name"
               size="small"
+              sx={{ width: "250px" }}
             />
-            <Button
-              variant="contained"
-              onClick={filterBySearchQuery}
-              disabled={!searchQuery}
-            >
-              Search
-            </Button>
-            <Button variant="contained" onClick={clearSearchQuery}>
-              Clear
-            </Button>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ flexGrow: 1 }}
-            ></Typography>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
             <Button
               variant="contained"
               endIcon={<AddCircleIcon />}
@@ -257,7 +253,7 @@ export default function Products() {
           selectedProd={row}
           deleteProduct={deleteProduct}
         />
-      </PageTemplate >
+      </PageTemplate>
     </>
   );
 }

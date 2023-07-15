@@ -36,6 +36,7 @@ function AddProductRow({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [maxLimit, setMaxLimit] = useState("");
+  const [purchaseRate, setPurchaseRate] = useState("");
   const [price, setPrice] = useState("");
   const [onSale, setOnSale] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
@@ -67,13 +68,14 @@ function AddProductRow({
       price,
       onSale,
       saleType,
-      saleValue:parseInt(saleValue),
+      saleValue: parseInt(saleValue),
       category,
       subCategory,
       measureUnit,
       quantity,
-      stockValue:parseInt(stockValue),
-      maxLimit:parseInt(maxLimit),
+      stockValue: parseInt(stockValue),
+      maxLimit: parseInt(maxLimit),
+      purchaseRate: parseInt(purchaseRate),
       url,
       showProduct,
       saleTag: "",
@@ -337,6 +339,19 @@ function AddProductRow({
           name="maxLimit"
           value={maxLimit}
           onChange={(e) => setMaxLimit(e.target.value)}
+          size="small"
+          sx={{ minWidth: "100%" }}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <TextField
+          error={false}
+          id="purchaseRate"
+          label="Purchase Rate"
+          type="number"
+          name="purchaseRate"
+          value={purchaseRate}
+          onChange={(e) => setPurchaseRate(e.target.value)}
           size="small"
           sx={{ minWidth: "100%" }}
         />

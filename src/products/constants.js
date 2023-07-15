@@ -83,8 +83,19 @@ export const getProductDataGridColumns = (
       headerName: "Is Product Live",
       minWidth: 100,
       flex: 1,
-      valueGetter: ({ row }) => (row.showProduct ? "Yes" : "No"),
-    },
+      renderCell: ({ row }) => (
+        <span
+          style={{
+            color: row.showProduct ? "green" : "red",
+            border: "1px solid",
+            padding: "4px",
+            borderRadius: "4px",
+          }}
+        >
+          {row.showProduct ? "Active" : "Deactive"}
+        </span>
+      ),
+    },    
     {
       field: "action",
       flex: 1,

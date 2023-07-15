@@ -46,6 +46,7 @@ export default function EditForm({ fid, closeEvent }) {
   const settingsDataRef = collection(db, "Settings");
   const [stockValue, setStockValue] = useState("");
   const [maxLimit, setMaxLimit] = useState("");
+  const [purchaseRate, setPurchaseRate] = useState("");
   const [categoryList, setCategoryList] = useState([]);
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryData, setCategoryData] = useState(null);
@@ -79,7 +80,8 @@ export default function EditForm({ fid, closeEvent }) {
     setQuantity(fid.quantity);
     setSubCategory(fid.subCategory);
     setStockValue(fid.stockValue);
-    setMaxLimit(fid.maxlimit);
+    setMaxLimit(fid.maxLimit);
+    setPurchaseRate(fid.purchaseRate);
     setShowProduct(fid.showProduct);
     setBrandName(fid.brandName)
   }, []);
@@ -112,6 +114,7 @@ export default function EditForm({ fid, closeEvent }) {
       category,
       stockValue: parseInt(stockValue),
       maxLimit: parseInt(maxLimit),
+      purchaseRate: parseInt(purchaseRate),
       showProduct,
       saleValue: parseInt(saleValue),
       onSale,
@@ -137,6 +140,7 @@ export default function EditForm({ fid, closeEvent }) {
       category: category,
       stockValue: parseInt(stockValue),
       maxLimit: parseInt(maxLimit),
+      purchaseRate: parseInt(purchaseRate),
       quantity,
       file: url,
       showProduct,
@@ -225,7 +229,7 @@ export default function EditForm({ fid, closeEvent }) {
     setShowProduct(event.target.checked);
   };
   return (
-    <div>
+    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
       <Box sx={{ m: 2 }} />
       <Typography variant="h5" align="center">
         Edit Product
@@ -419,6 +423,19 @@ export default function EditForm({ fid, closeEvent }) {
             name="maxLimit"
             value={maxLimit}
             onChange={(e) => setMaxLimit(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="purchaseRate"
+            label="Purchase Rate"
+            type="number"
+            name="purchaseRate"
+            value={purchaseRate}
+            onChange={(e) => setPurchaseRate(e.target.value)}
             size="small"
             sx={{ minWidth: "100%" }}
           />
