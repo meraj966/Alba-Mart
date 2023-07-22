@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Paper,
   Table,
@@ -15,9 +15,16 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
-import { collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
+import moment from "moment/moment";
 
 function OfferList({ offerData, getOfferData }) {
   const deleteOffer = (id) => {
@@ -31,20 +38,66 @@ function OfferList({ offerData, getOfferData }) {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.value) {
-        const menuRef = collection(db, 'Menu')
-        let data = await getDocs(menuRef)
+        const menuRef = collection(db, "Menu");
+        let data = await getDocs(menuRef);
         const selectedDoc = doc(db, "Offers", id);
         await deleteDoc(selectedDoc);
         Swal.fire("Deleted!", "Selected offer has been deleted", "success");
-        const menuData = data.docs.map(doc => ({ ...doc.data(), id: doc.id }))
-        menuData.forEach(async data => {
+        const menuData = data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        menuData.forEach(async (data) => {
           if (data.saleTag === id)
-            await updateDoc(doc(db, "Menu", data.id), { saleTag: '' })
-        })
+            await updateDoc(doc(db, "Menu", data.id), {
+              saleTag: "",
+              saleValue: 0,
+              salePrice: 0,
+              onSale: false,
+            });
+        });
         getOfferData();
       }
     });
   };
+  useEffect(() => {
+    console.log(offerData, "offerData");
+    if (offerData.length) {
+      let offerPastDue = offerData.filter(
+        (i) => moment(i.endDate) < moment.now()
+      );
+      if (offerPastDue.length) {
+        const titles = offerPastDue.map((i) => i.title).join(", ");
+        if (
+          window.confirm(
+            `Offers - ${titles} have past due date. Please remove products manually or select OK to REMOVE products from sale.`
+          )
+        ) {
+          Swal.fire({
+            title: "Are you sure, that you want to remove products from sale?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+          }).then(async (result) => {
+            if (result.value) {
+              let products = await getDocs(collection(db, "Menu"));
+              const productData = products.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+              }));
+              // Run through all offers and remove all products from sale.
+              
+            }
+          });
+        }
+      }
+      console.log(offerPastDue, "past due date");
+    }
+  }, [offerData]);
+
   console.log(offerData);
   return (
     <>
@@ -79,8 +132,10 @@ function OfferList({ offerData, getOfferData }) {
             {offerData.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.title)}</TableCell>
-                <TableCell align="left">{String(row.startDate) || '-'}</TableCell>
-                <TableCell align="left">{row.endDate || '-'}</TableCell>
+                <TableCell align="left">
+                  {String(row.startDate) || "-"}
+                </TableCell>
+                <TableCell align="left">{row.endDate || "-"}</TableCell>
                 <TableCell align="left">
                   {String(row.discountPercent)}
                 </TableCell>
