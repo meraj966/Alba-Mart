@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import ProductsList from "../products/ProductsList";
-import "../Dash.css";
-import Swal from "sweetalert2";
-import { useAppStore } from "../appStore";
-import PageTemplate from "./reusable/PageTemplate";
 import {
   Modal,
   Stack,
@@ -13,14 +8,16 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase-config";
-import AddProducts from "../products/AddProducts";
-import EditForm from "../products/EditForm";
+import Swal from "sweetalert2";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { BOX_STYLE } from "./reusable/Styles";
+import PageTemplate from "./reusable/PageTemplate";
 import ProductsGrid from "../products";
 import ProductPopup from "../products/resuable/ProductPopup";
+import AddProducts from "../products/AddProducts";
+import EditForm from "../products/EditForm";
 
 export default function Products() {
   const [categories, setCategories] = useState([]);
@@ -34,6 +31,16 @@ export default function Products() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
   const [modalType, setModalType] = useState("");
+
+  // Store the unsubscribe functions in state
+  const [unsubscribeFunctions, setUnsubscribeFunctions] = useState([]);
+
+  const getMenuData = async () => {
+    const menuData = await getDocs(menuRef);
+    const rowsData = menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setOriginalRows(rowsData);
+    setRows(rowsData);
+  };
 
   const handleBulkOpen = () => {
     setBulkOpen(true);
@@ -54,22 +61,34 @@ export default function Products() {
 
   useEffect(() => {
     getMenuData();
-  }, []);
 
-  const getMenuData = async () => {
-    const menuData = await getDocs(menuRef);
-    const categoryData = await getDocs(collection(db, "category")); // Fetch all categories from "category" database
-    const uniqueCategories = [
-      ...new Set([
-        ...menuData.docs.flatMap((doc) => doc.data().category),
-        ...categoryData.docs.map((doc) => doc.data().name), // Include categories from "category" database
-      ]),
-    ];
-    setCategories(uniqueCategories);
-    const rowsData = menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    setOriginalRows(rowsData);
-    setRows(rowsData);
-  };
+    // Subscribe to menu data changes
+    const menuUnsubscribe = onSnapshot(menuRef, (snapshot) => {
+      const menuData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setOriginalRows(menuData);
+      setRows(menuData);
+    });
+
+    // Subscribe to category data changes
+    const categoryUnsubscribe = onSnapshot(collection(db, "category"), (snapshot) => {
+      const categoryData = snapshot.docs.map((doc) => doc.data().name);
+      const uniqueCategories = [
+        ...new Set([
+          ...originalRows.flatMap((item) => item.category),
+          ...categoryData,
+        ]),
+      ];
+      setCategories(uniqueCategories);
+    });
+
+    // Store the unsubscribe functions
+    setUnsubscribeFunctions([menuUnsubscribe, categoryUnsubscribe]);
+
+    return () => {
+      // Unsubscribe from Firestore listeners
+      unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+    };
+  }, []);
 
   const filterData = (v) => {
     if (v) {

@@ -47,6 +47,7 @@ export default function EditForm({ fid, closeEvent }) {
   const [stockValue, setStockValue] = useState("");
   const [maxLimit, setMaxLimit] = useState("");
   const [purchaseRate, setPurchaseRate] = useState("");
+  const [barcode, setBarcode] = useState("");
   const [categoryList, setCategoryList] = useState([]);
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryData, setCategoryData] = useState(null);
@@ -83,7 +84,8 @@ export default function EditForm({ fid, closeEvent }) {
     setMaxLimit(fid.maxLimit);
     setPurchaseRate(fid.purchaseRate);
     setShowProduct(fid.showProduct);
-    setBrandName(fid.brandName)
+    setBrandName(fid.brandName);
+    setBarcode(fid.barcode)
   }, []);
 
   useEffect(() => {
@@ -95,8 +97,8 @@ export default function EditForm({ fid, closeEvent }) {
     const data = await getDocs(settingsDataRef);
     let settings = data.docs.map((doc) => ({ ...doc.data() }));
     setSaleTypeList(settings[0].saleType);
-    setUnitList(settings[0].unit)
-    setBrandNameList(settings[0].brandNameList)
+    setUnitList(settings[0].unit);
+    setBrandNameList(settings[0].brandNameList);
     setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
   };
   const getUsers = async () => {
@@ -113,15 +115,16 @@ export default function EditForm({ fid, closeEvent }) {
       subCategory,
       category,
       stockValue: parseInt(stockValue),
-      maxLimit: parseInt(maxLimit),
+      maxLimit,
       purchaseRate: parseInt(purchaseRate),
+      barcode,
       showProduct,
-      saleValue: parseInt(saleValue),
       onSale,
       saleType,
       quantity,
       brandName,
-      salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
+      saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
+      salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -139,16 +142,19 @@ export default function EditForm({ fid, closeEvent }) {
       subCategory: subCategory,
       category: category,
       stockValue: parseInt(stockValue),
-      maxLimit: parseInt(maxLimit),
+      maxLimit,
       purchaseRate: parseInt(purchaseRate),
+      barcode,
       quantity,
       file: url,
       showProduct,
-      saleValue: parseInt(saleValue),
+      // saleValue: parseInt(saleValue),
       onSale,
       saleType,
       brandName,
-      salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
+      // salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
+      saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
+      salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -223,7 +229,12 @@ export default function EditForm({ fid, closeEvent }) {
     setSubCategory(event.target.value);
   };
   const handleChangeOnSale = (event) => {
-    setOnSale(event.target.checked);
+    const isChecked = event.target.checked;
+    setOnSale(isChecked);
+
+    if (!isChecked) {
+      setSaleValue(0);
+    }
   };
   const handleChangeShowProduct = (event) => {
     setShowProduct(event.target.checked);
@@ -440,6 +451,17 @@ export default function EditForm({ fid, closeEvent }) {
             sx={{ minWidth: "100%" }}
           />
         </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="barcode"
+            label="Barcode"
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
         <Grid item xs={12}>
           <input type="file" onChange={handlePicChange} accept="/image/*" />
           <p>{percent}% completed</p>
@@ -448,19 +470,19 @@ export default function EditForm({ fid, closeEvent }) {
           <ReactQuill value={description} onChange={handleDescriptionChange} />
         </Grid>
         <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={showProduct}
-                  onChange={handleChangeShowProduct}
-                  name="showProduct"
-                />
-              }
-              name="showProduct"
-              sx={{ minWidth: "100%" }}
-              label="Show Product"
-            />
-          </Grid>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showProduct}
+                onChange={handleChangeShowProduct}
+                name="showProduct"
+              />
+            }
+            name="showProduct"
+            sx={{ minWidth: "100%" }}
+            label="Show Product"
+          />
+        </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" align="center">
             <Button variant="contained" onClick={handleUpload}>

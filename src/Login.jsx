@@ -1,24 +1,29 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import bg from "./bg/signin.svg";
-import bgimg from "./bg/backimg.jpg";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import React, { useEffect } from "react";
+import {
+  Box,
+  Grid,
+  TextField,
+  Typography,
+  Container,
+  Avatar,
+  IconButton,
+  InputAdornment,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Snackbar,
+  Stack,
+  Slide,
+} from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useState, forwardRef } from "react";
-import Snackbar from "@mui/material/Snackbar";
-import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
-import Slide from "@mui/material/Slide";
+import bgimg from "./bg/backimg.jpg";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase-config";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -52,6 +57,7 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
@@ -70,15 +76,12 @@ export default function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then((cred) => {
         const user = cred.user;
-        // navigate("/dashboard")
-        console.log(user);
         window.localStorage.setItem("token", user.accessToken);
         window.localStorage.setItem("userId", user.uid);
         window.localStorage.setItem("email", user.email);
         navigate("/dashboard");
       })
       .catch((error) => {
-        const errorCode = error.code;
         const errorMessage = error.message;
         setError(errorMessage);
       });
@@ -119,17 +122,7 @@ export default function Login() {
         <Box sx={boxstyle}>
           <Grid container>
             <Grid item xs={12} sm={12} lg={6}>
-              <Box
-                style={{
-                  backgroundImage: `url(${bg})`,
-                  backgroundSize: "cover",
-                  marginTop: "40px",
-                  marginLeft: "15px",
-                  marginRight: "15px",
-                  height: "63vh",
-                  color: "#f5f5f5",
-                }}
-              ></Box>
+              {/* Left side image (Add your own image) */}
             </Grid>
             <Grid item xs={12} sm={12} lg={6}>
               <Box
@@ -177,10 +170,27 @@ export default function Login() {
                             fullWidth
                             name="password"
                             label="Password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             id="password"
                             autoComplete="new-password"
                             onChange={(e) => setPassword(e.target.value)}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                  >
+                                    {showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              ),
+                            }}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>

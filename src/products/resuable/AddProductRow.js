@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CurrencyRupee } from "@mui/icons-material";
-import { Grid, InputAdornment, TextField, Switch } from "@mui/material";
+import { Grid, InputAdornment, TextField, Switch, Button } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -19,6 +19,7 @@ import { uploadImages } from "../../firebase_utils";
 import { getDiscountedPrice } from "../../utils";
 import SelectInput from "../../components/reusable/SelectInput";
 import ReactQuill from "react-quill";
+import BarcodeScanner from "./BarcodeScanner";
 
 function AddProductRow({
   saveDone,
@@ -56,6 +57,26 @@ function AddProductRow({
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
 
+  const [barcode, setBarcode] = useState(""); // State to store scanned barcode
+  const [lastGeneratedBarcode, setLastGeneratedBarcode] = useState(0);
+
+  const handleBarcodeScanned = (scannedBarcode) => {
+    setBarcode(scannedBarcode);
+  };
+
+  const generateRandomBarcode = () => {
+    const newBarcodeNumber = (lastGeneratedBarcode + 1).toString().padStart(6, "0");
+    setLastGeneratedBarcode(lastGeneratedBarcode + 1);
+    return newBarcodeNumber;
+  };
+
+  const handleGenerateBarcode = () => {
+    if (!barcode) {
+      const generatedBarcode = generateRandomBarcode();
+      setBarcode(generatedBarcode);
+    }
+  };
+
   const handleDescriptionChange = (value) => {
     setDescription(value);
   };
@@ -74,7 +95,7 @@ function AddProductRow({
       measureUnit,
       quantity,
       stockValue: parseInt(stockValue),
-      maxLimit: parseInt(maxLimit),
+      maxLimit,
       purchaseRate: parseInt(purchaseRate),
       url,
       showProduct,
@@ -82,6 +103,7 @@ function AddProductRow({
       date: String(new Date()),
       salePrice: getDiscountedPrice(saleType, price, saleValue),
       brandName,
+      barcode: barcode,
     });
     const id = docData.id;
     await updateDoc(doc(db, "Menu", id), { id }).then(delete products[index]);
@@ -150,7 +172,7 @@ function AddProductRow({
       price,
       onSale,
       saleType,
-      saleValue:parseInt(saleValue),
+      saleValue: parseInt(saleValue),
       category,
       subCategory,
       measureUnit,
@@ -179,211 +201,234 @@ function AddProductRow({
   ]);
 
   return (
-    <Grid container direction="row" spacing={0.8}>
-      <Grid item xs={3}>
-        <TextField
-          error={false}
-          id="name"
-          name="name"
-          multiline
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          label="Name"
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={1.5}>
-        <TextField
-          error={false}
-          id="price"
-          label="Price"
-          type="number"
-          name="price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          size="small"
-          sx={{ minWidth: "100%" }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <CurrencyRupee />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
-      <Grid item xs={0.7}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={onSale}
-              onChange={(e) => setOnSale(e.target.checked)}
-              name="onSale"
-            />
-          }
-          name="onSale"
-          sx={{ minWidth: "100%" }}
-          label="Sale"
-        />
-      </Grid>
-      <Grid item xs={1.6}>
-        {onSale && (
-          <SelectInput
-            id="saleType"
-            label="SaleType"
-            name="saleType"
-            value={saleType}
-            onChange={(e) => setSaleType(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-            data={saleTypeList}
-          />
-        )}
-      </Grid>
-      <Grid item xs={2}>
-        {onSale && (
+    <div>
+      <BarcodeScanner onBarcodeScanned={handleBarcodeScanned} />
+      <Grid container direction="row" spacing={0.8}>
+        <Grid item xs={3}>
           <TextField
             error={false}
-            id="SaleValue"
-            name="saleValue"
-            type="number"
-            value={saleValue}
-            onChange={(e) => setSaleValue(e.target.value)}
-            label="Sale Value"
+            id="name"
+            name="name"
+            multiline
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            label="Name"
             size="small"
             sx={{ minWidth: "100%" }}
           />
-        )}
-      </Grid>
-      <Grid item xs={3}>
-        <SelectInput
-          id="category"
-          label="Category"
-          name="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          size="small"
-          sx={{ minWidth: "100%" }}
-          data={categoryList}
-        />
-      </Grid>
-      <Grid item xs={3}>
-        <SelectInput
-          id="subCategory"
-          label="Sub Category"
-          size="small"
-          name="subCategory"
-          value={subCategory}
-          onChange={(e) => setSubCategory(e.target.value)}
-          sx={{ minWidth: "100%" }}
-          data={subCategoryList}
-        />
-      </Grid>
-      <Grid item xs={3}>
-        <SelectInput
-          id="brandName"
-          label="Brand Name"
-          size="small"
-          sx={{ minWidth: "100%" }}
-          name="brandName"
-          value={brandName}
-          onChange={(e) => setBrandName(e.target.value)}
-          data={brandNameList}
-        />
-      </Grid>
-      <Grid item xs={1.5}>
-        <SelectInput
-          id="measureUnit"
-          label="Unit"
-          name="measureUnit"
-          value={measureUnit}
-          onChange={(e) => setMeasureUnit(e.target.value)}
-          data={measureUnitList}
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={1.5}>
-        <TextField
-          error={false}
-          id="quantity"
-          label="Quantity"
-          type="number"
-          name="quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={1.5}>
-        <TextField
-          error={false}
-          id="stockValue"
-          label="Stock Value"
-          type="number"
-          name="stockValue"
-          value={stockValue}
-          onChange={(e) => setStockValue(e.target.value)}
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          error={false}
-          id="maxLimit"
-          label="Max Limit On product"
-          type="number"
-          name="maxLimit"
-          value={maxLimit}
-          onChange={(e) => setMaxLimit(e.target.value)}
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          error={false}
-          id="purchaseRate"
-          label="Purchase Rate"
-          type="number"
-          name="purchaseRate"
-          value={purchaseRate}
-          onChange={(e) => setPurchaseRate(e.target.value)}
-          size="small"
-          sx={{ minWidth: "100%" }}
-        />
-      </Grid>
-      <Grid item xs={3}>
-        <input
-          type="file"
-          multiple
-          onChange={(e) => setFiles(e.target.files)}
-          accept="/image/*"
-          name="file"
-          style={{ marginTop: "10px" }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <ReactQuill value={description} onChange={handleDescriptionChange} />
-      </Grid>
-      <Grid item xs={12}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={showProduct}
-              onChange={(e) => setShowProduct(e.target.checked)}
-              name="showProduct"
+        </Grid>
+        <Grid item xs={1.5}>
+          <TextField
+            error={false}
+            id="price"
+            label="Price"
+            type="number"
+            name="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <CurrencyRupee />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid item xs={0.7}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={onSale}
+                onChange={(e) => setOnSale(e.target.checked)}
+                name="onSale"
+              />
+            }
+            name="onSale"
+            sx={{ minWidth: "100%" }}
+            label="Sale"
+          />
+        </Grid>
+        <Grid item xs={1.6}>
+          {onSale && (
+            <SelectInput
+              id="saleType"
+              label="SaleType"
+              name="saleType"
+              value={saleType}
+              onChange={(e) => setSaleType(e.target.value)}
+              size="small"
+              sx={{ minWidth: "100%" }}
+              data={saleTypeList}
             />
-          }
-          name="showProduct"
-          sx={{ minWidth: "100%" }}
-          label="Show Product"
-        />
+          )}
+        </Grid>
+        <Grid item xs={2}>
+          {onSale && (
+            <TextField
+              error={false}
+              id="SaleValue"
+              name="saleValue"
+              type="number"
+              value={saleValue}
+              onChange={(e) => setSaleValue(e.target.value)}
+              label="Sale Value"
+              size="small"
+              sx={{ minWidth: "100%" }}
+            />
+          )}
+        </Grid>
+        <Grid item xs={3}>
+          <SelectInput
+            id="category"
+            label="Category"
+            name="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+            data={categoryList}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <SelectInput
+            id="subCategory"
+            label="Sub Category"
+            size="small"
+            name="subCategory"
+            value={subCategory}
+            onChange={(e) => setSubCategory(e.target.value)}
+            sx={{ minWidth: "100%" }}
+            data={subCategoryList}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <SelectInput
+            id="brandName"
+            label="Brand Name"
+            size="small"
+            sx={{ minWidth: "100%" }}
+            name="brandName"
+            value={brandName}
+            onChange={(e) => setBrandName(e.target.value)}
+            data={brandNameList}
+          />
+        </Grid>
+        <Grid item xs={1.5}>
+          <SelectInput
+            id="measureUnit"
+            label="Unit"
+            name="measureUnit"
+            value={measureUnit}
+            onChange={(e) => setMeasureUnit(e.target.value)}
+            data={measureUnitList}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={1.5}>
+          <TextField
+            error={false}
+            id="quantity"
+            label="Quantity"
+            type="number"
+            name="quantity"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={1.5}>
+          <TextField
+            error={false}
+            id="stockValue"
+            label="Stock Value"
+            type="number"
+            name="stockValue"
+            value={stockValue}
+            onChange={(e) => setStockValue(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="maxLimit"
+            label="Max Limit On product"
+            type="number"
+            name="maxLimit"
+            value={maxLimit}
+            onChange={(e) => setMaxLimit(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="purchaseRate"
+            label="Purchase Rate"
+            type="number"
+            name="purchaseRate"
+            value={purchaseRate}
+            onChange={(e) => setPurchaseRate(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="barcode"
+            label="Barcode"
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+          {!barcode && (
+            <Button
+              variant="contained"
+              onClick={handleGenerateBarcode}
+              sx={{ marginTop: 1 }}
+            >
+              Generate Barcode
+            </Button>
+          )}
+        </Grid>
+        <Grid item xs={3}>
+          <input
+            type="file"
+            multiple
+            onChange={(e) => setFiles(e.target.files)}
+            accept="/image/*"
+            name="file"
+            style={{ marginTop: "10px" }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <ReactQuill value={description} onChange={handleDescriptionChange} />
+        </Grid>
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showProduct}
+                onChange={(e) => setShowProduct(e.target.checked)}
+                name="showProduct"
+              />
+            }
+            name="showProduct"
+            sx={{ minWidth: "100%" }}
+            label="Show Product"
+          />
+        </Grid>
       </Grid>
-    </Grid>
+    </div>
   );
 }
 
