@@ -93,7 +93,7 @@ export default function Dashboard() {
     }));
     setProducts(res);
     setUnavailableProd(res.filter((i) => i.stockValue === 0));
-    setLowStockProd(res.filter((i) => i.stockValue < 4));
+    setLowStockProd(res.filter((i) => i.stockValue < 4 && i.stockValue !== 0));
   };
 
   const getOrders = async () => {

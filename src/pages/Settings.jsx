@@ -58,6 +58,7 @@ export default function Settings() {
   const [categoryData, setCategoryData] = useState(null);
 
   const [isBulkAdd, setIsBulkAdd] = useState(false);
+  const [selectedBrandName, setSelectedBrandName] = useState("");
 
   const [file, setFile] = useState(null);
 
@@ -129,6 +130,7 @@ export default function Settings() {
     if (editType === SUBCATEGORY) {
       if (!subCategory) return;
     }
+    setSelectedBrandName(selectedBrandName); // Set the selected brand name for editing
     setType(type);
     setEditType(editType);
     setEditOpen(!editOpen);
@@ -145,20 +147,34 @@ export default function Settings() {
     setIsBulkAdd(false);
   };
 
-  const getImageUrl = () =>
-    categoryData.find((i) => i.name === category).subCategory[subCategory]
-      .imageUrl;
+  const getImageUrl = () => {
+    const selectedCategory = categoryData.find((i) => i.name === category);
+    if (editType === SUBCATEGORY && selectedCategory && selectedCategory.subCategory && selectedCategory.subCategory[subCategory]) {
+      return selectedCategory.subCategory[subCategory].imageUrl;
+    } else if (editType === CATEGORY && selectedCategory) {
+      return selectedCategory.imageUrl;
+    }
+    return ""; // Return a default value if imageUrl is not available
+  };
 
-  const saveSubCategoryImage = async (url) => {
-    let payload = { [subCategory]: { imageUrl: url } };
-    let subCategoryData = {
-      ...categoryData.find((i) => i.name === category).subCategory,
-      ...payload,
-    };
-    const categoryDoc = doc(db, "category", category);
-    await updateDoc(categoryDoc, { subCategory: subCategoryData }).then(() => {
-      Swal.fire("Submitted!", "Your file has been submitted.", "success");
-    });
+  const saveCategoryImage = async (url) => {
+    const selectedCategory = categoryData.find((i) => i.name === category);
+    if (editType === SUBCATEGORY && selectedCategory && selectedCategory.subCategory && selectedCategory.subCategory[subCategory]) {
+      let payload = { [subCategory]: { imageUrl: url } };
+      let subCategoryData = {
+        ...selectedCategory.subCategory,
+        ...payload,
+      };
+      const categoryDoc = doc(db, "category", category);
+      await updateDoc(categoryDoc, { subCategory: subCategoryData }).then(() => {
+        Swal.fire("Submitted!", "Your file has been submitted.", "success");
+      });
+    } else if (editType === CATEGORY && selectedCategory) {
+      const categoryDoc = doc(db, "category", category);
+      await updateDoc(categoryDoc, { imageUrl: url }).then(() => {
+        Swal.fire("Submitted!", "Your file has been submitted.", "success");
+      });
+    }
     await getDataFromFirestore();
     setFile(null);
     handleEditForm("", "edit");
@@ -167,7 +183,7 @@ export default function Settings() {
   const handleCategorySave = async () => {
     if (!file) Swal.fire("Failed!", "Please upload an image first!", "error");
     else {
-      uploadImageAndSaveUrl(file, saveSubCategoryImage);
+      uploadImageAndSaveUrl(file, saveCategoryImage);
     }
   };
 
@@ -400,13 +416,24 @@ export default function Settings() {
             />
           </Grid>
           <Grid item>
+            <Tooltip title="Edit Brand Name">
+              <IconButton
+                aria-label="edit"
+                onClick={() => handleEditForm(BRAND_NAME, "edit")} // Pass the selected brand name for editing
+                sx={{ marginTop: "30px" }}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item>
             <Tooltip title="Add Brand Name">
               <IconButton
                 aria-label="edit"
                 onClick={() => handleEditForm(BRAND_NAME, "edit")}
                 sx={{ marginTop: "30px" }}
               >
-                 <AddCircle />
+                <AddCircle />
               </IconButton>
             </Tooltip>
           </Grid>

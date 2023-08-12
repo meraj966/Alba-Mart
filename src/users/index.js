@@ -17,7 +17,7 @@ export default function Users() {
   const [options, setOptions] = useState([]);
   const rows = useAppStore((state) => state.rows);
   const setRows = useAppStore((state) => state.setRows);
-  const empCollectionRef = collection(db, "Address");
+  const empCollectionRef = collection(db, "UserProfile");
 
   useEffect(() => {
     getUsers();
