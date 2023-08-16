@@ -117,12 +117,13 @@ export default function EditForm({ fid, closeEvent }) {
       stockValue: parseInt(stockValue),
       maxLimit,
       purchaseRate: parseInt(purchaseRate),
-      barcode,
+      barcode: barcode || "",
       showProduct,
       onSale,
       saleType,
       quantity,
       brandName,
+      measureUnit,
       saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
     };
@@ -144,15 +145,14 @@ export default function EditForm({ fid, closeEvent }) {
       stockValue: parseInt(stockValue),
       maxLimit,
       purchaseRate: parseInt(purchaseRate),
-      barcode,
+      barcode: barcode || "",
       quantity,
       file: url,
       showProduct,
-      // saleValue: parseInt(saleValue),
       onSale,
       saleType,
       brandName,
-      // salePrice: getDiscountedPrice(saleType, Number(price), saleValue),
+      measureUnit,
       saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
     };

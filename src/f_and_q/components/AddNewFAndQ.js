@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -28,6 +33,9 @@ function AddNewFAndQ({
   refreshFAndQ,
   handleClose,
 }) {
+  const [selectedFor, setSelectedFor] = useState(
+    isEditMode ? data.for : "User"
+  );
   const [question, setQuestion] = useState(
     isEditMode ? data.question : ""
   );
@@ -39,21 +47,27 @@ function AddNewFAndQ({
     event.preventDefault();
     if (isEditMode) {
       await updateDoc(doc(db, "FAndQ", data.id), {
+        for: selectedFor,
         question,
         answer,
       }).then(() => {
-        Swal.fire("Succesfull!", "F and Q added", "success");
+        Swal.fire("Successful!", "F and Q added", "success");
       });
     } else {
       await addDoc(collection(db, "FAndQ"), {
+        for: selectedFor,
         question,
         answer,
       }).then(() => {
-        Swal.fire("Succesfull!", "F and Q added", "success");
+        Swal.fire("Successful!", "F and Q added", "success");
       });
     }
     refreshFAndQ();
     handleClose();
+  };
+
+  const handleForChange = (event) => {
+    setSelectedFor(event.target.value);
   };
 
   const handleQuestionChange = (event) => {
@@ -66,9 +80,26 @@ function AddNewFAndQ({
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
-      <CardHeader title="Add Terms & Condition" />
+      <CardHeader title="Add F & Q" />
       <CardContent sx={{ overflowY: "scroll", maxHeight: "400px" }}>
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel htmlFor="for-select">For</InputLabel>
+              <Select
+                value={selectedFor}
+                onChange={handleForChange}
+                label="For"
+                inputProps={{
+                  name: "for",
+                  id: "for-select",
+                }}
+              >
+                <MenuItem value="User">User</MenuItem>
+                <MenuItem value="Delivery Boy">Delivery Boy</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
           <Grid item xs={12}>
             <TextField
               label="Question"
