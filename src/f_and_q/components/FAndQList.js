@@ -25,6 +25,9 @@ function FAndQList({ openModal, fAndQData, handleDelete }) {
           <Table aria-label="sticky table" stickyHeader>
             <TableHead>
               <TableRow>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
+                  For
+                </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
                   Question
                 </TableCell>
@@ -40,6 +43,7 @@ function FAndQList({ openModal, fAndQData, handleDelete }) {
               {fAndQData?.map((row) => {
                 return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                  <TableCell align="left">{String(row.for)}</TableCell>
                   <TableCell align="left">{String(row.question)}</TableCell>
                   <TableCell align="left"><div dangerouslySetInnerHTML={{__html: row.answer}}></div></TableCell>
                   <TableCell align="left">
