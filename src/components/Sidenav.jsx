@@ -21,6 +21,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import SendIcon from '@mui/icons-material/Send';
 
 const drawerWidth = 240;
 
@@ -175,6 +176,11 @@ export default function Sidenav() {
           label={"F & Q"}
           Icon={<QuestionAnswerIcon />}
           navigationUrl={"/f_and_q"}
+        />
+        <SideNavListItem
+          label={"Send Notification"}
+          Icon={<SendIcon />}
+          navigationUrl={"/push_notification"}
         />
         <SideNavListItem
           label={"Logout"}
