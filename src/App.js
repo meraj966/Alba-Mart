@@ -19,6 +19,7 @@ import DeliveryCharge from "./delivery_charge";
 import Register from "./authentication/Register";
 import ForgotPassword from "./authentication/ForgotPassword";
 import FAndQ from "./f_and_q";
+import PushNotification from "./push_notification";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 
 export default function App() {
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/users" exact element={protectedElement(<Users />)}></Route>
           <Route path="/orders" exact element={protectedElement(<Orders />)}></Route>
           <Route path="/settings" exact element={protectedElement(<Settings />)}></Route>
+          <Route path="/push_notification" exact element={protectedElement(<PushNotification />)}></Route>
           <Route
             path="/offer-settings"
             exact

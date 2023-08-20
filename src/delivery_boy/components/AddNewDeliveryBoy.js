@@ -41,46 +41,54 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   };
 
   const saveBoy = async (urls) => {
-    console.log(joinDate, dayjs(joinDate));
+    const updateData = {
+      name,
+      address: address,
+      dlnumber: dlnumber,
+      phoneNumber: phoneNumber,
+      alternateNumber: alternateNumber,
+      joinDate: formatDate(joinDate),
+      isActive: isActive,
+    };
+  
+    if (urls[0]) {
+      updateData.dlImageFront = urls[0];
+    }
+    if (urls[1]) {
+      updateData.dlImageBack = urls[1];
+    }
+    if (urls[2]) {
+      updateData.profilePic = urls[2];
+    }
+  
     if (isEditMode) {
-      await updateDoc(doc(db, 'DeliveryBoy', data.id), {
-        name,
-        dlImageFront: urls[0],
-        dlImageBack: urls[1],
-        profilePic: urls[2],
-        address: address,
-        dlnumber: dlnumber,
-        phoneNumber: phoneNumber,
-        alternateNumber: alternateNumber,
-        joinDate: formatDate(joinDate),
-        isActive: isActive,
-      }).then(() => {
-        Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
-      })
+      await updateDoc(doc(db, 'DeliveryBoy', data.id), updateData).then(() => {
+        Swal.fire("Submitted!", "Delivery Boy has been updated", "success");
+      });
     } else {
-      await addDoc(collection(db, 'DeliveryBoy'), {
-        name,
-        dlImageFront: urls[0],
-        dlImageBack: urls[1],
-        profilePic: urls[2],
-        address: address,
-        dlnumber: dlnumber,
-        phoneNumber: phoneNumber,
-        alternateNumber: alternateNumber,
-        joinDate: formatDate(joinDate),
-        isActive: isActive,
-      }).then(() => {
+      await addDoc(collection(db, 'DeliveryBoy'), updateData).then(() => {
         Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
       });
     }
     refreshDeliveryBoys();
     closeModal();
-  };
+  };  
 
   const submitNewDeliveryBoy = async () => {
-    const res = await uploadImages([dlImageFront, dlImageBack, profileImage]);
+    let res = [];
+    
+    // Check if it's an edit operation and any image files are selected
+    if (isEditMode && (dlImageFront || dlImageBack || profileImage)) {
+      res = await uploadImages([dlImageFront, dlImageBack, profileImage]);
+    } else if (!isEditMode) {
+      // If it's not an edit operation (add new), upload all images if available
+      if (dlImageFront || dlImageBack || profileImage) {
+        res = await uploadImages([dlImageFront, dlImageBack, profileImage]);
+      }
+    }
+  
     await saveBoy(res);
-  };
+  };  
 
   const handleSubmit = () => {
     if (!name) Swal.fire("Validation Issue!", "Please add a Title", "error");
