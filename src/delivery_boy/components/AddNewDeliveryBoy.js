@@ -30,11 +30,12 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [joinDate, setJoinDate] = useState(dayjs(new Date()));
   const [address, setAddress] = useState(isEditMode ? data.address : "");
   const [dlnumber, setDlNumber] = useState(isEditMode ? data.dlnumber : "");
-  const [dlImageFront, setDlImageFront] = useState(null);
-  const [dlImageBack, setDlImageBack] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
   const [percent, setPercent] = useState("");
   const [isActive, setIsActive] = useState(isEditMode ? data.isActive : false);
+  const [dlImageFrontFile, setDlImageFrontFile] = useState(null);
+  const [dlImageBackFile, setDlImageBackFile] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
+
 
   const formatDate = (obj) => {
     return `${obj.date()}/${obj.month()}/${obj.year()}`;
@@ -50,17 +51,17 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
       joinDate: formatDate(joinDate),
       isActive: isActive,
     };
-  
+
     if (urls[0]) {
-      updateData.dlImageFront = urls[0];
+      updateData.dlImageFrontFile = urls[0];
     }
     if (urls[1]) {
-      updateData.dlImageBack = urls[1];
+      updateData.dlImageBackFile = urls[1];
     }
     if (urls[2]) {
-      updateData.profilePic = urls[2];
+      updateData.profileImageFile = urls[2];
     }
-  
+
     if (isEditMode) {
       await updateDoc(doc(db, 'DeliveryBoy', data.id), updateData).then(() => {
         Swal.fire("Submitted!", "Delivery Boy has been updated", "success");
@@ -76,19 +77,17 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
 
   const submitNewDeliveryBoy = async () => {
     let res = [];
-    
-    // Check if it's an edit operation and any image files are selected
-    if (isEditMode && (dlImageFront || dlImageBack || profileImage)) {
-      res = await uploadImages([dlImageFront, dlImageBack, profileImage]);
-    } else if (!isEditMode) {
-      // If it's not an edit operation (add new), upload all images if available
-      if (dlImageFront || dlImageBack || profileImage) {
-        res = await uploadImages([dlImageFront, dlImageBack, profileImage]);
-      }
+
+    if (isEditMode) {
+      const imageFiles = [dlImageFrontFile, dlImageBackFile, profileImageFile];
+      res = await uploadImages(imageFiles.filter(file => file !== null));
+    } else {
+      const imageFiles = [dlImageFrontFile, dlImageBackFile, profileImageFile];
+      res = await uploadImages(imageFiles.filter(file => file !== null));
     }
-  
+
     await saveBoy(res);
-  };  
+  }; 
 
   const handleSubmit = () => {
     if (!name) Swal.fire("Validation Issue!", "Please add a Title", "error");
@@ -100,7 +99,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   };
 
   return (
-    <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "80vh", overflow: "auto" }}>
+    <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "90vh", overflow: "auto" }}>
       <CardHeader title="Delivery Boy Form" />
       <CardContent>
         <Grid container spacing={2}>
@@ -116,7 +115,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
               sx={{ mb: 2 }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               error={false}
               id="address"
@@ -125,6 +124,8 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
               onChange={(e) => setAddress(e.target.value)}
               label="Address"
               size="small"
+              multiline // Add this prop for multiline
+              rows={4} // Specify the number of rows
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -173,7 +174,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
             <input
               type="file"
               style={{ marginTop: "10px" }}
-              onChange={(e) => setDlImageFront(e.target.files[0])}
+              onChange={(e) => setDlImageFrontFile(e.target.files[0])}
               accept="/image/*"
             />
           </Grid>
@@ -188,7 +189,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
             <input
               type="file"
               style={{ marginTop: "10px" }}
-              onChange={(e) => setDlImageBack(e.target.files[0])}
+              onChange={(e) => setDlImageBackFile(e.target.files[0])}
               accept="/image/*"
             />
           </Grid>
@@ -203,7 +204,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
             <input
               type="file"
               style={{ marginTop: "10px" }}
-              onChange={(e) => setProfileImage(e.target.files[0])}
+              onChange={(e) => setProfileImageFile(e.target.files[0])}
               accept="/image/*"
             />
           </Grid>

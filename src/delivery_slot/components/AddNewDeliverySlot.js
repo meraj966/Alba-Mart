@@ -15,10 +15,6 @@ import {
 import { collection, addDoc, setDoc, updateDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
 
 function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose }) {
   console.log("data", data);
@@ -56,7 +52,7 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
     if (isEditMode) {
       await updateDoc(doc(db, "DeliverySlot", data.id), {
         day,
-        slot1: numDeliveriesSlot1,
+        slot1: parseInt(numDeliveriesSlot1),
         slot1Time: timeFromSlot1 + " " + amPmFromSlot1 + " " + "to" + " " + timeToSlot1 + " " + amPmToSlot1,
       }).then(() => {
         Swal.fire("Succesfull!", "Delivery Slot added", "success");
@@ -64,7 +60,7 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
     } else {
       await setDoc(doc(collection(db, "DeliverySlot"), day), {
         day,
-        slot1: numDeliveriesSlot1,
+        slot1: parseInt(numDeliveriesSlot1),
         slot1Time: timeFromSlot1 + " " + amPmFromSlot1 + " " + "to" + " " + timeToSlot1 + " " + amPmToSlot1,
       }).then(() => {
         Swal.fire("Succesfull!", "Delivery Slot added", "success");
