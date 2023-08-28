@@ -64,7 +64,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 <TableCell align="left">{String(row.joinDate)}</TableCell>
                 <TableCell align="left">
                   <img
-                    src={row.dlImageFront}
+                    src={row.dlImageFrontFile}
                     height="70px"
                     width="70px"
                     style={{ borderRadius: "15px" }}
@@ -73,7 +73,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 </TableCell>
                 <TableCell align="left">
                   <img
-                    src={row.dlImageBack}
+                    src={row.dlImageBackFile}
                     height="70px"
                     width="70px"
                     style={{ borderRadius: "15px" }}
@@ -82,7 +82,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 </TableCell>
                 <TableCell align="left">
                   <img
-                    src={row.profilePic}
+                    src={row.profileImageFile}
                     height="70px"
                     width="70px"
                     style={{ borderRadius: "15px" }}

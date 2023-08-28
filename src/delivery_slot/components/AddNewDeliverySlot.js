@@ -56,7 +56,7 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
     if (isEditMode) {
       await updateDoc(doc(db, "DeliverySlot", data.id), {
         day,
-        slot1: numDeliveriesSlot1,
+        slot1: parseInt(numDeliveriesSlot1),
         slot1Time: timeFromSlot1 + " " + amPmFromSlot1 + " " + "to" + " " + timeToSlot1 + " " + amPmToSlot1,
       }).then(() => {
         Swal.fire("Succesfull!", "Delivery Slot added", "success");
@@ -64,7 +64,7 @@ function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose
     } else {
       await setDoc(doc(collection(db, "DeliverySlot"), day), {
         day,
-        slot1: numDeliveriesSlot1,
+        slot1: parseInt(numDeliveriesSlot1),
         slot1Time: timeFromSlot1 + " " + amPmFromSlot1 + " " + "to" + " " + timeToSlot1 + " " + amPmToSlot1,
       }).then(() => {
         Swal.fire("Succesfull!", "Delivery Slot added", "success");

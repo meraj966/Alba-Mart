@@ -44,24 +44,25 @@ function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
   };
 
   const saveMessage = async (urls, selectedProductId = null) => {
+    const messageData = {
+      body,
+      title,
+      type,
+      image: urls[0],
+    };
+
+    if (type === "Product") {
+      messageData.product = selectedProductId;
+    } else {
+      messageData.product = ""; // Set product to blank if type is not Product
+    }
+
     if (isEditMode) {
-      await updateDoc(doc(db, "GlobalNotification", data.id), {
-        body,
-        title,
-        type,
-        image: urls[0],
-        product: selectedProductId,
-      }).then(() => {
+      await updateDoc(doc(db, "GlobalNotification", data.id), messageData).then(() => {
         Swal.fire("Submitted!", "Message has been updated", "success");
       });
     } else {
-      await addDoc(collection(db, "GlobalNotification"), {
-        body,
-        title,
-        type,
-        image: urls[0],
-        product: selectedProductId,
-      }).then(() => {
+      await addDoc(collection(db, "GlobalNotification"), messageData).then(() => {
         Swal.fire("Submitted!", "New message has been added", "success");
       });
     }
@@ -86,12 +87,7 @@ function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
     }
 
     const res = await uploadImages([image]);
-
-    if (type === "Product") {
-      await saveMessage(res, selectedProductId);
-    } else {
-      await saveMessage(res);
-    }
+    await saveMessage(res, selectedProductId);
   };
 
   const handleSubmit = () => {
