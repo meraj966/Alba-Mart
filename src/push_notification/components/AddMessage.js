@@ -115,7 +115,7 @@ function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
               sx={{ mb: 2 }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               error={false}
               id="body"
@@ -124,6 +124,8 @@ function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
               onChange={(e) => setBody(e.target.value)}
               label="Body"
               size="small"
+              multiline
+              rows={4}
               sx={{ mb: 2 }}
             />
           </Grid>

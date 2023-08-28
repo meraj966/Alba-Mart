@@ -15,10 +15,6 @@ import {
 import { collection, addDoc, setDoc, updateDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
 
 function AddNewDeliverySlot({ data, isEditMode, refreshDeliverySlot, handleClose }) {
   console.log("data", data);

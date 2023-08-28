@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc,setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, setDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -24,7 +24,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   const [message, setMessage] = useState(isEditMode ? data.message : "");
   const [numUsers, setNumUsers] = useState(isEditMode ? data.numUsers : 0);
   const [startDate, setStartDate] = useState(isEditMode ? data.startDate : "dd-mm-yyyy");
-  const [endDate, setEndDate] = useState(isEditMode ? data.endDate: "dd-mm-yyyy");
+  const [endDate, setEndDate] = useState(isEditMode ? data.endDate : "dd-mm-yyyy");
   const [minOrderAmount, setMinOrderAmount] = useState(
     isEditMode ? data.minOrderAmount : 0
   );
@@ -55,7 +55,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         discountStatus,
         startDate, // add "Start Date" to the object being saved to Firestore
         endDate, // add "End Date" to the object being saved to Firestore
-      }).then(()=> {
+      }).then(() => {
         Swal.fire('Succesfull!', 'Promo code added', 'success')
       })
     } else {
@@ -70,7 +70,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         discountStatus,
         startDate, // add "Start Date" to the object being saved to Firestore
         endDate, // add "End Date" to the object being saved to Firestore
-      }).then(()=> {
+      }).then(() => {
         Swal.fire('Succesfull!', 'Promo code added', 'success')
       });
     }
@@ -119,7 +119,7 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   };
 
   return (
-    <Card sx={{ marginTop: "25px", border: "1px solid" }}>
+    <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "90vh", overflow: "auto" }}>
       <CardHeader title="Add Promo Code" />
       <CardContent>
         <Grid container spacing={2}>
@@ -132,12 +132,14 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
               sx={{ mb: 2 }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               label="Message"
               type="text"
               value={message}
               onChange={handleMessageChange}
+              multiline
+              rows={4}
               sx={{ mb: 2, display: "block" }}
             />
           </Grid>
