@@ -57,7 +57,7 @@ function AddPrivacyAndPolicy({ data, isEditMode, refreshPrivacyAndPolicy, handle
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid" }}>
-      <CardHeader title="Add Terms & Condition" />
+      <CardHeader title="Add Privacy & Policy" />
       <CardContent sx={{ overflowY: "scroll", maxHeight: "400px" }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>

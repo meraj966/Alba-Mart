@@ -37,7 +37,7 @@ function PrivacyAndPolicy() {
           closeModal={() => setPrivacyAndPolicy(false)}
           isEditMode={openInEditMode}
           data={privacyAndPolicyModalData}
-          refreshTermsAndConditions={getPrivacyAndPolicyData}
+          refreshPrivacyAndPolicy={getPrivacyAndPolicyData}
           handleClose={handleClose}
         />
       </Box>
@@ -61,7 +61,7 @@ function PrivacyAndPolicy() {
             setOpenInEditMode(false);
           }}
         >
-          Add Term & Condition
+          Add Privacy & Policy
         </Button>
       </Stack>
     </>
@@ -71,7 +71,7 @@ function PrivacyAndPolicy() {
       <PageTemplate
         modal={modal()}
         actionBar={actionBar()}
-        title={"Terms And Conditions"}
+        title={"Privacy And Policy"}
       >
         <PrivacyAndPolicyList
           openModal={(row) => {
