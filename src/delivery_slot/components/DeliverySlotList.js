@@ -27,16 +27,16 @@ function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
           <TableHead>
             <TableRow>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Day
+                <strong>Day</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Slot 1 Time
+                <strong>Slot 1 Time</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                No. Of Delvry(Slot 1)
+                <strong>No. Of Delvry(Slot 1)</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                Action
+                <strong>Action</strong>
               </TableCell>
             </TableRow>
           </TableHead>

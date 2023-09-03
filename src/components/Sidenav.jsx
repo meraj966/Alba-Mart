@@ -23,6 +23,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import SendIcon from '@mui/icons-material/Send';
 import PolicyIcon from '@mui/icons-material/Policy';
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 
 const drawerWidth = 240;
 
@@ -187,6 +188,11 @@ export default function Sidenav() {
           label={"Privacy & Policy"}
           Icon={<PolicyIcon />}
           navigationUrl={"/privacy_and_policy"}
+        />
+        <SideNavListItem
+          label={"Contact Us"}
+          Icon={<ContactPhoneIcon />}
+          navigationUrl={"/contact_us"}
         />
         <SideNavListItem
           label={"Logout"}

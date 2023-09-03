@@ -36,19 +36,19 @@ export default function UsersList({rows}) {
             <TableHead>
               <TableRow>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Name
+                  <strong>Name</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Email
+                  <strong>Email</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Phone
+                  <strong>Phone</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Pincode
+                  <strong>Pincode</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Address
+                  <strong>Address</strong>
                 </TableCell>
               </TableRow>
             </TableHead>

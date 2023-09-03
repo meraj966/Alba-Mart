@@ -25,22 +25,22 @@ function PromoCodeList({ openModal, promocodeData, handleDelete }) {
           <TableHead>
             <TableRow>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Promo Code
+                <strong>Promo Code</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Start Date
+                <strong>Start Date</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                End Date
+                <strong>End Date</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Promo Code Dis.(%)
+                <strong>Promo Code Dis.(%)</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Is PromoCode Live
+                <strong>Is PromoCode Live</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                Action
+                <strong>Action</strong>
               </TableCell>
             </TableRow>
           </TableHead>
