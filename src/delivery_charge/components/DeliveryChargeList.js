@@ -35,19 +35,19 @@ function DeliveryChargeList({ openModal, deliveryChargeData, handleDelete }) {
           <TableHead>
             <TableRow>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Pin Code
+                <strong>Pin Code</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Maximum Value
+                <strong>Maximum Value</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Minimum Value
+                <strong>Minimum Value</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Delivery Charge
+                <strong>Delivery Charge</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                Action
+                <strong>Action</strong>
               </TableCell>
             </TableRow>
           </TableHead>

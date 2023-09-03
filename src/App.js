@@ -21,6 +21,7 @@ import ForgotPassword from "./authentication/ForgotPassword";
 import FAndQ from "./f_and_q";
 import PushNotification from "./push_notification";
 import PrivacyAndPolicy from "./privacy_and_policy"
+import ContactDetails from "./contact_us"
 import ProtectedRoute from "./authentication/ProtectedRoute";
 
 export default function App() {
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/settings" exact element={protectedElement(<Settings />)}></Route>
           <Route path="/push_notification" exact element={protectedElement(<PushNotification />)}></Route>
           <Route path="/privacy_and_policy" exact element={protectedElement(<PrivacyAndPolicy />)}></Route>
+          <Route path="/contact_us" exact element={protectedElement(<ContactDetails />)}></Route>
           <Route
             path="/offer-settings"
             exact

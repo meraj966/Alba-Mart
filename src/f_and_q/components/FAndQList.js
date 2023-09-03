@@ -26,16 +26,16 @@ function FAndQList({ openModal, fAndQData, handleDelete }) {
             <TableHead>
               <TableRow>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                  For
+                  <strong>For</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Question
+                  <strong>Question</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Answer
+                  <strong>Answer</strong>
                 </TableCell>
                 <TableCell align="left" style={{ width: "100px" }}>
-                  Action
+                  <strong>Action</strong>
                 </TableCell>
               </TableRow>
             </TableHead>

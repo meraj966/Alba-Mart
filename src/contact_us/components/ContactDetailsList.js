@@ -15,7 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-function PrivacyAndPolicyList({ openModal, privacyAndPolicyData, handleDelete }) {
+function ContactDetailsList({ openModal, contactDetailsData, handleDelete }) {
   
   
     return (
@@ -28,7 +28,7 @@ function PrivacyAndPolicyList({ openModal, privacyAndPolicyData, handleDelete })
                   <strong>User / Delivery Boy</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  <strong>Privacy And Policy</strong>
+                  <strong>Contact Details</strong>
                 </TableCell>
                 <TableCell align="left" style={{ width: "100px" }}>
                   <strong>Action</strong>
@@ -36,11 +36,11 @@ function PrivacyAndPolicyList({ openModal, privacyAndPolicyData, handleDelete })
               </TableRow>
             </TableHead>
             <TableBody>
-              {privacyAndPolicyData?.map((row) => {
+              {contactDetailsData?.map((row) => {
                 return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                   <TableCell align="left">{String(row.for)}</TableCell>
-                  <TableCell align="left"><div dangerouslySetInnerHTML={{__html: row.privacyAndPolicy}}></div></TableCell>
+                  <TableCell align="left"><div dangerouslySetInnerHTML={{__html: row.contactDetails}}></div></TableCell>
                   <TableCell align="left">
                     <Stack spacing={2} direction="row">
                       <EditIcon
@@ -71,4 +71,4 @@ function PrivacyAndPolicyList({ openModal, privacyAndPolicyData, handleDelete })
     );
   }
 
-  export default PrivacyAndPolicyList;
+  export default ContactDetailsList;

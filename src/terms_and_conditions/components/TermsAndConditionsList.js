@@ -25,13 +25,13 @@ function TermsAndConditionsList({ openModal, termsAndConditionsData, handleDelet
             <TableHead>
               <TableRow>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  User / Delivery Boy
+                  <strong>User / Delivery Boy</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
-                  Description
+                  <strong>Description</strong>
                 </TableCell>
                 <TableCell align="left" style={{ width: "100px" }}>
-                  Action
+                  <strong>Action</strong>
                 </TableCell>
               </TableRow>
             </TableHead>

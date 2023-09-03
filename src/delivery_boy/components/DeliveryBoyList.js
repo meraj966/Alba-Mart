@@ -27,31 +27,31 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
           <TableHead>
             <TableRow>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Name
+                <strong>Name</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Mobile
+                <strong>Mobile</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                DL Number
+                <strong>DL Number</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Date Of Join
+                <strong>Date Of Join</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                DL Image(Front)
+                <strong>DL Image(Front)</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                DL Image(Back)
+                <strong>DL Image(Back)</strong>
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
-                Profile Pic
+                <strong>Profile Pic</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                Action
+                <strong>Action</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                View Details
+                <strong>View Details</strong>
               </TableCell>
             </TableRow>
           </TableHead>
