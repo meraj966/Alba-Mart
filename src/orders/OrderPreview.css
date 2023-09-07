@@ -1,0 +1,41 @@
+/* Order Preview CSS for Thermal Printing */
+.print-container {
+    font-family: monospace; /* Use a monospace font for consistent spacing */
+    max-width: 300px; /* Adjust the width as needed for your thermal printer */
+    margin: 0 auto; /* Center align the content on the page */
+    padding: 10px;
+    border: 1px solid #000; /* Add a border for better separation */
+    box-shadow: none; /* Remove any box shadow for printing */
+  }
+
+  .table-header {
+    font-weight: bold;
+    text-align: left;
+    padding: 8px;
+    margin-left: -5px; /* Add a negative margin to shift the headers slightly to the left */
+  }
+  
+  .print-heading {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  /* Style individual data points as needed */
+  p {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+
+  .separation-line {
+    border-top: 2px solid #000; /* Customize the border as needed */
+    margin: 20px 0; /* Adjust the margin to control the spacing */
+  }
+  
+  .sub-total {
+    font-weight: bold;
+  }
+  
+  /* Add additional styling as per your requirements */
+  
