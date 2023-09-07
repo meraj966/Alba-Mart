@@ -84,14 +84,22 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   );
   const handleSave = () => {
     updatedOrders.forEach(async (id) => {
+      const orderToUpdate = orders.find((i) => i.id === id);
+      const { deliveryBoy, ...restOrderData } = orderToUpdate;
+      
+      // Update both the 'deliveryBoy' and 'deliveryBoyResponse' columns
       await updateDoc(doc(db, "Order", id), {
-        ...orders.find((i) => i.id === id),
+        ...restOrderData,
+        deliveryBoy,
+        deliveryBoyResponse: "None", // Update with the desired value
       });
     });
+  
     setIsEdit(false);
     setUpdatedOrders([]);
     refreshOrders();
-  };
+  };  
+
   console.log(orders, "orders");
   return (
     <Box sx={{ width: "100%" }}>
