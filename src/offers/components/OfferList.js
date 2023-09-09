@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -15,11 +15,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
-import { collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+  onSnapshot, // Import onSnapshot for real-time updates
+} from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
 
-function OfferList({ offerData, getOfferData }) {
+function OfferList() {
+  const [offerData, setOfferData] = useState([]);
+
   const deleteOffer = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -30,22 +39,41 @@ function OfferList({ offerData, getOfferData }) {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
-      if (result.value) {
-        const menuRef = collection(db, 'Menu')
-        let data = await getDocs(menuRef)
+      if (result.isConfirmed) {
+        const menuRef = collection(db, "Menu");
+        const data = await getDocs(menuRef);
         const selectedDoc = doc(db, "Offers", id);
         await deleteDoc(selectedDoc);
         Swal.fire("Deleted!", "Selected offer has been deleted", "success");
-        const menuData = data.docs.map(doc => ({ ...doc.data(), id: doc.id }))
-        menuData.forEach(async data => {
+        const menuData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        menuData.forEach(async (data) => {
           if (data.saleTag === id)
-            await updateDoc(doc(db, "Menu", data.id), { saleTag: '' })
-        })
-        getOfferData();
+            await updateDoc(doc(db, "Menu", data.id), { saleTag: "" });
+        });
       }
     });
   };
-  console.log(offerData);
+
+  const getOfferData = async () => {
+    const offersRef = collection(db, "Offers");
+    const snapshot = await getDocs(offersRef);
+    const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setOfferData(data);
+  };
+
+  useEffect(() => {
+    getOfferData();
+
+    // Set up a listener for real-time updates
+    const unsubscribe = onSnapshot(collection(db, "Offers"), (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setOfferData(data);
+    });
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
   return (
     <>
       <TableContainer>
@@ -79,14 +107,13 @@ function OfferList({ offerData, getOfferData }) {
             {offerData.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.title)}</TableCell>
-                <TableCell align="left">{String(row.startDate) || '-'}</TableCell>
-                <TableCell align="left">{row.endDate || '-'}</TableCell>
+                <TableCell align="left">
+                  {String(row.startDate) || "-"}
+                </TableCell>
+                <TableCell align="left">{row.endDate || "-"}</TableCell>
                 <TableCell align="left">
                   {String(row.discountPercent)}
                 </TableCell>
-                {/* <TableCell align="left">
-                  {String(row.isOfferLive ? "Yes" : "No")}
-                </TableCell> */}
                 <TableCell align="left">
                   <span
                     style={{
@@ -102,7 +129,7 @@ function OfferList({ offerData, getOfferData }) {
                 <TableCell sx={{ paddingLeft: "5px" }}>
                   <Stack direction="row">
                     <Tooltip title="Edit products in offer">
-                      <IconButton onClick={() => console.log("edit")}>
+                      <IconButton>
                         <Link
                           to={`/edit-offer/${row.id}`}
                           target="_blank"
@@ -120,7 +147,7 @@ function OfferList({ offerData, getOfferData }) {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete Offer">
-                      <IconButton onClick={() => deleteOffer(row.saleTag)}>
+                      <IconButton onClick={() => deleteOffer(row.id)}>
                         <DeleteIcon
                           style={{
                             fontSize: "20px",
