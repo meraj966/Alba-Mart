@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import PageTemplate from "../../pages/reusable/PageTemplate";
 import { useParams } from "react-router-dom";
 import ProductsList from "../../products/ProductsList";
-import { useAppStore } from "../../appStore";
 import {
   Button,
   Grid,
@@ -12,6 +11,9 @@ import {
   Switch,
   TextField,
   Box,
+  Card,
+  CardContent,
+  CardMedia,
 } from "@mui/material";
 import {
   collection,
@@ -20,7 +22,8 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../firebase-config";
+import { db, storage } from "../../firebase-config"; // Import Firebase Storage
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import Firebase Storage functions
 import Swal from "sweetalert2";
 import { Stack } from "@mui/system";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -35,15 +38,34 @@ function EditOffer() {
   const productsRef = collection(db, "Menu");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isOfferLive, setIsOfferLive] = useState(false);
+  const [title, setTitle] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [bannerImage, setBannerImage] = useState(""); // State to store banner image URL
+  const [uploadedImage, setUploadedImage] = useState(null); // State to store uploaded image URL
+  const [searchFilterActive, setSearchFilterActive] = useState(false);
 
   const formatDate = (obj) => {
     return !isNaN(obj?.date())
       ? `${obj.year()}-${obj.month() + 1 < 10 ? "0" + (obj.month() + 1) : obj.month() + 1}-${obj.date() < 10 ? "0" + obj.date() : obj.date()}`
       : "";
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const storageRef = ref(storage, `offer-banners/${id}`);
+
+      try {
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        setUploadedImage(downloadURL);
+      } catch (error) {
+        console.error("Error uploading image: ", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -57,6 +79,8 @@ function EditOffer() {
       setDiscount(offerData.discountPercent);
       setStartDate(dayjs(offerData.startDate));
       setEndDate(dayjs(offerData.endDate));
+      setTitle(offerData.title);
+      setBannerImage(offerData.bannerImage);
     }
   }, [offerData]);
 
@@ -108,6 +132,8 @@ function EditOffer() {
       delete product.isSelected;
     }
     await updateDoc(currentOffer, {
+      title: title,
+      bannerImage: uploadedImage || bannerImage,
       products: selectedProdIds,
       isOfferLive,
       discountPercent: discount,
@@ -119,10 +145,17 @@ function EditOffer() {
     getProductData();
   };
 
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    // Set searchFilterActive to true when there's a query, and false when the query is empty.
+    setSearchFilterActive(!!query);
+  };
+
   const filteredProducts = selectedProducts.filter((product) => {
     const productName = product.name.toLowerCase();
-    const search = searchQuery.toLowerCase();
-    return productName.includes(search);
+    return searchFilterActive ? productName.includes(searchQuery) : true;
   });
 
   return (
@@ -141,12 +174,23 @@ function EditOffer() {
             id="search"
             name="search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearch}
             label="Search by Product Name"
             size="small"
             sx={{ width: "250px" }}
           />
-          <Box sx={{ width: "16px" }} /> {/* Add space between search bar and title */}
+          <TextField
+            type="text"
+            error={false}
+            id="title"
+            name="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            label="Title"
+            size="small"
+            sx={{ width: "200px", marginTop: "16px" }}
+          />
+          <Box sx={{ width: "16px" }} />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Start Date"
@@ -156,6 +200,7 @@ function EditOffer() {
               format="YYYY-MM-DD"
             />
           </LocalizationProvider>
+          <span style={{ margin: '0 8px' }}></span>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="End Date"
@@ -165,6 +210,7 @@ function EditOffer() {
               format="YYYY-MM-DD"
             />
           </LocalizationProvider>
+          <span style={{ margin: '0 8px' }}></span>
           <TextField
             type="number"
             error={false}
@@ -187,19 +233,60 @@ function EditOffer() {
               }
             />
           </FormGroup>
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            id="upload-image"
+            onChange={handleImageUpload}
+          />
+          <label htmlFor="upload-image">
+            <Button
+              variant="contained"
+              component="span"
+              sx={{ marginTop: "16px" }}
+            >
+              Change Banner Image
+            </Button>
+          </label>
         </Stack>
       }
     >
+      {(uploadedImage || bannerImage) && (
+        <Card>
+          <CardMedia
+            component="img"
+            alt="Offer Banner"
+            style={{ maxWidth: '200px', maxHeight: '150px' }}
+            image={uploadedImage || bannerImage}
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Banner Image
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          {filteredProducts.length ? (
+          {searchFilterActive ? (
+            // Display filteredProducts when the search filter is active.
             <ProductsList
               rows={filteredProducts}
               isEditOffer={true}
               handleSelectedProducts={handleSelectedProducts}
               saleValue={discount}
             />
-          ) : null}
+          ) : (
+            // Display all products when the search filter is not active.
+            <ProductsList
+              rows={selectedProducts}
+              isEditOffer={true}
+              handleSelectedProducts={handleSelectedProducts}
+              saleValue={discount}
+            />
+          )}
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" align="right">
