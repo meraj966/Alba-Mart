@@ -58,8 +58,9 @@ function OrderPreview() {
               <th>Name</th>
               <th>MRP</th>
               <th>Sale Price</th>
-              <th>Discount</th>
-              <th>Quantity</th>
+              <th>Amt</th>
+              <th>Unit</th>
+              <th>Qt</th>
             </tr>
           </thead>
           <tbody>
@@ -67,8 +68,9 @@ function OrderPreview() {
               <tr key={productId}>
                 <td>{products[productId].name}</td>
                 <td>{products[productId].mrp}</td>
-                <td>{products[productId].amount}</td>
                 <td>{products[productId].rate}</td>
+                <td>{products[productId].amount}</td>
+                <td>{products[productId].unit}</td>
                 <td>{products[productId].quantity}</td>
               </tr>
             ))}
