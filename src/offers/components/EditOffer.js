@@ -46,6 +46,7 @@ function EditOffer() {
   const [bannerImage, setBannerImage] = useState(""); // State to store banner image URL
   const [uploadedImage, setUploadedImage] = useState(null); // State to store uploaded image URL
   const [searchFilterActive, setSearchFilterActive] = useState(false);
+  const [offerDescription, setOfferDescription] = useState(""); // New state for description
 
   const formatDate = (obj) => {
     return !isNaN(obj?.date())
@@ -81,6 +82,7 @@ function EditOffer() {
       setEndDate(dayjs(offerData.endDate));
       setTitle(offerData.title);
       setBannerImage(offerData.bannerImage);
+      setOfferDescription(offerData.description); // Set description from offerData
     }
   }, [offerData]);
 
@@ -139,8 +141,20 @@ function EditOffer() {
       discountPercent: discount,
       startDate: formatDate(startDate),
       endDate: formatDate(endDate),
+      description: offerDescription, // Save offer description
     }).then(() => {
       Swal.fire("Successful", "Updated Offer Details", "success");
+      // Update offerData after saving
+      setOfferData({
+        ...offerData,
+        title,
+        bannerImage: uploadedImage || bannerImage,
+        isOfferLive,
+        discountPercent: discount,
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+        description: offerDescription, // Update the description in the offerData
+      });
     });
     getProductData();
   };
@@ -244,7 +258,7 @@ function EditOffer() {
             <Button
               variant="contained"
               component="span"
-              sx={{ marginTop: "16px" }}
+              sx={{ marginTop: "15px" }}
             >
               Change Banner Image
             </Button>
@@ -252,12 +266,30 @@ function EditOffer() {
         </Stack>
       }
     >
+      <div style={{ clear: "both", width: "80%" }}>
+        <TextField
+          type="text"
+          error={false}
+          id="description"
+          name="description"
+          value={offerDescription}
+          onChange={(e) => setOfferDescription(e.target.value)}
+          label="Description"
+          size="small"
+          sx={{ width: "80%" }}
+        />
+      </div>
       {(uploadedImage || bannerImage) && (
         <Card>
           <CardMedia
             component="img"
             alt="Offer Banner"
-            style={{ maxWidth: '200px', maxHeight: '150px' }}
+            style={{
+              maxWidth: '120px',
+              maxHeight: '120px',
+              border: '1px solid #000',
+              borderRadius: '4px'
+            }}
             image={uploadedImage || bannerImage}
           />
           <CardContent>
@@ -271,7 +303,6 @@ function EditOffer() {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           {searchFilterActive ? (
-            // Display filteredProducts when the search filter is active.
             <ProductsList
               rows={filteredProducts}
               isEditOffer={true}
@@ -279,7 +310,6 @@ function EditOffer() {
               saleValue={discount}
             />
           ) : (
-            // Display all products when the search filter is not active.
             <ProductsList
               rows={selectedProducts}
               isEditOffer={true}

@@ -1,19 +1,19 @@
-import React from "react";
-import { useEffect } from "react";
-import { Grid } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Grid, Link, Modal } from "@mui/material";
 import DashboardCard from "./reusable/DashboardCard";
 import DashboardCardStock from "./reusable/DashboardCardStock";
-import Link from "@mui/material/Link";
-import Modal from "@mui/material/Modal";
-import ProductsAvailability from "./reusable/ProductsAvailability";
-import { useState } from "react";
 import { PRODUCTS_UNAVAILABLE, PRODUCTS_LOW_STOCK } from "../Constants";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import { sum } from "lodash";
 import MuiAlert from "@mui/material/Alert";
+import ProductsAvailability from "./reusable/ProductsAvailability";
+import Swal from "sweetalert2";
+import Button from "@mui/material/Button";
+import { writeFile } from "exceljs";
+import ExcelJS from "exceljs";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -117,10 +117,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    refreshPage()
+    refreshPage();
     const interval = setInterval(() => {
       refreshPage();
-      if (orders.length != orderLength) {
+      if (orders.length !== orderLength) {
         setTimeout(() => setInfo("Update in Orders"), 3000);
       }
     }, 60 * 1000);
@@ -151,7 +151,51 @@ export default function Dashboard() {
       </>
     </Modal>
   );
+
+  const exportToExcel = (data, fileName) => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Products");
+    
+    // Define columns
+    worksheet.columns = [
+      { header: "Product Name", key: "name" },
+      { header: "Category", key: "category" },
+      { header: "Subcategory", key: "subCategory" },
+      { header: "Stock Value", key: "stockValue" },
+    ];
+
+    // Add data rows
+    data.forEach((product) => {
+      worksheet.addRow({
+        name: product.name,
+        category: product.category,
+        subCategory: product.subCategory,
+        stockValue: product.stockValue,
+      });
+    });
+
+    // Generate Excel file
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  };
+
+  const handleExportUnavailable = () => {
+    exportToExcel(unavailableProd, "ProductsUnavailable.xlsx");
+  };
+
+  const handleExportLowStock = () => {
+    exportToExcel(lowStockProd, "ProductsLowStock.xlsx");
+  };
+
   if (!window.localStorage.getItem("token")) navigate("/");
+  
   return (
     <>
       <PageTemplate modal={modal()} title="Dashboard">
@@ -238,6 +282,21 @@ export default function Dashboard() {
                 header="Products in low stock"
               />
             </Link>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={handleExportUnavailable}
+              style={{ marginRight: "250px" }}
+            >
+              Export Products Out of Stock
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleExportLowStock}
+            >
+              Export Products in Low Stock
+            </Button>
           </Grid>
         </Grid>
       </PageTemplate>

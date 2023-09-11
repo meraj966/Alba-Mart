@@ -23,6 +23,7 @@
     "dayjs": "^1.11.7",
     "dompurify": "^3.0.2",
     "draft-js": "^0.11.7",
+    "exceljs": "^4.3.0",
     "express": "^4.18.2",
     "firebase": "^9.15.0",
     "lodash": "^4.17.21",
@@ -44,6 +45,7 @@
     "uuid": "^9.0.0",
     "uuidv4": "^6.2.13",
     "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
     "zustand": "^4.3.1"
   },
   "scripts": {

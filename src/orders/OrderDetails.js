@@ -1,43 +1,20 @@
 import React, { useEffect, useState } from "react";
 import PageTemplate from "../pages/reusable/PageTemplate";
-import { Button, Card, Grid } from "@mui/material";
-import { useParams, Link } from "react-router-dom"; // Import Link for navigation
-import { getProductByIds } from "../firebase_utils";
+import { Button, Card, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { useParams, Link } from "react-router-dom";
 import { doc, getDoc } from "@firebase/firestore";
 import { db } from "../firebase-config";
-import ProductsList from "../products/ProductsList";
 import "../orders/OrderDetails.css";
 
 function OrderDetails() {
   const { id } = useParams();
   const [order, setOrder] = useState({});
-  const [products, setProducts] = useState([]);
   const [user, setUser] = useState({});
   const [subTotal, setSubTotal] = useState(0);
 
   useEffect(() => {
     getOrderDetail();
   }, [id]);
-
-  const setOrderProducts = async () => {
-    let total = 0;
-    let products = Object.keys(order.products)?.map((i) => {
-      let product = order.products[i];
-      total = total + Number(product.amount);
-      return {
-        id: i,
-        price: product.mrp,
-        name: product.name,
-        amount: product.amount,
-        rate: product.rate,
-        quantity: product.quantity,
-      };
-    });
-    setSubTotal(total);
-    const userData = await getDoc(doc(db, "UserProfile", order.userID));
-    setUser(userData.data());
-    setProducts(products);
-  };
 
   const getOrderDetail = async () => {
     try {
@@ -46,39 +23,9 @@ function OrderDetails() {
       if (order) {
         const userData = await getDoc(doc(db, "UserProfile", order.userID));
         const user = userData.data();
-        const productIds = Object.keys(order.products || {});
 
-        if (productIds.length > 0) {
-          const fetchedProducts = await getProductByIds(productIds);
-          const products = productIds.map((productId) => {
-            const product = fetchedProducts.find((p) => p.id === productId);
-            if (product) {
-              return {
-                id: productId,
-                url: order.products[productId].image,
-                price: order.products[productId].mrp,
-                name: product.name,
-                amount: order.products[productId].amount,
-                rate: order.products[productId].rate,
-                quantity: order.products[productId].unit,
-              };
-            }
-            return null;
-          });
-
-          setOrder(order);
-          setUser(user);
-          setProducts(products.filter(Boolean));
-          setOrderProducts(); // Call the function to update the products
-        } else {
-          setOrder(order);
-          setUser(user);
-          setProducts([]);
-        }
-      } else {
-        setOrder({});
-        setUser({});
-        setProducts([]);
+        setOrder(order);
+        setUser(user);
       }
     } catch (error) {
       console.log("Error fetching order details:", error);
@@ -90,7 +37,6 @@ function OrderDetails() {
       title={
         <>
           <span>Order Details</span>
-          {/* Add the Preview button */}
           <Link to={`/order-preview/${id}`}>
             <Button variant="contained" sx={{ marginLeft: "20px" }}>
               Preview
@@ -143,11 +89,43 @@ function OrderDetails() {
           {order?.deleverySlot || "-"}
         </Grid>
         <Card sx={{ width: "100%", marginTop: "10px" }}>
-          <ProductsList
-            rows={products}
-            isDetailView={true}
-            isOrderDetailView={true}
-          />
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Image</TableCell>
+                  <TableCell>MRP</TableCell>
+                  <TableCell>Sale Price</TableCell>
+                  <TableCell>Amount</TableCell>
+                  <TableCell>Unit</TableCell>
+                  <TableCell>Quantity</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Object.keys(order.products || {}).map((productId) => (
+                  <TableRow key={productId}>
+                    <TableCell>{order.products[productId].name}</TableCell>
+                    <TableCell>
+                      <img
+                        src={order.products[productId].image}
+                        alt={order.products[productId].name}
+                        height="70px"
+                        width="70px"
+                        style={{ borderRadius: "15px" }}
+                        loading="lazy"
+                      />
+                    </TableCell>
+                    <TableCell>{order.products[productId].mrp}</TableCell>
+                    <TableCell>{order.products[productId].rate}</TableCell>
+                    <TableCell>{order.products[productId].amount}</TableCell>
+                    <TableCell>{order.products[productId].unit}</TableCell>
+                    <TableCell>{order.products[productId].quantity}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Card>
         <Grid item xs={2}>
           Sub Total Price:

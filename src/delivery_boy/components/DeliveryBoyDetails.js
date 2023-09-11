@@ -1,69 +1,63 @@
+import PageTemplate from "../../pages/reusable/PageTemplate";
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // Add this import
 import { collection, getDocs } from "firebase/firestore";
-import { db, storage } from "../../firebase-config"; // Assuming you have imported 'storage' from the Firebase SDK
+import { db, storage } from "../../firebase-config";
 
-function DeliveryBoyDetails({ deliveryBoy }) {
+function DeliveryBoyDetails() {
+  const { id } = useParams(); // Get the delivery boy's ID from the URL
+
+  console.log("Delivery Boy ID:", id); // Add this line to check the ID
+
+  const [deliveryBoy, setDeliveryBoy] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-    const fetchImage = async () => {
-      const storageRef = storage.ref();
-      // Assuming you have a field named "image" in the delivery boy document
-      const imageRef = storageRef.child(deliveryBoy.profilePic);
-      const url = await imageRef.getDownloadURL();
-      setImageUrl(url);
-    };
-
-    fetchImage();
-  }, [deliveryBoy]);
-
-  return (
-    <div>
-      {deliveryBoy ? (
-        <div>
-          <h1>{`${deliveryBoy.name} Detail`}</h1>
-          <p>Name: {deliveryBoy.name}</p>
-          <p>DL Number: {deliveryBoy.dlnumber}</p>
-          <p>Phone Number: {deliveryBoy.phoneNumber}</p>
-          <p>Date Of Joining: {deliveryBoy.joinDate}</p>
-          <p>Address: {deliveryBoy.address}</p>
-          {imageUrl && <img src={imageUrl} alt="Delivery Boy" />}
-          {/* Display other details as needed */}
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
-  );
-}
-
-function DeliveryBoyList() {
-  const [deliveryBoys, setDeliveryBoys] = useState([]);
-
-  useEffect(() => {
-    const fetchDeliveryBoys = async () => {
+    const fetchDeliveryBoy = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "DeliveryBoy"));
         const deliveryBoyData = querySnapshot.docs.map((doc) => doc.data());
-        setDeliveryBoys(deliveryBoyData);
+
+        // Find the delivery boy with the matching ID
+        const selectedDeliveryBoy = deliveryBoyData.find((db) => db.id === id);
+
+        if (selectedDeliveryBoy) {
+          setDeliveryBoy(selectedDeliveryBoy);
+          const storageRef = storage.ref();
+          const imageRef = storageRef.child(selectedDeliveryBoy.profilePic);
+          const url = await imageRef.getDownloadURL();
+          setImageUrl(url);
+        } else {
+          console.log("Delivery boy not found");
+        }
       } catch (error) {
         console.log("Error fetching delivery boys:", error);
       }
     };
 
-    fetchDeliveryBoys();
-  }, []);
+    fetchDeliveryBoy();
+  }, [id]);
 
   return (
-    <div>
-      {deliveryBoys.map((deliveryBoy) => (
-        <DeliveryBoyDetails
-          deliveryBoy={deliveryBoy}
-          key={deliveryBoy.id}
-        />
-      ))}
-    </div>
+    <PageTemplate>
+      <div>
+        {deliveryBoy ? (
+          <div>
+            <h1>{`${deliveryBoy.name} Detail`}</h1>
+            <p>Name: {deliveryBoy.name}</p>
+            <p>DL Number: {deliveryBoy.dlnumber}</p>
+            <p>Phone Number: {deliveryBoy.phoneNumber}</p>
+            <p>Date Of Joining: {deliveryBoy.joinDate}</p>
+            <p>Address: {deliveryBoy.address}</p>
+            {imageUrl && <img src={imageUrl} alt="Delivery Boy" />}
+            {/* Display other details as needed */}
+          </div>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    </PageTemplate>
   );
 }
 
-export default DeliveryBoyList;
+export default DeliveryBoyDetails;
