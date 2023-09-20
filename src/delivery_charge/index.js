@@ -10,7 +10,7 @@ import { useAppStore } from "../appStore";
 import { db } from "../firebase-config";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 
-function DeliveryBoys() {
+function DeliveryCharges() {
     const [addNewDeliveryCharge, setAddNewDeliveryCharge] = useState(false);
     const [deliveryChargeModalData, setDeliveryChargeModalData] = useState(null)
     const [openInEditMode, setOpenInEditMode] = useState(false);
@@ -20,10 +20,10 @@ function DeliveryBoys() {
     const deliveryChargeCollectionRef = collection(db, "DeliveryCharge");
 
     useEffect(() => {
-        getBoys();
+        getCharges();
     }, []);
 
-    const getBoys = async () => {
+    const getCharges = async () => {
         const data = await getDocs(deliveryChargeCollectionRef);
         setDeliveryChargeData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
 
@@ -41,7 +41,7 @@ function DeliveryBoys() {
                     closeModal={() => setAddNewDeliveryCharge(false)}
                     isEditMode={openInEditMode}
                     data={deliveryChargeModalData}
-                    refreshDeliveryBoys={getBoys}
+                    refreshDeliveryChargess={getCharges}
                     handleClose={handleClose}
                 />
             </Box>
@@ -74,7 +74,7 @@ function DeliveryBoys() {
             <PageTemplate
                 modal={modal()}
                 actionBar={actionBar()}
-                title={"Delivery Boys List"}
+                title={"Delivery Charges List"}
             >
                 <DeliveryChargeList
                     openModal={(row) => {
@@ -91,4 +91,4 @@ function DeliveryBoys() {
     );
 }
 
-export default DeliveryBoys;
+export default DeliveryCharges;

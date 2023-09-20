@@ -18,8 +18,16 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
 function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
+  // Define the order of days
+  const orderedDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  
+  // Sort the data based on the orderedDays array
+  const sortedData = [...deliveryslotData].sort((a, b) => {
+    const dayA = orderedDays.indexOf(a.day);
+    const dayB = orderedDays.indexOf(b.day);
+    return dayA - dayB;
+  });
+
   return (
     <>
       <TableContainer>
@@ -41,7 +49,7 @@ function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {deliveryslotData?.map((row) => (
+            {sortedData.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.day)}</TableCell>
                 <TableCell align="left">{String(row.slot1Time)}</TableCell>

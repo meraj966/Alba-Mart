@@ -161,6 +161,7 @@ export default function Dashboard() {
       { header: "Product Name", key: "name" },
       { header: "Category", key: "category" },
       { header: "Subcategory", key: "subCategory" },
+      { header: "Unit", key: "unit"},
       { header: "Stock Value", key: "stockValue" },
     ];
 
@@ -170,6 +171,7 @@ export default function Dashboard() {
         name: product.name,
         category: product.category,
         subCategory: product.subCategory,
+        unit: `${product.quantity} ${product.measureUnit}`,
         stockValue: product.stockValue,
       });
     });
@@ -187,11 +189,11 @@ export default function Dashboard() {
   };
 
   const handleExportUnavailable = () => {
-    exportToExcel(unavailableProd, "ProductsUnavailable.xlsx");
+    exportToExcel(unavailableProd, "ProductsOutOfStock.xlsx");
   };
 
   const handleExportLowStock = () => {
-    exportToExcel(lowStockProd, "ProductsLowStock.xlsx");
+    exportToExcel(lowStockProd, "ProductsInLowStock.xlsx");
   };
 
   if (!window.localStorage.getItem("token")) navigate("/");
@@ -287,7 +289,7 @@ export default function Dashboard() {
             <Button
               variant="contained"
               onClick={handleExportUnavailable}
-              style={{ marginRight: "250px" }}
+              style={{ marginRight: "350px" }}
             >
               Export Products Out of Stock
             </Button>

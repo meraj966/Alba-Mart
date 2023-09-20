@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc, setDoc, doc } from "firebase/firestore";
+import { collection, setDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -9,38 +9,40 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  ToggleButton,
-  ToggleButtonGroup,
   Card,
   Grid,
   Box,
   CardHeader,
   CardContent,
 } from "@mui/material";
-import dayjs from "dayjs";
 import Swal from "sweetalert2";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css"; // Import the styles for the PhoneInput component
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.snow.css"; // Import the styles for the ReactQuill component
 
 function AddContactDetails({ data, isEditMode, refreshContactDetails, handleClose }) {
   const [userOrDeliveryBoy, setUserOrDeliveryBoy] = useState(isEditMode ? data.for : "");
-  const [contactDetails, setContactDetails] = useState(isEditMode ? data.contactDetails : "");
+  const [phoneNumber, setPhoneNumber] = useState(isEditMode ? data.phoneNumber : ""); // State for the phone number
+  const [contactDetails, setContactDetails] = useState(isEditMode ? data.contactDetails : ""); // State for contact details
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (isEditMode) {
       await updateDoc(doc(db, "ContactUs", data.id), {
         for: userOrDeliveryBoy,
-        contactDetails,
+        phoneNumber, // Store the phone number
+        contactDetails, // Store the contact details
       }).then(() => {
-        Swal.fire("Succesfull!", "Contact Details Added", "success");
+        Swal.fire("Successful!", "Contact Details Added", "success");
       });
     } else {
       await setDoc(doc(collection(db, "ContactUs"), userOrDeliveryBoy), {
         for: userOrDeliveryBoy,
-        contactDetails,
+        phoneNumber, // Store the phone number
+        contactDetails, // Store the contact details
       }).then(() => {
-        Swal.fire("Succesfull!", "Contact Details Added", "success");
+        Swal.fire("Successful!", "Contact Details Added", "success");
       });
     }
     refreshContactDetails();
@@ -74,8 +76,21 @@ function AddContactDetails({ data, isEditMode, refreshContactDetails, handleClos
               </Select>
             </FormControl>
           </Grid>
+          <Grid item xs={8}>
+            <PhoneInput
+              placeholder="Primary Phone number"
+              country="IN"
+              value={phoneNumber}
+              onChange={setPhoneNumber}
+              defaultCountry="IN"
+            />
+          </Grid>
           <Grid item xs={12}>
-            <ReactQuill value={contactDetails} onChange={handleContactDetailsChange} />
+            <ReactQuill
+              value={contactDetails}
+              onChange={handleContactDetailsChange}
+              placeholder="Enter contact details"
+            />
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h5" align="right">
@@ -91,4 +106,3 @@ function AddContactDetails({ data, isEditMode, refreshContactDetails, handleClos
 }
 
 export default AddContactDetails;
-

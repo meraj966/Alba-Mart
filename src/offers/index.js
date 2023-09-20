@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Stack, Typography, Button } from "@mui/material";
+import { Modal, Stack, Typography, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import OfferList from "../offers/components/OfferList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -13,6 +13,7 @@ function OfferSettings() {
   const [offerData, setOfferData] = useState([]);
   const [addNewOffer, setAddNewOffer] = useState(false);
   const ref = collection(db, "Offers");
+  const [filterValue, setFilterValue] = useState(""); 
 
   useEffect(() => {
     getOfferData();
@@ -22,6 +23,20 @@ function OfferSettings() {
     const data = await getDocs(ref);
     setOfferData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };  
+
+  const handleFilterChange = (event) => {
+    // Set the selected filter value
+    setFilterValue(event.target.value);
+  };
+
+  // Filter the table data based on the selected filter value
+  const filteredOffersData = filterValue
+    ? offerData.filter(
+        (row) =>
+          (filterValue === "Yes" && row.isOfferLive === true) ||
+          (filterValue === "No" && row.isOfferLive === false)
+      )
+    : offerData;
 
   const modal = () => (
     <Modal onClose={() => setAddNewOffer(false)} open={addNewOffer}>
@@ -34,6 +49,20 @@ function OfferSettings() {
     <>
       <Stack direction="row" spacing={2} className="my-2 mb-2">
         {/* must have some filters */}
+        <FormControl variant="outlined" sx={{ minWidth: "150px" }}>
+          <InputLabel id="filter-label">Filter</InputLabel>
+          <Select
+            labelId="filter-label"
+            id="filter"
+            value={filterValue}
+            label="Filter"
+            onChange={handleFilterChange}
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="Yes">Yes</MenuItem>
+            <MenuItem value="No">No</MenuItem>
+          </Select>
+        </FormControl>
         <Typography
           variant="h6"
           component="div"
@@ -56,7 +85,7 @@ function OfferSettings() {
         actionBar={actionBar()}
         title={"Offer Settings"}
       >
-        <OfferList offerData={offerData} getOfferData={getOfferData}/>
+        <OfferList offerData={filteredOffersData} getOfferData={getOfferData}/>
       </PageTemplate>
     </>
   );

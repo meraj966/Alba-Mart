@@ -18,6 +18,7 @@ import ProductsGrid from "../products";
 import ProductPopup from "../products/resuable/ProductPopup";
 import AddProducts from "../products/AddProducts";
 import EditForm from "../products/EditForm";
+import VariantPopup from "./VariantPopup";
 
 export default function Products() {
   const [categories, setCategories] = useState([]);
@@ -31,6 +32,7 @@ export default function Products() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
   const [modalType, setModalType] = useState("");
+  const [variantPopupOpen, setVariantPopupOpen] = useState(false);
 
   // Store the unsubscribe functions in state
   const [unsubscribeFunctions, setUnsubscribeFunctions] = useState([]);
@@ -40,6 +42,14 @@ export default function Products() {
     const rowsData = menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     setOriginalRows(rowsData);
     setRows(rowsData);
+  };
+
+  const handleOpenVariantPopup = () => {
+    setVariantPopupOpen(true);
+  };
+
+  const handleCloseVariantPopup = () => {
+    setVariantPopupOpen(false);
   };
 
   const handleBulkOpen = () => {
@@ -256,6 +266,19 @@ export default function Products() {
             >
               Add Product
             </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              endIcon={<AddCircleIcon />}
+              onClick={handleOpenVariantPopup}
+            >
+              Add Variant
+            </Button>
+
+            <VariantPopup
+              open={variantPopupOpen}
+              handleClose={handleCloseVariantPopup}
+            />
           </Stack>
         }
       >

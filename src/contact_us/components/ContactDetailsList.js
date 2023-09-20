@@ -28,6 +28,9 @@ function ContactDetailsList({ openModal, contactDetailsData, handleDelete }) {
                   <strong>User / Delivery Boy</strong>
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: "100px" }}>
+                  <strong>Admin Phone Number</strong>
+                </TableCell>
+                <TableCell align="left" style={{ minWidth: "100px" }}>
                   <strong>Contact Details</strong>
                 </TableCell>
                 <TableCell align="left" style={{ width: "100px" }}>
@@ -40,6 +43,7 @@ function ContactDetailsList({ openModal, contactDetailsData, handleDelete }) {
                 return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                   <TableCell align="left">{String(row.for)}</TableCell>
+                  <TableCell align="left">{String(row.phoneNumber)}</TableCell>
                   <TableCell align="left"><div dangerouslySetInnerHTML={{__html: row.contactDetails}}></div></TableCell>
                   <TableCell align="left">
                     <Stack spacing={2} direction="row">

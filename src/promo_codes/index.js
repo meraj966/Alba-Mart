@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Stack, Typography, Button, Box, Modal } from "@mui/material";
+import { Stack, Typography, Button, Box, Modal, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import AddNewPromoCode from "../promo_codes/components/AddNewPromoCode";
 import PromoCodeList from "../promo_codes/components/PromoCodeList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase-config";
 
 function PromoCodes() {
@@ -15,9 +15,12 @@ function PromoCodes() {
   const [openInEditMode, setOpenInEditMode] = useState(false);
   const [promocodeData, setPromoCodeData] = useState([]);
   const ref = collection(db, "PromoCode");
+  const [filterValue, setFilterValue] = useState(""); // State for filter value
 
   useEffect(() => {
     getPromoCodeData();
+    // Check and update promo code status when the component mounts
+    checkAndUpdatePromoCodeStatus();
   }, []);
 
   const getPromoCodeData = async () => {
@@ -29,6 +32,47 @@ function PromoCodes() {
     await deleteDoc(doc(ref, id));
     setPromoCodeData(promocodeData.filter((row) => row.id !== id));
   };
+
+  const checkAndUpdatePromoCodeStatus = async () => {
+    // Get the current date
+    const currentDate = new Date();
+
+    // Loop through promo codes
+    for (const promoCode of promocodeData) {
+      // Convert endDate from a string to a Date object
+      const endDate = new Date(promoCode.endDate);
+
+      // Check if the endDate has passed
+      if (endDate < currentDate && promoCode.discountStatus) {
+        // Update discountStatus to false in the database
+        const promoCodeRef = doc(ref, promoCode.id);
+        await updateDoc(promoCodeRef, { discountStatus: false });
+
+        // Update the promoCodeData in state to reflect the change
+        setPromoCodeData((prevData) =>
+          prevData.map((item) =>
+            item.id === promoCode.id
+              ? { ...item, discountStatus: false }
+              : item
+          )
+        );
+      }
+    }
+  };
+
+  const handleFilterChange = (event) => {
+    // Set the selected filter value
+    setFilterValue(event.target.value);
+  };
+
+  // Filter the table data based on the selected filter value
+  const filteredPromoCodeData = filterValue
+    ? promocodeData.filter(
+        (row) =>
+          (filterValue === "Active" && row.discountStatus === true) ||
+          (filterValue === "Deactive" && row.discountStatus === false)
+      )
+    : promocodeData;
 
   const modal = () => (
     <Modal onClose={() => setAddNewPromoCode(false)} open={addNewPromoCode}>
@@ -47,7 +91,20 @@ function PromoCodes() {
   const actionBar = () => (
     <>
       <Stack direction="row" spacing={2} className="my-2 mb-2">
-        {/* must have some filters */}
+        <FormControl variant="outlined" sx={{ minWidth: "150px" }}>
+          <InputLabel id="filter-label">Filter</InputLabel>
+          <Select
+            labelId="filter-label"
+            id="filter"
+            value={filterValue}
+            label="Filter"
+            onChange={handleFilterChange}
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="Active">Active</MenuItem>
+            <MenuItem value="Deactive">Deactive</MenuItem>
+          </Select>
+        </FormControl>
         <Typography
           variant="h6"
           component="div"
@@ -66,6 +123,7 @@ function PromoCodes() {
       </Stack>
     </>
   );
+
   return (
     <>
       <PageTemplate
@@ -79,7 +137,7 @@ function PromoCodes() {
             setPromoCodeModalData(row);
             handleOpen();
           }}
-          promocodeData={promocodeData}
+          promocodeData={filteredPromoCodeData} // Pass filtered data to PromoCodeList
           handleDelete={handleDelete}
         />
       </PageTemplate>
