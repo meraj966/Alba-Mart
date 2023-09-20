@@ -56,8 +56,15 @@ export const getProductDataGridColumns = (
       flex: 1,
     },
     {
+      field: "purchaseRate",
+      headerName: "Purchase Rate",
+      minWidth: 150,
+      flex: 1,
+    },
+    {
       field: "discountValue",
       headerName: "Discount",
+      minWidth: 100,
       flex: 1,
       // minWidth: 150,
       valueGetter: ({ row }) => {
@@ -198,9 +205,9 @@ export const getOrdersGridColumns = (
       headerName: "Order Date",
       flex: 1,
       valueGetter: ({ row }) => {
-        if (row.date) {
-          const dateArray = row.date.split(" ");
-          return dateArray[0]; // This will give you the date part "2023-07-04"
+        if (row.orderDate) {
+          const dateArray = row.orderDate.split(" ");
+          return dateArray[0]; // This will give you the date part "2023-08-30"
         }
         return "--";
       },
@@ -210,11 +217,11 @@ export const getOrdersGridColumns = (
       headerName: "Order Time",
       flex: 1,
       valueGetter: ({ row }) => {
-        if (row.date) {
-          const timePart = row.date.split(" ")[1];
+        if (row.orderDate) {
+          const timePart = row.orderDate.split(" ")[1];
           if (timePart) {
-            // If you want to show only the hours and minutes, you can further extract them
-            const hoursMinutes = timePart.substr(0, 5); // This will give you "20:10"
+            // Extract only the hours and minutes
+            const hoursMinutes = timePart.substr(0, 5); // This will give you "11:59"
             return hoursMinutes;
           }
         }

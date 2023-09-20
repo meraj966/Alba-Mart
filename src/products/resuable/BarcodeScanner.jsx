@@ -18,7 +18,7 @@ function BarcodeScanner({ onBarcodeScanned }) {
   return (
     <div>
       <BarcodeReader onScan={handleScan} onError={handleError} />
-      <p>Scanned Barcode: {scannedBarcode}</p>
+      <p>{scannedBarcode}</p>
     </div>
   );
 }

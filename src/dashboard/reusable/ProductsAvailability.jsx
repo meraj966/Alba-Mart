@@ -53,7 +53,7 @@ function ProductsAvailability({ title, data }) {
                 <Grid item xs={2}>{row.name}</Grid>
                 <Grid item xs={2}>{row.category}</Grid>
                 <Grid item xs={2}>{row.subCategory}</Grid>
-                <Grid item xs={2}>{row.measureUnit}</Grid>
+                <Grid item xs={2}>{row.quantity} {row.measureUnit}</Grid>
                 <Grid item xs={2}>{row.price}</Grid>
                 <Grid item xs={2}>{row.stockValue}</Grid>
                 {/* <Grid item xs={2}>

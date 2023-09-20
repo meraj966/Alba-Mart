@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, setDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -38,13 +38,26 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   const [discountStatus, setDiscountStatus] = useState(
     isEditMode ? data.discountStatus : true
   );
-  // const [startDate, setStartDate] = useState("dd-mm-yyyy"); // new state for "Start Date"
-  // const [endDate, setEndDate] = useState("dd-mm-yyyy"); // new state for "End Date"
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Check if the promo code already exists in the database
+    const promoCodeDocRef = doc(db, 'PromoCode', promoCode);
+    const promoCodeDocSnapshot = await getDoc(promoCodeDocRef);
+
+    if (promoCodeDocSnapshot.exists()) {
+      // Promo code already exists, show an error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Promo Code Already Exists',
+        text: `Promo Code - '${promoCode}' is an existing promo code. Please add another.`,
+      });
+      return; // Exit the function
+    }
+
     if (isEditMode) {
-      await updateDoc(doc(db, 'PromoCode', promoCode), { // Use promoCode as the document ID
+      await updateDoc(promoCodeDocRef, {
         code: promoCode,
         message,
         numUsers,
@@ -53,13 +66,13 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         discount,
         maxDiscount,
         discountStatus,
-        startDate, // add "Start Date" to the object being saved to Firestore
-        endDate, // add "End Date" to the object being saved to Firestore
+        startDate,
+        endDate,
       }).then(() => {
-        Swal.fire('Succesfull!', 'Promo code added', 'success')
-      })
+        Swal.fire('Successful!', 'Promo code updated', 'success');
+      });
     } else {
-      await setDoc(doc(collection(db, "PromoCode"), promoCode), {
+      await setDoc(promoCodeDocRef, {
         code: promoCode,
         message,
         numUsers,
@@ -68,14 +81,15 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         discount,
         maxDiscount,
         discountStatus,
-        startDate, // add "Start Date" to the object being saved to Firestore
-        endDate, // add "End Date" to the object being saved to Firestore
+        startDate,
+        endDate,
       }).then(() => {
-        Swal.fire('Succesfull!', 'Promo code added', 'success')
+        Swal.fire('Successful!', 'Promo code added', 'success');
       });
     }
+
     refreshPromoCodes();
-    handleClose()
+    handleClose();
   };
 
   const handlePromoCodeChange = (event) => {

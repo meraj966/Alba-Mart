@@ -63,7 +63,7 @@ export default function UsersList({rows}) {
                       tabIndex={-1}
                       key={row.code}
                     >
-                      <TableCell align="left">{row.name}</TableCell>
+                      <TableCell align="left">{row.primaryName}</TableCell>
                       <TableCell align="left">{String(row.primaryEmail)}</TableCell>
                       <TableCell align="left">{String(row.primaryContact)}</TableCell>
                       <TableCell align="left">{String(row.pin)}</TableCell>

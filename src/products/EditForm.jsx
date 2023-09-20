@@ -252,7 +252,7 @@ export default function EditForm({ fid, closeEvent }) {
         <CloseIcon />
       </IconButton>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={3}>
           <TextField
             error={false}
             id="name"
@@ -264,11 +264,11 @@ export default function EditForm({ fid, closeEvent }) {
             sx={{ minWidth: "100%" }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={1.5}>
           <TextField
             error={false}
             id="price"
-            label="Price"
+            label="Price(MRP)"
             type="number"
             value={price}
             onChange={handlePriceChange}
@@ -281,6 +281,19 @@ export default function EditForm({ fid, closeEvent }) {
                 </InputAdornment>
               ),
             }}
+          />
+        </Grid>
+        <Grid item xs={1.5}>
+          <TextField
+            error={false}
+            id="purchaseRate"
+            label="Purchase Rate"
+            type="number"
+            name="purchaseRate"
+            value={purchaseRate}
+            onChange={(e) => setPurchaseRate(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
           />
         </Grid>
         <Grid item xs={0.8}>
@@ -333,6 +346,75 @@ export default function EditForm({ fid, closeEvent }) {
             />
           )}
         </Grid>
+        <Grid item xs={1.5}>
+          <TextField
+            error={false}
+            id="measureUnit"
+            label="Unit"
+            select
+            name="measureUnit"
+            value={measureUnit}
+            onChange={handleChangeUnit}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          >
+            {unitList.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="quantity"
+            label="Quantity"
+            type="number"
+            name="quantity"
+            value={quantity}
+            onChange={handleSetQuantity}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="stockValue"
+            label="Stock Value"
+            type="number"
+            name="stockValue"
+            value={stockValue}
+            onChange={(e) => setStockValue(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            error={false}
+            id="barcode"
+            label="Barcode"
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="maxLimit"
+            label="Max Limit On Product"
+            type="number"
+            name="maxLimit"
+            value={maxLimit}
+            onChange={(e) => setMaxLimit(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
         <Grid item xs={3}>
           <TextField
             error={false}
@@ -370,38 +452,6 @@ export default function EditForm({ fid, closeEvent }) {
           </TextField>
         </Grid>
         <Grid item xs={3}>
-          <TextField
-            error={false}
-            id="measureUnit"
-            label="Unit"
-            select
-            name="measureUnit"
-            value={measureUnit}
-            onChange={handleChangeUnit}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          >
-            {unitList.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            error={false}
-            id="quantity"
-            label="Quantity"
-            type="number"
-            name="quantity"
-            value={quantity}
-            onChange={handleSetQuantity}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={3}>
           <SelectInput
             id="brandName"
             label={'Brand Name'}
@@ -410,56 +460,6 @@ export default function EditForm({ fid, closeEvent }) {
             data={brandNameList}
             value={brandName}
             onChange={e => setBrandName(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            error={false}
-            id="stockValue"
-            label="Stock Value"
-            type="number"
-            name="stockValue"
-            value={stockValue}
-            onChange={(e) => setStockValue(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            error={false}
-            id="maxLimit"
-            label="Max Limit On Product"
-            type="number"
-            name="maxLimit"
-            value={maxLimit}
-            onChange={(e) => setMaxLimit(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            error={false}
-            id="purchaseRate"
-            label="Purchase Rate"
-            type="number"
-            name="purchaseRate"
-            value={purchaseRate}
-            onChange={(e) => setPurchaseRate(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            error={false}
-            id="barcode"
-            label="Barcode"
-            value={barcode}
-            onChange={(e) => setBarcode(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
           />
         </Grid>
         <Grid item xs={12}>

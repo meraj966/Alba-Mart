@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import { db } from "../../firebase-config";
 import { addDoc, collection, doc, updateDoc, setDoc } from "firebase/firestore";
 
-function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryBoys, data }) {
+function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess, data }) {
   const [charge, setCharge] = useState(isEditMode ? data.charge : "");
   const [pincode, setPincode] = useState(isEditMode ? data.pincode : "");
   const [maximumValue, setMaximumValue] = useState(isEditMode ? data.maximumValue : "");
@@ -44,13 +44,13 @@ function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryBoys, dat
         Swal.fire("Submitted!", "New Delivery Charges has been added", "success");
       });
     }
-    refreshDeliveryBoys();
+    refreshDeliveryChargess();
     closeModal();
   };
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "80vh", overflow: "auto" }}>
-      <CardHeader title="Delivery Boy Form" />
+      <CardHeader title="Delivery Charges Form" />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={8}>

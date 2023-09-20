@@ -43,7 +43,7 @@ function PushNotification() {
                     closeModal={() => setAddNewMessage(false)}
                     isEditMode={openInEditMode}
                     data={messageModalData}
-                    refreshDeliveryBoys={getNotifications}
+                    refreshMessages={getNotifications}
                     handleClose={handleClose}
                 />
             </Box>

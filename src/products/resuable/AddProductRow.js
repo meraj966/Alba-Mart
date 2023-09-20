@@ -221,7 +221,7 @@ function AddProductRow({
           <TextField
             error={false}
             id="price"
-            label="Price"
+            label="Price(MRP)"
             type="number"
             name="price"
             value={price}
@@ -235,6 +235,19 @@ function AddProductRow({
                 </InputAdornment>
               ),
             }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="purchaseRate"
+            label="Purchase Rate"
+            type="number"
+            name="purchaseRate"
+            value={purchaseRate}
+            onChange={(e) => setPurchaseRate(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
           />
         </Grid>
         <Grid item xs={0.7}>
@@ -280,42 +293,6 @@ function AddProductRow({
             />
           )}
         </Grid>
-        <Grid item xs={3}>
-          <SelectInput
-            id="category"
-            label="Category"
-            name="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-            data={categoryList}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <SelectInput
-            id="subCategory"
-            label="Sub Category"
-            size="small"
-            name="subCategory"
-            value={subCategory}
-            onChange={(e) => setSubCategory(e.target.value)}
-            sx={{ minWidth: "100%" }}
-            data={subCategoryList}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <SelectInput
-            id="brandName"
-            label="Brand Name"
-            size="small"
-            sx={{ minWidth: "100%" }}
-            name="brandName"
-            value={brandName}
-            onChange={(e) => setBrandName(e.target.value)}
-            data={brandNameList}
-          />
-        </Grid>
         <Grid item xs={1.5}>
           <SelectInput
             id="measureUnit"
@@ -354,32 +331,6 @@ function AddProductRow({
             sx={{ minWidth: "100%" }}
           />
         </Grid>
-        <Grid item xs={2}>
-          <TextField
-            error={false}
-            id="maxLimit"
-            label="Max Limit On product"
-            type="number"
-            name="maxLimit"
-            value={maxLimit}
-            onChange={(e) => setMaxLimit(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            error={false}
-            id="purchaseRate"
-            label="Purchase Rate"
-            type="number"
-            name="purchaseRate"
-            value={purchaseRate}
-            onChange={(e) => setPurchaseRate(e.target.value)}
-            size="small"
-            sx={{ minWidth: "100%" }}
-          />
-        </Grid>
         <Grid item xs={3}>
           <TextField
             error={false}
@@ -399,6 +350,55 @@ function AddProductRow({
               Generate Barcode
             </Button>
           )}
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            error={false}
+            id="maxLimit"
+            label="Max Limit On product"
+            type="number"
+            name="maxLimit"
+            value={maxLimit}
+            onChange={(e) => setMaxLimit(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <SelectInput
+            id="category"
+            label="Category"
+            name="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            size="small"
+            sx={{ minWidth: "100%" }}
+            data={categoryList}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <SelectInput
+            id="subCategory"
+            label="Sub Category"
+            size="small"
+            name="subCategory"
+            value={subCategory}
+            onChange={(e) => setSubCategory(e.target.value)}
+            sx={{ minWidth: "100%" }}
+            data={subCategoryList}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <SelectInput
+            id="brandName"
+            label="Brand Name"
+            size="small"
+            sx={{ minWidth: "100%" }}
+            name="brandName"
+            value={brandName}
+            onChange={(e) => setBrandName(e.target.value)}
+            data={brandNameList}
+          />
         </Grid>
         <Grid item xs={3}>
           <input
