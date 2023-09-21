@@ -91,13 +91,13 @@ function PromoCodes() {
   const actionBar = () => (
     <>
       <Stack direction="row" spacing={2} className="my-2 mb-2">
-        <FormControl variant="outlined" sx={{ minWidth: "150px" }}>
-          <InputLabel id="filter-label">Filter</InputLabel>
+        <FormControl variant="outlined" sx={{ minWidth: "250px" }}>
+          <InputLabel id="filter-label">Filter By PromoCode Status</InputLabel>
           <Select
             labelId="filter-label"
             id="filter"
             value={filterValue}
-            label="Filter"
+            label="Filter By PromoCode Status"
             onChange={handleFilterChange}
           >
             <MenuItem value="">All</MenuItem>

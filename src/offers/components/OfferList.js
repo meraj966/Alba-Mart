@@ -10,6 +10,10 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,13 +25,15 @@ import {
   doc,
   getDocs,
   updateDoc,
-  onSnapshot, // Import onSnapshot for real-time updates
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
+import Typography from "@mui/material/Typography";
 
 function OfferList() {
   const [offerData, setOfferData] = useState([]);
+  const [filterValue, setFilterValue] = useState("All"); // State for filter value
 
   const deleteOffer = (id) => {
     Swal.fire({
@@ -64,18 +70,36 @@ function OfferList() {
   useEffect(() => {
     getOfferData();
 
-    // Set up a listener for real-time updates
     const unsubscribe = onSnapshot(collection(db, "Offers"), (snapshot) => {
       const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
       setOfferData(data);
     });
 
-    // Clean up the listener on component unmount
     return () => unsubscribe();
   }, []);
 
+  // Function to handle filter change
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value);
+  };
+
   return (
     <>
+      <FormControl variant="outlined" sx={{ minWidth: "200px" }}>
+        <InputLabel id="filter-label">Filter By Offer Status</InputLabel>
+        <Select
+          labelId="filter-label"
+          label="Filter By Offer Status"
+          value={filterValue}
+          onChange={handleFilterChange}
+          sx={{ marginBottom: 2, width: "180px" }}
+        >
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="Yes">Yes</MenuItem>
+          <MenuItem value="No">No</MenuItem>
+        </Select>
+      </FormControl>
+
       <TableContainer>
         <Table aria-label="sticky table" stickyHeader>
           <TableHead>
@@ -104,72 +128,76 @@ function OfferList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {offerData.map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                <TableCell align="left">{String(row.title)}</TableCell>
-                <TableCell align="left">
-                  {String(row.startDate) || "-"}
-                </TableCell>
-                <TableCell align="left">{row.endDate || "-"}</TableCell>
-                <TableCell align="left">
-                  {String(row.discountPercent)}
-                </TableCell>
-                <TableCell align="left">
-                  <span
-                    style={{
-                      color: row.isOfferLive ? "green" : "red",
-                      border: "1px solid",
-                      padding: "4px",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    {row.isOfferLive ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-                <TableCell sx={{ paddingLeft: "5px" }}>
-                  <Stack direction="row">
-                    <Tooltip title="Edit products in offer">
-                      <IconButton>
-                        <Link
-                          to={`/edit-offer/${row.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <EditIcon
+            {offerData
+              .filter((row) =>
+                filterValue === "All" ? true : row.isOfferLive === (filterValue === "Yes")
+              )
+              .map((row) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                  <TableCell align="left">{String(row.title)}</TableCell>
+                  <TableCell align="left">
+                    {String(row.startDate) || "-"}
+                  </TableCell>
+                  <TableCell align="left">{row.endDate || "-"}</TableCell>
+                  <TableCell align="left">
+                    {String(row.discountPercent)}
+                  </TableCell>
+                  <TableCell align="left">
+                    <span
+                      style={{
+                        color: row.isOfferLive ? "green" : "red",
+                        border: "1px solid",
+                        padding: "4px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {row.isOfferLive ? "Yes" : "No"}
+                    </span>
+                  </TableCell>
+                  <TableCell sx={{ paddingLeft: "5px" }}>
+                    <Stack direction="row">
+                      <Tooltip title="Edit products in offer">
+                        <IconButton>
+                          <Link
+                            to={`/edit-offer/${row.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <EditIcon
+                              style={{
+                                fontSize: "20px",
+                                color: "blue",
+                                cursor: "pointer",
+                              }}
+                              className="cursor-pointer"
+                            />
+                          </Link>
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Offer">
+                        <IconButton onClick={() => deleteOffer(row.id)}>
+                          <DeleteIcon
                             style={{
                               fontSize: "20px",
-                              color: "blue",
+                              color: "darkred",
                               cursor: "pointer",
                             }}
-                            className="cursor-pointer"
                           />
-                        </Link>
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete Offer">
-                      <IconButton onClick={() => deleteOffer(row.id)}>
-                        <DeleteIcon
-                          style={{
-                            fontSize: "20px",
-                            color: "darkred",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </TableCell>
-                <TableCell align="center">
-                  <Link
-                    to={`/offer-details/${row.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <OpenInNewIcon color="primary" />
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Link
+                      to={`/offer-details/${row.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <OpenInNewIcon color="primary" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
