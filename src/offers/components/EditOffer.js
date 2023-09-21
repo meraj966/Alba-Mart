@@ -42,10 +42,8 @@ function EditOffer() {
   const [discount, setDiscount] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [bannerImage, setBannerImage] = useState(""); // State to store banner image URL
   const [uploadedImage, setUploadedImage] = useState(null); // State to store uploaded image URL
-  const [searchFilterActive, setSearchFilterActive] = useState(false);
   const [offerDescription, setOfferDescription] = useState(""); // New state for description
 
   const formatDate = (obj) => {
@@ -159,19 +157,6 @@ function EditOffer() {
     getProductData();
   };
 
-  const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-
-    // Set searchFilterActive to true when there's a query, and false when the query is empty.
-    setSearchFilterActive(!!query);
-  };
-
-  const filteredProducts = selectedProducts.filter((product) => {
-    const productName = product.name.toLowerCase();
-    return searchFilterActive ? productName.includes(searchQuery) : true;
-  });
-
   return (
     <PageTemplate
       title={`Edit Offer | ${offerData?.title}`}
@@ -185,16 +170,6 @@ function EditOffer() {
         >
           <TextField
             type="text"
-            id="search"
-            name="search"
-            value={searchQuery}
-            onChange={handleSearch}
-            label="Search by Product Name"
-            size="small"
-            sx={{ width: "250px" }}
-          />
-          <TextField
-            type="text"
             error={false}
             id="title"
             name="title"
@@ -202,7 +177,7 @@ function EditOffer() {
             onChange={(e) => setTitle(e.target.value)}
             label="Title"
             size="small"
-            sx={{ width: "200px", marginTop: "16px" }}
+            sx={{ width: "200px" }}
           />
           <Box sx={{ width: "16px" }} />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -214,7 +189,7 @@ function EditOffer() {
               format="YYYY-MM-DD"
             />
           </LocalizationProvider>
-          <span style={{ margin: '0 8px' }}></span>
+          <span style={{ margin: '0 12px' }}></span>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="End Date"
@@ -224,7 +199,7 @@ function EditOffer() {
               format="YYYY-MM-DD"
             />
           </LocalizationProvider>
-          <span style={{ margin: '0 8px' }}></span>
+          <span style={{ margin: '0 12px' }}></span>
           <TextField
             type="number"
             error={false}
@@ -302,21 +277,13 @@ function EditOffer() {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          {searchFilterActive ? (
-            <ProductsList
-              rows={filteredProducts}
-              isEditOffer={true}
-              handleSelectedProducts={handleSelectedProducts}
-              saleValue={discount}
-            />
-          ) : (
-            <ProductsList
-              rows={selectedProducts}
-              isEditOffer={true}
-              handleSelectedProducts={handleSelectedProducts}
-              saleValue={discount}
-            />
-          )}
+        <hr style={{ marginTop: "20px", marginBottom: "20px" }} /> {/* Divider with margin */}
+          <ProductsList
+            rows={selectedProducts}
+            isEditOffer={true}
+            handleSelectedProducts={handleSelectedProducts}
+            saleValue={discount}
+          />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" align="right">

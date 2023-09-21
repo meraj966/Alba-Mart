@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Product from "./resuable/Product";
@@ -7,10 +9,8 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Skeleton } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
-import { useState } from "react";
-import "../orders/OrderDetails.css";
+import { Skeleton } from "@mui/material";
 
 export default function ProductsList({
   rows,
@@ -23,6 +23,17 @@ export default function ProductsList({
   isOrderDetailView
 }) {
   const [selectAll, setSelectAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // State for the search query
+  const [filteredRows, setFilteredRows] = useState([]); // State for filtered products
+
+  useEffect(() => {
+    // Filter products based on the search query
+    const filtered = rows.filter((product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredRows(filtered);
+  }, [rows, searchQuery]);
+
   const productSelected = (id, checked) => {
     let products = [...rows];
     products.map((prod) => {
@@ -42,7 +53,21 @@ export default function ProductsList({
 
   return (
     <>
-      {rows.length > 0 && (
+      {/* Add a search input field */}
+      {isEditOffer && (
+        <TextField
+          type="text"
+          id="search"
+          name="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          label="Search by Product Name"
+          size="small"
+          sx={{ width: "250px" }}
+        />
+      )}
+
+      {filteredRows.length > 0 && (
         <>
           <TableContainer>
             <Table stickyHeader aria-label="Products">
@@ -58,9 +83,9 @@ export default function ProductsList({
                   )}
                   <TableCell align="left">Name</TableCell>
                   {!isOrderDetailView &&
-                  <TableCell align="left">
-                    <span className="hide-on-print">Prod Img</span>
-                  </TableCell>}
+                    <TableCell align="left">
+                      <span className="hide-on-print">Prod Img</span>
+                    </TableCell>}
 
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
@@ -74,8 +99,8 @@ export default function ProductsList({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows?.length > 0 &&
-                  rows?.map((row) => {
+                {filteredRows?.length > 0 &&
+                  filteredRows?.map((row) => {
                     return (
                       <Product
                         data={row}
@@ -98,24 +123,22 @@ export default function ProductsList({
         </>
       )}
 
-      {rows.length === 0 && (
-        <>
-          <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
-            <Box height={20} />
-            <Skeleton variant="rectangular" width={"100%"} height={30} />
-            <Box height={40} />
-            <Skeleton variant="rectangular" width={"100%"} height={60} />
-            <Box height={20} />
-            <Skeleton variant="rectangular" width={"100%"} height={60} />
-            <Box height={20} />
-            <Skeleton variant="rectangular" width={"100%"} height={60} />
-            <Box height={20} />
-            <Skeleton variant="rectangular" width={"100%"} height={60} />
-            <Box height={20} />
-            <Skeleton variant="rectangular" width={"100%"} height={60} />
-            <Box height={20} />
-          </Paper>
-        </>
+      {filteredRows.length === 0 && (
+        <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
+          <Box height={20} />
+          <Skeleton variant="rectangular" width={"100%"} height={30} />
+          <Box height={40} />
+          <Skeleton variant="rectangular" width={"100%"} height={60} />
+          <Box height={20} />
+          <Skeleton variant="rectangular" width={"100%"} height={60} />
+          <Box height={20} />
+          <Skeleton variant="rectangular" width={"100%"} height={60} />
+          <Box height={20} />
+          <Skeleton variant="rectangular" width={"100%"} height={60} />
+          <Box height={20} />
+          <Skeleton variant="rectangular" width={"100%"} height={60} />
+          <Box height={20} />
+        </Paper>
       )}
     </>
   );
