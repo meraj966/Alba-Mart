@@ -4,7 +4,6 @@ import { Button, Card, Grid, Table, TableBody, TableCell, TableContainer, TableH
 import { useParams, Link } from "react-router-dom";
 import { doc, getDoc } from "@firebase/firestore";
 import { db } from "../firebase-config";
-import "../orders/OrderDetails.css";
 
 function OrderDetails() {
   const { id } = useParams();

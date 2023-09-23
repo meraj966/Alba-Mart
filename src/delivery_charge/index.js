@@ -9,10 +9,11 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useAppStore } from "../appStore";
 import { db } from "../firebase-config";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 function DeliveryCharges() {
     const [addNewDeliveryCharge, setAddNewDeliveryCharge] = useState(false);
-    const [deliveryChargeModalData, setDeliveryChargeModalData] = useState(null)
+    const [deliveryChargeModalData, setDeliveryChargeModalData] = useState(null);
     const [openInEditMode, setOpenInEditMode] = useState(false);
     const handleOpen = () => setAddNewDeliveryCharge(true);
     const handleClose = () => setAddNewDeliveryCharge(false);
@@ -26,12 +27,26 @@ function DeliveryCharges() {
     const getCharges = async () => {
         const data = await getDocs(deliveryChargeCollectionRef);
         setDeliveryChargeData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
     };
 
     const handleDelete = async (id) => {
-        await deleteDoc(doc(deliveryChargeCollectionRef, id));
-        setDeliveryChargeData(deliveryChargeData.filter((row) => row.id !== id));
+        // Show the confirmation dialog using Swal.fire with custom button styles
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#1976d2", // Blue color for "Yes, delete it!"
+            cancelButtonColor: "#ff5722", // Red color for "Cancel"
+        });
+
+        if (result.isConfirmed) {
+            await deleteDoc(doc(deliveryChargeCollectionRef, id));
+            setDeliveryChargeData(deliveryChargeData.filter((row) => row.id !== id));
+            Swal.fire("Deleted!", "Your delivery charge has been deleted.", "success");
+        }
     };
 
     const modal = () => (
@@ -86,7 +101,6 @@ function DeliveryCharges() {
                     handleDelete={handleDelete}
                 />
             </PageTemplate>
-
         </>
     );
 }

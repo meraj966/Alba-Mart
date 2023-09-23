@@ -340,7 +340,7 @@ export default function EditForm({ fid, closeEvent }) {
               type="number"
               value={saleValue}
               onChange={handleSaleValueChange}
-              label="Sale Value"
+              label="Sale Value(Discount Rate)"
               size="small"
               sx={{ minWidth: "100%" }}
             />

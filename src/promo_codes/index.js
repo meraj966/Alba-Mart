@@ -6,6 +6,7 @@ import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase-config";
+import Swal from "sweetalert2";
 
 function PromoCodes() {
   const [addNewPromoCode, setAddNewPromoCode] = useState(false);
@@ -29,8 +30,23 @@ function PromoCodes() {
   };
 
   const handleDelete = async (id) => {
-    await deleteDoc(doc(ref, id));
-    setPromoCodeData(promocodeData.filter((row) => row.id !== id));
+    // Show the confirmation dialog using Swal.fire with custom button styles
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#1976d2", // Blue color for "Yes, delete it!"
+      cancelButtonColor: "#ff5722", // Red color for "Cancel"
+    });
+
+    if (result.isConfirmed) {
+      await deleteDoc(doc(ref, id));
+      setPromoCodeData(promocodeData.filter((row) => row.id !== id));
+      Swal.fire("Deleted!", "Your entry has been deleted.", "success");
+    }
   };
 
   const checkAndUpdatePromoCodeStatus = async () => {
@@ -68,10 +84,10 @@ function PromoCodes() {
   // Filter the table data based on the selected filter value
   const filteredPromoCodeData = filterValue
     ? promocodeData.filter(
-        (row) =>
-          (filterValue === "Active" && row.discountStatus === true) ||
-          (filterValue === "Deactive" && row.discountStatus === false)
-      )
+      (row) =>
+        (filterValue === "Active" && row.discountStatus === true) ||
+        (filterValue === "Deactive" && row.discountStatus === false)
+    )
     : promocodeData;
 
   const modal = () => (

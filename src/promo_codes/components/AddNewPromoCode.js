@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { collection, addDoc, updateDoc, setDoc, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  setDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase-config";
 import {
   TextField,
@@ -12,18 +19,24 @@ import {
   Switch,
   Card,
   Grid,
-  Box,
   CardHeader,
   CardContent,
 } from "@mui/material";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
 
-function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
+function AddNewPromoCode({
+  data,
+  isEditMode,
+  refreshPromoCodes,
+  handleClose,
+}) {
   const [promoCode, setPromoCode] = useState(isEditMode ? data.code : "");
   const [message, setMessage] = useState(isEditMode ? data.message : "");
   const [numUsers, setNumUsers] = useState(isEditMode ? data.numUsers : 0);
-  const [startDate, setStartDate] = useState(isEditMode ? data.startDate : "dd-mm-yyyy");
+  const [startDate, setStartDate] = useState(
+    isEditMode ? data.startDate : "dd-mm-yyyy"
+  );
   const [endDate, setEndDate] = useState(isEditMode ? data.endDate : "dd-mm-yyyy");
   const [minOrderAmount, setMinOrderAmount] = useState(
     isEditMode ? data.minOrderAmount : 0
@@ -42,22 +55,24 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Check if the promo code already exists in the database
-    const promoCodeDocRef = doc(db, 'PromoCode', promoCode);
-    const promoCodeDocSnapshot = await getDoc(promoCodeDocRef);
+    if (!isEditMode) {
+      // Check if promo code already exists in the database
+      const promoCodeRef = doc(db, 'PromoCode', promoCode);
+      const promoCodeSnapshot = await getDoc(promoCodeRef);
 
-    if (promoCodeDocSnapshot.exists()) {
-      // Promo code already exists, show an error message
-      Swal.fire({
-        icon: 'error',
-        title: 'Promo Code Already Exists',
-        text: `Promo Code - '${promoCode}' is an existing promo code. Please add another.`,
-      });
-      return; // Exit the function
+      if (promoCodeSnapshot.exists()) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Promo Code - '${promoCode}' is an existing promo code. Please add another.`,
+        });
+        return;
+      }
     }
 
     if (isEditMode) {
-      await updateDoc(promoCodeDocRef, {
+      // Update promo code
+      await updateDoc(doc(db, 'PromoCode', promoCode), {
         code: promoCode,
         message,
         numUsers,
@@ -68,11 +83,11 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         discountStatus,
         startDate,
         endDate,
-      }).then(() => {
-        Swal.fire('Successful!', 'Promo code updated', 'success');
       });
+      Swal.fire('Successful!', 'Promo code updated', 'success');
     } else {
-      await setDoc(promoCodeDocRef, {
+      // Add new promo code
+      await setDoc(doc(collection(db, 'PromoCode'), promoCode), {
         code: promoCode,
         message,
         numUsers,
@@ -83,11 +98,9 @@ function AddNewPromoCode({ data, isEditMode, refreshPromoCodes, handleClose }) {
         discountStatus,
         startDate,
         endDate,
-      }).then(() => {
-        Swal.fire('Successful!', 'Promo code added', 'success');
       });
+      Swal.fire('Successful!', 'Promo code added', 'success');
     }
-
     refreshPromoCodes();
     handleClose();
   };

@@ -15,7 +15,13 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [filteredOrder, setFilteredOrders] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
-  
+  const [startDate, setStartDate] = useState(
+    new Date().toISOString().split("T")[0] // Initialize with current date
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0] // Initialize with current date
+  );
+
   useEffect(() => {
     getOrders();
   }, []);
@@ -24,7 +30,7 @@ export default function Orders() {
     if (orderType === "All Orders") {
       setFilteredOrders(null);
     } else {
-      setFilteredOrders(orders.filter(o=>o.orderStatus === orderType))
+      setFilteredOrders(orders.filter((o) => o.orderStatus === orderType));
     }
   }, [orderType]);
 
@@ -56,6 +62,45 @@ export default function Orders() {
           sx={{ minWidth: "280px" }}
         />
       </div>
+      <div style={{ float: "left", marginLeft: "20px" }}>
+        <TextField
+          type="date"
+          label="Start Date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          sx={{ marginRight: "5px" }}
+        />
+        <TextField
+          type="date"
+          label="End Date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          sx={{ marginRight: "5px" }}
+        />
+        <Button
+          onClick={() => handleFilter()}
+          style={{
+            marginRight: "5px",
+            fontSize: "15px",
+            color: "black",
+            background: "#1976d2",
+            color: "white",
+          }}
+        >
+          Filter
+        </Button>
+        <Button
+          onClick={() => handleClear()}
+          style={{
+            fontSize: "15px",
+            color: "black",
+            background: "#f44336",
+            color: "white",
+          }}
+        >
+          Clear
+        </Button>
+      </div>
       <div style={{ float: "right" }}>
         <Button>
           {isEdit ? (
@@ -75,6 +120,26 @@ export default function Orders() {
       </div>
     </div>
   );
+
+  const handleFilter = () => {
+    // Filtering orders based on selected date range
+    const filteredOrders = orders.filter((order) => {
+      if (!startDate || !endDate) return true; // If start or end date is not selected, display all orders
+      const orderDate = new Date(order.orderDate).getTime();
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate).getTime();
+      return orderDate >= start && orderDate <= end;
+    });
+
+    setFilteredOrders(filteredOrders);
+  };
+
+  const handleClear = () => {
+    // Clear the date filter and display all orders
+    setStartDate(new Date().toISOString().split("T")[0]); // Reset to current date
+    setEndDate(new Date().toISOString().split("T")[0]); // Reset to current date
+    setFilteredOrders(null);
+  };
 
   return (
     <>

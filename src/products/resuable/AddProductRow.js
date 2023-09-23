@@ -278,7 +278,7 @@ function AddProductRow({
             />
           )}
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={2.5}>
           {onSale && (
             <TextField
               error={false}
@@ -287,7 +287,7 @@ function AddProductRow({
               type="number"
               value={saleValue}
               onChange={(e) => setSaleValue(e.target.value)}
-              label="Sale Value"
+              label="Sale Value(Discount Rate)"
               size="small"
               sx={{ minWidth: "100%" }}
             />

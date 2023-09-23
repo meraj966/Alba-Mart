@@ -81,7 +81,7 @@ export default function Dashboard() {
   };
 
   const getCustomers = async () => {
-    const data = await getDocs(collection(db, "Address"));
+    const data = await getDocs(collection(db, "UserProfile"));
     setCustomers(data.docs.length);
   };
 
@@ -155,13 +155,13 @@ export default function Dashboard() {
   const exportToExcel = (data, fileName) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Products");
-    
+
     // Define columns
     worksheet.columns = [
       { header: "Product Name", key: "name" },
       { header: "Category", key: "category" },
       { header: "Subcategory", key: "subCategory" },
-      { header: "Unit", key: "unit"},
+      { header: "Unit", key: "unit" },
       { header: "Stock Value", key: "stockValue" },
     ];
 
@@ -197,7 +197,7 @@ export default function Dashboard() {
   };
 
   if (!window.localStorage.getItem("token")) navigate("/");
-  
+
   return (
     <>
       <PageTemplate modal={modal()} title="Dashboard">

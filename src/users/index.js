@@ -7,11 +7,9 @@ import UsersList from "../users/components/UsersList";
 import "../Dash.css";
 import Stack from "@mui/material/Stack";
 import { db } from "../firebase-config";
-import {
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import PageTemplate from "../pages/reusable/PageTemplate";
+import ExcelJS from "exceljs/dist/exceljs.min.js"; // Import ExcelJS
 
 export default function Users() {
   const [options, setOptions] = useState([]);
@@ -25,14 +23,64 @@ export default function Users() {
 
   const getUsers = async () => {
     const data = await getDocs(empCollectionRef);
-    const uniqueValues = [...new Set(data.docs.flatMap(doc => Object.values(doc.data())))];
+    const uniqueValues = [
+      ...new Set(data.docs.flatMap((doc) => Object.values(doc.data()))),
+    ];
     setOptions(uniqueValues);
-    setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setRows(
+      data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    );
+  };
+
+  // Function to handle exporting data to Excel using ExcelJS
+  const handleExportToExcel = () => {
+    if (rows.length > 0) {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("UserList");
+
+      // Define the headers you want to export
+      const headers = ["Name", "Email", "Phone", "Pincode", "Address"];
+
+      // Add headers to the worksheet
+      worksheet.addRow(headers);
+
+      // Map the user data to include only the desired fields
+      const mappedData = rows.map((row) => ({
+        Name: row.primaryName || "",
+        Email: row.primaryEmail || "",
+        Phone: row.primaryContact || "",
+        Pincode: row.pin || "",
+        Address: row.address || "",
+      }));
+
+      // Add data rows to the worksheet
+      mappedData.forEach((row) => {
+        worksheet.addRow(Object.values(row));
+      });
+
+      // Generate a Blob containing the Excel file
+      workbook.xlsx.writeBuffer().then((data) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a download link and trigger the download
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "user_list.xlsx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
   };
 
   const filterData = (v) => {
     if (v) {
-      const filteredRows = rows.filter(row => Object.values(row).includes(v));
+      const filteredRows = rows.filter((row) =>
+        Object.values(row).includes(v)
+      );
       setRows(filteredRows);
     } else {
       getUsers();
@@ -56,8 +104,10 @@ export default function Users() {
         component="div"
         sx={{ flexGrow: 1 }}
       ></Typography>
+      <button onClick={handleExportToExcel} style={{ backgroundColor: 'darkslateblue', color: 'white', border: 'none', padding: '8px 16px', cursor: 'pointer' }}>Export Users Detail</button>
     </Stack>
   );
+
   return (
     <>
       <PageTemplate title="Users List" actionBar={actionBar()}>

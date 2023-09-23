@@ -8,6 +8,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Autocomplete from "@mui/material/Autocomplete";
 import { db } from "../firebase-config";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 function DeliveryBoys() {
     const [addNewDeliveryBoy, setAddNewDeliveryBoy] = useState(false);
@@ -28,8 +29,23 @@ function DeliveryBoys() {
     };
 
     const handleDelete = async (id) => {
-        await deleteDoc(doc(deliveryBoyCollectionRef, id));
-        setDeliveryBoyData(deliveryboyData.filter((row) => row.id !== id));
+        // Show the confirmation dialog using Swal.fire with custom button styles
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#1976d2", // Blue color for "Yes, delete it!"
+            cancelButtonColor: "#ff5722", // Red color for "Cancel"
+        });
+
+        if (result.isConfirmed) {
+            await deleteDoc(doc(deliveryBoyCollectionRef, id));
+            setDeliveryBoyData(deliveryboyData.filter((row) => row.id !== id));
+            Swal.fire("Deleted!", "Your delivery boy has been deleted.", "success");
+        }
     };
 
     const handleOpen = () => setAddNewDeliveryBoy(true);
