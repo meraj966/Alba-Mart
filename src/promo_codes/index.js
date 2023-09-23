@@ -84,10 +84,10 @@ function PromoCodes() {
   // Filter the table data based on the selected filter value
   const filteredPromoCodeData = filterValue
     ? promocodeData.filter(
-        (row) =>
-          (filterValue === "Active" && row.discountStatus === true) ||
-          (filterValue === "Deactive" && row.discountStatus === false)
-      )
+      (row) =>
+        (filterValue === "Active" && row.discountStatus === true) ||
+        (filterValue === "Deactive" && row.discountStatus === false)
+    )
     : promocodeData;
 
   const modal = () => (

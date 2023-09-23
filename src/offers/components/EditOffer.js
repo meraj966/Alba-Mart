@@ -150,9 +150,9 @@ function EditOffer() {
         description: offerDescription,
       });
     });
-  
+
     getProductData();
-  };   
+  };
 
   return (
     <PageTemplate
@@ -274,7 +274,7 @@ function EditOffer() {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-        <hr style={{ marginTop: "20px", marginBottom: "20px" }} /> {/* Divider with margin */}
+          <hr style={{ marginTop: "20px", marginBottom: "20px" }} /> {/* Divider with margin */}
           <ProductsList
             rows={selectedProducts}
             isEditOffer={true}
