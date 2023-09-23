@@ -81,7 +81,7 @@ export default function Dashboard() {
   };
 
   const getCustomers = async () => {
-    const data = await getDocs(collection(db, "Address"));
+    const data = await getDocs(collection(db, "UserProfile"));
     setCustomers(data.docs.length);
   };
 
