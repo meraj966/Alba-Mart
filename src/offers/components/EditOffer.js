@@ -111,19 +111,16 @@ function EditOffer() {
         product["saleTag"] = id;
         product["onSale"] = product.isSelected;
         product["saleType"] = "%";
+        product["prevSalePrice"] = product["salePrice"]; // Store the current salePrice as prevSalePrice
         product["saleValue"] = discount;
-        product["salePrice"] = getDiscountedPrice(
-          "%",
-          product["price"],
-          discount
-        );
+        product["salePrice"] = getDiscountedPrice("%", product["price"], discount);
       } else {
         if (product.saleTag === id) {
           product["saleTag"] = "";
           product["onSale"] = false;
           product["saleType"] = "%";
           product["saleValue"] = "";
-          product["salePrice"] = "";
+          product["salePrice"] = product["price"];
         }
       }
       const prodDoc = doc(db, "Menu", product["id"]);
@@ -139,10 +136,9 @@ function EditOffer() {
       discountPercent: discount,
       startDate: formatDate(startDate),
       endDate: formatDate(endDate),
-      description: offerDescription, // Save offer description
+      description: offerDescription,
     }).then(() => {
       Swal.fire("Successful", "Updated Offer Details", "success");
-      // Update offerData after saving
       setOfferData({
         ...offerData,
         title,
@@ -151,11 +147,12 @@ function EditOffer() {
         discountPercent: discount,
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),
-        description: offerDescription, // Update the description in the offerData
+        description: offerDescription,
       });
     });
+  
     getProductData();
-  };
+  };   
 
   return (
     <PageTemplate

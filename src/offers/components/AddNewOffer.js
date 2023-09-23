@@ -128,7 +128,7 @@ function AddNewOffer({ closeModal, getOfferData }) {
               name="discount"
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
-              label="Discount"
+              label="Discount(%)"
               size="small"
               sx={{ minWidth: "100%" }}
             />

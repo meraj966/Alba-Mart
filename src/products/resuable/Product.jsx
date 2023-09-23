@@ -12,7 +12,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { Box, Modal } from "@mui/material";
 import ProductPopup from "./ProductPopup";
 import { getDiscountedPrice } from "../../utils";
-import "../../orders/OrderDetails.css";
 function Product({
   id,
   name,
