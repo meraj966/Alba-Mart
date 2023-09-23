@@ -19,6 +19,7 @@ import ProductPopup from "../products/resuable/ProductPopup";
 import AddProducts from "../products/AddProducts";
 import EditForm from "../products/EditForm";
 import VariantPopup from "./VariantPopup";
+import ExcelJS from "exceljs";
 
 export default function Products() {
   const [categories, setCategories] = useState([]);
@@ -224,6 +225,56 @@ export default function Products() {
     });
   };
 
+  // Code to export in excel sheet
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Product Data");
+
+    // Define the columns you want to include in the export
+    const columns = [
+      { header: "Name", key: "name", width: 20 },
+      { header: "Category", key: "category", width: 20 },
+      { header: "SubCategory", key: "subCategory", width: 20 },
+      { header: "MRP", key: "price", width: 15 },
+      { header: "SalePrice", key: "salePrice", width: 15 },
+      { header: "Purchase Rate", key: "purchaseRate", width: 15 },
+      { header: "Stock Value", key: "stockValue", width: 15 },
+      { header: "Barcode", key: "barcode", width: 15 },
+    ];
+
+    // Add the column headers to the worksheet
+    worksheet.columns = columns;
+
+    // Populate the worksheet with data from your rows array
+    rows.forEach((row) => {
+      worksheet.addRow({
+        name: row.name,
+        category: row.category,
+        subCategory: row.subCategory,
+        price: row.price,
+        salePrice: row.salePrice,
+        purchaseRate: row.purchaseRate,
+        stockValue: row.stockValue,
+        barcode: row.barcode,
+      });
+    });
+
+    // Generate a blob for the workbook
+    workbook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+
+      // Create a temporary anchor element to trigger the download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "product_data.xlsx";
+      a.click();
+
+      // Clean up
+      URL.revokeObjectURL(url);
+    });
+  };
+
   return (
     <>
       <PageTemplate
@@ -259,6 +310,13 @@ export default function Products() {
               sx={{ width: "250px" }}
             />
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={exportToExcel}
+            >
+              Export to Excel
+            </Button>
             <Button
               variant="contained"
               endIcon={<AddCircleIcon />}

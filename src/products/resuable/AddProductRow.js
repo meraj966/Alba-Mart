@@ -11,6 +11,7 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
@@ -64,16 +65,39 @@ function AddProductRow({
     setBarcode(scannedBarcode);
   };
 
-  const generateRandomBarcode = () => {
-    const newBarcodeNumber = (lastGeneratedBarcode + 1).toString().padStart(6, "0");
-    setLastGeneratedBarcode(lastGeneratedBarcode + 1);
-    return newBarcodeNumber;
+  // Function to get the last generated barcode from the database
+  const getLastGeneratedBarcode = async () => {
+    const barcodeRef = doc(db, "Barcode", "Barcode");
+
+    try {
+      const barcodeDoc = await getDoc(barcodeRef);
+      if (barcodeDoc.exists()) {
+        return barcodeDoc.data().code || 0;
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      console.error("Error getting last generated barcode: ", error);
+      return 0;
+    }
   };
 
-  const handleGenerateBarcode = () => {
-    if (!barcode) {
-      const generatedBarcode = generateRandomBarcode();
-      setBarcode(generatedBarcode);
+  // Function to handle generating and saving the barcode
+  const handleGenerateBarcode = async () => {
+    // Get the last generated barcode from the database
+    const lastGeneratedBarcode = await getLastGeneratedBarcode();
+
+    // Increment the last generated barcode by 1
+    const newBarcodeNumber = (parseInt(lastGeneratedBarcode) + 1).toString().padStart(6, "0");
+
+    // Save the new barcode in the "Barcode" document with ID "Barcode"
+    const barcodeRef = doc(db, "Barcode", "Barcode");
+
+    try {
+      await setDoc(barcodeRef, { code: newBarcodeNumber });
+      setBarcode(newBarcodeNumber); // Update the displayed barcode
+    } catch (error) {
+      console.error("Error saving barcode: ", error);
     }
   };
 

@@ -10,6 +10,7 @@ import {
   Typography,
   Button,
   Switch,
+  Divider,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -35,6 +36,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [dlImageFrontFile, setDlImageFrontFile] = useState(null);
   const [dlImageBackFile, setDlImageBackFile] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
+  const [deliveryBoyReward, setDeliveryBoyReward] = useState(isEditMode ? data.deliveryBoyReward : "");
 
 
   const formatDate = (obj) => {
@@ -50,6 +52,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
       alternateNumber: alternateNumber,
       joinDate: formatDate(joinDate),
       isActive: isActive,
+      deliveryBoyReward: deliveryBoyReward,
     };
 
     if (urls[0]) {
@@ -226,6 +229,21 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
                 />
               }
               label="Active/Deactive"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Divider sx={{ mt: 2, mb: 2 }} /> {/* Add the Divider */}
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              error={false}
+              id="deliveryBoyReward" // Add the id for the new field
+              name="deliveryBoyReward" // Add the name for the new field
+              value={deliveryBoyReward} // Bind the value to the state
+              onChange={(e) => setDeliveryBoyReward(e.target.value)} // Update the state
+              label="Delivery Boy Reward" // Label for the new field
+              size="small"
+              sx={{ mb: 2 }}
             />
           </Grid>
           <Grid item xs={12}>
