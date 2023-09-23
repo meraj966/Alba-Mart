@@ -18,7 +18,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
 function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
-  
+
 
   return (
     <>
@@ -48,11 +48,14 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 <strong>Profile Pic</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                <strong>Action</strong>
+                <strong>Reward</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
-                <strong>View Details</strong>
+                <strong>Action</strong>
               </TableCell>
+              {/* <TableCell align="left" style={{ width: "100px" }}>
+                <strong>View Details</strong>
+              </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -90,6 +93,9 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                   />
                 </TableCell>
                 <TableCell align="left">
+                  <strong>{row.deliveryBoyReward.trim() === "" ? "-" : String(row.deliveryBoyReward)}</strong>
+                </TableCell>
+                <TableCell align="left">
                   <Stack spacing={2} direction="row">
                     <EditIcon
                       style={{
@@ -110,7 +116,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                     />
                   </Stack>
                 </TableCell>
-                <TableCell align="center">
+                {/* <TableCell align="center">
                   <Link
                     to={`/deliveryboy-details/${row.id}`}
                     target="_blank"
@@ -118,7 +124,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                   >
                     <OpenInNewIcon color="primary" />
                   </Link>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

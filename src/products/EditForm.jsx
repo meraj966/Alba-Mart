@@ -8,7 +8,7 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import InputAdornment from "@mui/material/InputAdornment";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
-import { collection, updateDoc, getDocs, doc } from "firebase/firestore";
+import { collection, updateDoc, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebase-config";
 import Swal from "sweetalert2";
@@ -53,6 +53,42 @@ export default function EditForm({ fid, closeEvent }) {
   const [categoryData, setCategoryData] = useState(null);
   const [showProduct, setShowProduct] = useState(false);
   const categoryRef = collection(db, "category");
+
+  // Function to get the last generated barcode from the database
+  const getLastGeneratedBarcode = async () => {
+    const barcodeRef = doc(db, "Barcode", "Barcode");
+
+    try {
+      const barcodeDoc = await getDoc(barcodeRef);
+      if (barcodeDoc.exists()) {
+        return barcodeDoc.data().code || 0;
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      console.error("Error getting last generated barcode: ", error);
+      return 0;
+    }
+  };
+
+  // Function to handle generating and saving the barcode
+  const handleGenerateBarcode = async () => {
+    // Get the last generated barcode from the database
+    const lastGeneratedBarcode = await getLastGeneratedBarcode();
+
+    // Increment the last generated barcode by 1
+    const newBarcodeNumber = (parseInt(lastGeneratedBarcode) + 1).toString().padStart(6, "0");
+
+    // Save the new barcode in the "Barcode" document with ID "Barcode"
+    const barcodeRef = doc(db, "Barcode", "Barcode");
+
+    try {
+      await setDoc(barcodeRef, { code: newBarcodeNumber });
+      setBarcode(newBarcodeNumber); // Update the displayed barcode
+    } catch (error) {
+      console.error("Error saving barcode: ", error);
+    }
+  };
   useEffect(() => {
     if (categoryData)
       setSubCategoryList(
@@ -401,6 +437,13 @@ export default function EditForm({ fid, closeEvent }) {
             size="small"
             sx={{ minWidth: "100%" }}
           />
+          <Button
+            variant="contained"
+            onClick={handleGenerateBarcode} // Call the barcode generation function here
+            sx={{ marginTop: 1 }}
+          >
+            Generate Barcode
+          </Button>
         </Grid>
         <Grid item xs={2}>
           <TextField

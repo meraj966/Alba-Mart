@@ -86,6 +86,13 @@ export const getProductDataGridColumns = (
       valueGetter: ({ row }) => `${row.quantity} ${row.measureUnit}`
     },
     {
+      field: "barcode",
+      headerName: "Barcode",
+      minWidth: 100,
+      flex: 1,
+      valueGetter: ({ row }) => row.barcode || "-",
+    },
+    {
       field: "isProductLive",
       headerName: "Is Product Live",
       minWidth: 100,
@@ -111,14 +118,14 @@ export const getProductDataGridColumns = (
       minWidth: 100,
       renderCell: ({ row }) => (
         <Stack direction={"row"} spacing={2}>
-          <PreviewIcon
+          {/* <PreviewIcon
             style={{
               fontSize: "20px",
               cursor: "pointer",
               color: open && selectedProd.id === row.id ? "black" : "gray",
             }}
             onClick={() => openProductPreview(row)}
-          />
+          /> */}
           <EditIcon
             style={{
               fontSize: "20px",
