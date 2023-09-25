@@ -18,6 +18,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { getDiscountedPrice } from "../utils";
 import SelectInput from "../components/reusable/SelectInput";
 import ReactQuill from "react-quill";
+import { uploadImages } from "../firebase_utils";
 
 // import uuid from 'uuid/package.json';
 const { v4: uuidv4 } = require("uuid");
@@ -141,7 +142,7 @@ export default function EditForm({ fid, closeEvent }) {
     const data = await getDocs(empCollectionRef);
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
-  const createUser = async () => {
+  const createDoc = async () => {
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
       // id: doc.id,
@@ -169,10 +170,11 @@ export default function EditForm({ fid, closeEvent }) {
     Swal.fire("Submitted!", "Your file has been updated.", "success");
   };
 
-  const createUserWithFile = async (url) => {
+  const saveDataWithUrl = async (url) => {
+    console.log("urll", url)
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
-      id: doc.id,
+      // id: doc.id,
       name: name,
       description: description,
       price: Number(price),
@@ -183,7 +185,7 @@ export default function EditForm({ fid, closeEvent }) {
       purchaseRate: parseInt(purchaseRate),
       barcode: barcode || "",
       quantity,
-      file: url,
+      url,
       showProduct,
       onSale,
       saleType,
@@ -198,36 +200,43 @@ export default function EditForm({ fid, closeEvent }) {
     Swal.fire("Submitted!", "Your file has been updated.", "success");
   };
 
-  const handleUpload = () => {
-    if (!file) {
-      createUser();
-    } else {
-      // const name = new Date().getTime() + file.name
-      const storageRef = ref(storage, `/images/${file.name + uuidv4()}`);
+  const handleUpload = async () => {
+    if (!file) 
+      createDoc();
+    //  else {
+    //   // const name = new Date().getTime() + file.name
+    //   const storageRef = ref(storage, `/images/${file.name + uuidv4()}`);
 
-      // progress can be paused and resumed. It also exposes progress updates.
-      // Receives the storage reference and the file to upload.
-      const uploadTask = uploadBytesResumable(storageRef, file);
+    //   // progress can be paused and resumed. It also exposes progress updates.
+    //   // Receives the storage reference and the file to upload.
+    //   const uploadTask = uploadBytesResumable(storageRef, file);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const percent = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
+    //   uploadTask.on(
+    //     "state_changed",
+    //     (snapshot) => {
+    //       const percent = Math.round(
+    //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    //       );
 
-          // update progress
-          setPercent(percent);
-        },
-        (err) => console.log(err),
-        () => {
-          // download url
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            // console.log(url);
-            createUserWithFile(url);
-          });
-        }
-      );
+    //       // update progress
+    //       setPercent(percent);
+    //     },
+    //     (err) => console.log(err),
+    //     () => {
+    //       // download url
+    //       getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+    //         // console.log(url);
+    //         createUserWithFile(url);
+    //       });
+    //     }
+    //   );
+    // }
+    else {
+      console.log(file, "fileeess")
+      let urls = await uploadImages(file);
+      let x = Promise.resolve(urls)
+      console.log(x, "xxxxx ")
+      await saveDataWithUrl(urls)
     }
   };
 
@@ -258,7 +267,7 @@ export default function EditForm({ fid, closeEvent }) {
   };
 
   const handlePicChange = (event) => {
-    setFile(event.target.files[0]);
+    setFile(event.target.files);
   };
 
   const handleSubCategoryChange = (event) => {
@@ -506,7 +515,7 @@ export default function EditForm({ fid, closeEvent }) {
           />
         </Grid>
         <Grid item xs={12}>
-          <input type="file" onChange={handlePicChange} accept="/image/*" />
+          <input type="file" multiple onChange={handlePicChange} accept="/image/*" />
           <p>{percent}% completed</p>
         </Grid>
         <Grid item xs={12}>
