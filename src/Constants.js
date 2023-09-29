@@ -38,7 +38,7 @@ export const ORDER_TYPE_DROPDOWN_VALUES = [
   },
   {
     label: "Returned",
-    value: "Returned",
+    value: "returned",
   },
 ];
 export const CONDITION = {
