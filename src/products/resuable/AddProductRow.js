@@ -12,6 +12,8 @@ import {
   getDocs,
   updateDoc,
   setDoc,
+  query, // Add this import
+  where,
 } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
@@ -57,6 +59,7 @@ function AddProductRow({
   const [category, setCategory] = useState("");
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [saleTag, setSaleTag] = useState(""); // Added saleTag state
 
   const [barcode, setBarcode] = useState(""); // State to store scanned barcode
   const [lastGeneratedBarcode, setLastGeneratedBarcode] = useState(0);
@@ -107,6 +110,7 @@ function AddProductRow({
 
   const saveRowData = async (url) => {
     const menuRef = collection(db, "Menu");
+    const realSalePrice = onSale && !saleTag ? getDiscountedPrice(saleType, price, saleValue) : price;
     const docData = await addDoc(menuRef, {
       name,
       description,
@@ -126,6 +130,7 @@ function AddProductRow({
       saleTag: "",
       date: String(new Date()),
       salePrice: getDiscountedPrice(saleType, price, saleValue),
+      realSalePrice,
       brandName,
       barcode: barcode,
     });
@@ -206,6 +211,7 @@ function AddProductRow({
       showProduct,
       brandName,
       salePrice: getDiscountedPrice(saleType, price, saleValue),
+      realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, price, saleValue) : price,
     };
     setProducts({ ...products, [index]: rowData });
   }, [

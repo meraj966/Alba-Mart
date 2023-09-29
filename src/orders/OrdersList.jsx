@@ -91,7 +91,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       await updateDoc(doc(db, "Order", id), {
         ...restOrderData,
         deliveryBoy,
-        deliveryBoyResponse: "None", // Update with the desired value
+        deliveryBoyResponse: "none", // Update with the desired value
       });
     });
   

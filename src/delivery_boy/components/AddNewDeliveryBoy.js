@@ -33,6 +33,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [dlnumber, setDlNumber] = useState(isEditMode ? data.dlnumber : "");
   const [percent, setPercent] = useState("");
   const [isActive, setIsActive] = useState(isEditMode ? data.isActive : false);
+  const [isAvailable, setIsAvailable] = useState(isEditMode ? data.isAvailable : false);
   const [dlImageFrontFile, setDlImageFrontFile] = useState(null);
   const [dlImageBackFile, setDlImageBackFile] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
@@ -52,6 +53,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
       alternateNumber: alternateNumber,
       joinDate: formatDate(joinDate),
       isActive: isActive,
+      isAvailable: isAvailable,
       deliveryBoyReward: deliveryBoyReward,
     };
 
@@ -70,9 +72,13 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
         Swal.fire("Submitted!", "Delivery Boy has been updated", "success");
       });
     } else {
-      await addDoc(collection(db, 'DeliveryBoy'), updateData).then(() => {
-        Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
-      });
+      // Add a new delivery boy and save the document ID
+      const newDocRef = await addDoc(collection(db, 'DeliveryBoy'), updateData);
+      const newDocId = newDocRef.id; // Get the new document ID
+      Swal.fire("Submitted!", "New Delivery Boy has been added", "success");
+
+      // Update the document with the new document ID
+      await updateDoc(doc(db, 'DeliveryBoy', newDocId), { id: newDocId });
     }
     refreshDeliveryBoys();
     closeModal();
@@ -99,6 +105,10 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
 
   const handleToggleChange = () => {
     setIsActive(!isActive);
+  };
+
+  const handleToggleChangeAvailabel = () => {
+    setIsAvailable(!isAvailable);
   };
 
   return (
@@ -226,6 +236,21 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
                   checked={isActive}
                   onChange={handleToggleChange}
                   name="isActive"
+                />
+              }
+              label="Active/Deactive"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" sx={{ ml: 1 }}>
+              Is Boy Available?
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isAvailable}
+                  onChange={handleToggleChangeAvailabel}
+                  name="isAvailable"
                 />
               }
               label="Active/Deactive"

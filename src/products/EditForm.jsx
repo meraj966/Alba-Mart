@@ -53,6 +53,7 @@ export default function EditForm({ fid, closeEvent }) {
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [categoryData, setCategoryData] = useState(null);
   const [showProduct, setShowProduct] = useState(false);
+  const [saleTag, setSaleTag] = useState("");
   const categoryRef = collection(db, "category");
 
   // Function to get the last generated barcode from the database
@@ -122,7 +123,8 @@ export default function EditForm({ fid, closeEvent }) {
     setPurchaseRate(fid.purchaseRate);
     setShowProduct(fid.showProduct);
     setBrandName(fid.brandName);
-    setBarcode(fid.barcode)
+    setBarcode(fid.barcode);
+    setSaleTag(fid.saleTag || "");
   }, []);
 
   useEffect(() => {
@@ -163,6 +165,8 @@ export default function EditForm({ fid, closeEvent }) {
       measureUnit,
       saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
+      saleTag, // Include saleTag
+      realsalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -193,6 +197,8 @@ export default function EditForm({ fid, closeEvent }) {
       measureUnit,
       saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
+      saleTag, // Include saleTag
+      realsalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
     };
     await updateDoc(userDoc, newFields);
     getUsers();
