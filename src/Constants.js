@@ -9,36 +9,36 @@ export const ORDER_TYPE_DROPDOWN_VALUES = [
     value: "All Orders",
   },
   {
-    label: "Awaiting",
-    value: "Awaiting",
+    label: "Placed",
+    value: "placed",
   },
+  // {
+  //   label: "Received",
+  //   value: "Received",
+  // },
   {
-    label: "Received",
-    value: "Received",
-  },
-  {
-    label: "Processed",
-    value: "Processed",
+    label: "Processing",
+    value: "processing",
   },
   {
     label: "Shipped",
-    value: "Shipped",
+    value: "shipped",
   },
-  {
-    label: "Ready to Pickup",
-    value: "Ready to Pickup",
-  },
+  // {
+  //   label: "Ready to Pickup",
+  //   value: "Ready to Pickup",
+  // },
   {
     label: "Delivered",
-    value: "Delivered",
+    value: "delivered",
   },
   {
     label: "Cancelled",
-    value: "Cancelled",
+    value: "canceled",
   },
   {
     label: "Returned",
-    value: "Returned",
+    value: "returned",
   },
 ];
 export const CONDITION = {
