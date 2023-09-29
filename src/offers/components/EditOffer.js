@@ -111,7 +111,6 @@ function EditOffer() {
         product["saleTag"] = id;
         product["onSale"] = product.isSelected;
         product["saleType"] = "%";
-        product["prevSalePrice"] = product["salePrice"]; // Store the current salePrice as prevSalePrice
         product["saleValue"] = discount;
         product["salePrice"] = getDiscountedPrice("%", product["price"], discount);
       } else {
