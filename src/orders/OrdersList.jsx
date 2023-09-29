@@ -34,13 +34,16 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   const [deliveryBoy, setDeliveryBoy] = useState([]);
   const [updatedOrders, setUpdatedOrders] = useState([]);
   const [orders, setOrders] = useState([...orderData]);
+
   useEffect(() => {
     getData();
   }, []);
+
   const getData = () => {
     getUserByOrder();
     getDeliveryBoy();
   };
+
   useEffect(() => {
     setOrders([...orderData]);
   }, [orderData]);
@@ -51,6 +54,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       deliveryBoyData.docs.map((i) => ({ ...i.data(), id: i.id }))
     );
   };
+
   const getUserByOrder = async () => {
     let data = await getDocs(collection(db, "UserProfile"));
     let users = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
@@ -74,33 +78,30 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       />
     );
   };
-  const statusDropdown = (index, order) => (
-    <Dropdown
-      label="Status"
-      value={orders[index].orderStatus}
-      onChange={(e) => handleChange(e, index, order, "orderStatus")}
-      data={ORDER_TYPE_DROPDOWN_VALUES}
-    />
-  );
-  const handleSave = () => {
+
+  const handleSave = async () => {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as "YYYY-MM-DD"
+    
     updatedOrders.forEach(async (id) => {
       const orderToUpdate = orders.find((i) => i.id === id);
       const { deliveryBoy, ...restOrderData } = orderToUpdate;
-      
+
       // Update both the 'deliveryBoy' and 'deliveryBoyResponse' columns
       await updateDoc(doc(db, "Order", id), {
         ...restOrderData,
         deliveryBoy,
-        deliveryBoyResponse: "none", // Update with the desired value
+        deliveryBoyResponse: "none",
+        orderStatus: "processing", // Update orderStatus to "processing"
+        processingDate: formattedDate, // Update processingDate to the current date
       });
     });
-  
+
     setIsEdit(false);
     setUpdatedOrders([]);
     refreshOrders();
-  };  
+  };
 
-  console.log(orders, "orders");
   return (
     <Box sx={{ width: "100%" }}>
       {isEdit ? (
@@ -136,14 +137,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                       <TableCell align="left">
                         {user && user.date ? user.date.split(" ")[0] : ""}
                       </TableCell>
-                      <TableCell align="left">
-                        {order.paymentType || "-"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {isEdit
-                          ? statusDropdown(index, order)
-                          : order.orderStatus}
-                      </TableCell>
+                      <TableCell align="left">{order.orderStatus}</TableCell>
                       <TableCell align="left">
                         {isEdit
                           ? deliveryBoyDropdown(index, order)
@@ -187,7 +181,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
           columns={getOrdersGridColumns(
             users,
             isEdit,
-            statusDropdown,
+            null, // Pass null to prevent statusDropdown
             deliveryBoy
           )}
           autoHeight={true}

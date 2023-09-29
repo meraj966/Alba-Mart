@@ -166,7 +166,7 @@ export default function EditForm({ fid, closeEvent }) {
       saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
       saleTag, // Include saleTag
-      realsalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
+      realSalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -198,7 +198,7 @@ export default function EditForm({ fid, closeEvent }) {
       saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
       saleTag, // Include saleTag
-      realsalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
+      realSalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
     };
     await updateDoc(userDoc, newFields);
     getUsers();
