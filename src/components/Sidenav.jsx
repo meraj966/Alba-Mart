@@ -24,6 +24,7 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import SendIcon from '@mui/icons-material/Send';
 import PolicyIcon from '@mui/icons-material/Policy';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import CategoryIcon from '@mui/icons-material/Category';
 
 const drawerWidth = 240;
 
@@ -163,6 +164,11 @@ export default function Sidenav() {
           label={"Delivery Charges"}
           Icon={<CurrencyRupeeIcon />}
           navigationUrl={"/delivery_charge"}
+        />
+        <SideNavListItem
+          label={"Category"}
+          Icon={<CategoryIcon />}
+          navigationUrl={"/category"}
         />
         <SideNavListItem
           label={"Settings"}

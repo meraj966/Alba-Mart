@@ -15,12 +15,14 @@ import TermsAndConditions from "./terms_and_conditions";
 import EditOffer from "./offers/components/EditOffer";
 import OrderDetails from "./orders/OrderDetails";
 import DeliveryBoyDetails from "./delivery_boy/components/DeliveryBoyDetails";
+import SubCategoryDetails from "./category/components/SubCategoryDetails"
 import DeliveryCharge from "./delivery_charge";
 import Register from "./authentication/Register";
 import ForgotPassword from "./authentication/ForgotPassword";
 import FAndQ from "./f_and_q";
 import PushNotification from "./push_notification";
 import PrivacyAndPolicy from "./privacy_and_policy";
+import CategoryDetails from "./category";
 import ContactDetails from "./contact_us";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 import OrderPreview from "./orders/OrderPreview"; // Import the OrderPreview component
@@ -95,6 +97,11 @@ export default function App() {
             element={protectedElement(<ContactDetails />)}
           />
           <Route
+            path="/category"
+            exact
+            element={protectedElement(<CategoryDetails />)}
+          />
+          <Route
             path="/offer-settings"
             exact
             element={protectedElement(<OfferSettings />)}
@@ -118,6 +125,11 @@ export default function App() {
             path="/deliveryboy-details/:id"
             exact
             element={protectedElement(<DeliveryBoyDetails />)}
+          />
+          <Route
+            path="/subCategory/:id"
+            exact
+            element={protectedElement(<SubCategoryDetails />)}
           />
           <Route
             path="/edit-offer/:id"
