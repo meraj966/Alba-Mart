@@ -42,20 +42,13 @@ export default function Settings() {
   const [brandNameList, setBrandNameList] = useState([]);
   const [saleType, setSaleType] = useState("");
   const [saleTypeList, setSaleTypeList] = useState([]);
-  const [category, setCategory] = useState("");
-  const [categoryList, setCategoryList] = useState([]);
-  const [subCategory, setSubCategory] = useState("");
-  const [subCategoryList, setSubCategoryList] = useState([]);
-
   const [editOpen, setEditOpen] = useState(false);
   const [editType, setEditType] = useState("");
   const [type, setType] = useState("edit");
 
   const dataRef = collection(db, "Settings");
-  const categoryDataRef = collection(db, "category");
 
   const [settings, setSettings] = useState(null);
-  const [categoryData, setCategoryData] = useState(null);
 
   const [isBulkAdd, setIsBulkAdd] = useState(false);
   const [selectedBrandName, setSelectedBrandName] = useState("");
@@ -73,29 +66,9 @@ export default function Settings() {
       setBrandNameList(data.brandNameList);
       setSaleType(data.defaultSaleType);
       setSaleTypeList(data.saleType);
-      setCategory(data.defaultCategory);
+      // setCategory(data.defaultCategory);
     }
   }, [settings]);
-  useEffect(() => {
-    if (categoryData) {
-      console.log("CATEGORY =>", categoryData);
-      setCategoryList(categoryData.map((i) => i.name));
-      setSubCategoryList(
-        Object.keys(
-          categoryData.find((i) => i.name === category)?.subCategory || {}
-        )
-      );
-    }
-  }, [categoryData]);
-
-  useEffect(() => {
-    if (category && categoryData)
-      setSubCategoryList(
-        Object.keys(
-          categoryData.find((i) => i.name === category)?.subCategory || {}
-        )
-      );
-  }, [category]);
 
   useEffect(() => {
     getDataFromFirestore();
@@ -103,15 +76,12 @@ export default function Settings() {
 
   async function getDataFromFirestore() {
     const data = await getDocs(dataRef);
-    const categoryData = await getDocs(categoryDataRef);
     setSettings(data.docs.map((doc) => ({ ...doc.data() })));
-    setCategoryData(categoryData.docs.map((doc) => ({ ...doc.data() })));
   }
 
   const handleSubmit = async () => {
     const settingsDoc = doc(db, "Settings", "UserSettings");
     const newFields = {
-      defaultCategory: category,
       defaultSaleType: saleType,
       defaultUnit: unit,
       defaultBrandName,
@@ -127,9 +97,6 @@ export default function Settings() {
   };
 
   const handleEditForm = (editType, type) => {
-    if (editType === SUBCATEGORY) {
-      if (!subCategory) return;
-    }
     setSelectedBrandName(selectedBrandName); // Set the selected brand name for editing
     setType(type);
     setEditType(editType);
@@ -147,46 +114,6 @@ export default function Settings() {
     setIsBulkAdd(false);
   };
 
-  const getImageUrl = () => {
-    const selectedCategory = categoryData.find((i) => i.name === category);
-    if (editType === SUBCATEGORY && selectedCategory && selectedCategory.subCategory && selectedCategory.subCategory[subCategory]) {
-      return selectedCategory.subCategory[subCategory].imageUrl;
-    } else if (editType === CATEGORY && selectedCategory) {
-      return selectedCategory.imageUrl;
-    }
-    return ""; // Return a default value if imageUrl is not available
-  };
-
-  const saveCategoryImage = async (url) => {
-    const selectedCategory = categoryData.find((i) => i.name === category);
-    if (editType === SUBCATEGORY && selectedCategory && selectedCategory.subCategory && selectedCategory.subCategory[subCategory]) {
-      let payload = { [subCategory]: { imageUrl: url } };
-      let subCategoryData = {
-        ...selectedCategory.subCategory,
-        ...payload,
-      };
-      const categoryDoc = doc(db, "category", category);
-      await updateDoc(categoryDoc, { subCategory: subCategoryData }).then(() => {
-        Swal.fire("Submitted!", "Your file has been submitted.", "success");
-      });
-    } else if (editType === CATEGORY && selectedCategory) {
-      const categoryDoc = doc(db, "category", category);
-      await updateDoc(categoryDoc, { imageUrl: url }).then(() => {
-        Swal.fire("Submitted!", "Your file has been submitted.", "success");
-      });
-    }
-    await getDataFromFirestore();
-    setFile(null);
-    handleEditForm("", "edit");
-  };
-
-  const handleCategorySave = async () => {
-    if (!file) Swal.fire("Failed!", "Please upload an image first!", "error");
-    else {
-      uploadImageAndSaveUrl(file, saveCategoryImage);
-    }
-  };
-
   const handleBrandNameSave = async () => {
     const brandNames = brandName.split(",").map((i) => i.trim());
     let brandNameList = settings[0]?.brandNameList
@@ -201,8 +128,8 @@ export default function Settings() {
         "success"
       );
       setEditOpen(!editOpen);
-      setBrandName('')
-      isBulkAdd(false)
+      setBrandName('');
+      setIsBulkAdd(false);
     });
   };
 
@@ -216,42 +143,9 @@ export default function Settings() {
             // onClose={handleEditClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
-            onClose={() => handleEditForm("", "edit")}
+            // onClose={() => handleEditForm("", "edit")}
           >
             <Box sx={BOX_STYLE} className="editForm">
-              {editType === CATEGORY && (
-                <CategoryEditForm
-                  closeForm={() => setEditOpen(!editOpen)}
-                  formType={type}
-                  handleEditForm={handleEditForm}
-                  selectedCategory={category}
-                  settingsData={settings}
-                  refreshSettingsData={getDataFromFirestore}
-                  subCategoryList={subCategoryList}
-                  categoryData={categoryData}
-                />
-              )}
-              {editType === SUBCATEGORY && (
-                <SettingsEditForm
-                  title="Edit SubCategory"
-                  subTitle={`Sub Category - ${subCategory}`}
-                  onSave={handleCategorySave}
-                  submitButtonText={"SAVE"}
-                  onClose={closeSettingsForm}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <Image url={getImageUrl()} alt="Category Image" />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <input
-                        type="file"
-                        onChange={(e) => setFile(e.target.files[0])}
-                      />
-                    </Grid>
-                  </Grid>
-                </SettingsEditForm>
-              )}
               {editType === BRAND_NAME && (
                 <SettingsEditForm
                   title={"Add Brand Name"}
@@ -285,83 +179,8 @@ export default function Settings() {
         }
       >
         <Grid container spacing={2}>
-          <Grid item xs={12}></Grid>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
-            <TextField
-              error={false}
-              id="category"
-              name="category"
-              label="Set Default Category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              size="small"
-              select
-              sx={{ minWidth: "100%" }}
-            >
-              {categoryList?.map((option) => {
-                return (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                );
-              })}
-            </TextField>
-          </Grid>
-          <Grid item>
-            <Tooltip title="Edit current category">
-              <IconButton
-                aria-label="edit"
-                onClick={() => handleEditForm(CATEGORY, "edit")}
-              >
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          <Grid item>
-            <Tooltip title="Add Categories">
-              <IconButton onClick={() => handleEditForm(CATEGORY, "add")}>
-                <AddCircle />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          {/* SUB CATEGORY */}
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
-            <TextField
-              error={false}
-              id="subCategory"
-              name="subCategory"
-              value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
-              label="Sub Category"
-              size="small"
-              select
-              sx={{ marginTop: "30px", minWidth: "100%" }}
-            >
-              {subCategoryList?.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item>
-            <Tooltip
-              title="Select sub-category"
-              sx={{ marginTop: "30px", minWidth: "100%" }}
-            >
-              <IconButton
-                aria-label="edit"
-                onClick={() => handleEditForm(SUBCATEGORY, "edit")}
-              >
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          {/* SALE TYPE */}
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
+          {/* Sale Type */}
+          <Grid item xs={3}>
             <TextField
               error={false}
               id="saleType"
@@ -380,10 +199,9 @@ export default function Settings() {
               ))}
             </TextField>
           </Grid>
-          <Grid item xs={2}></Grid>
+
           {/* Unit */}
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
+          <Grid item xs={3}>
             <TextField
               id="unit"
               name="unit"
@@ -401,32 +219,42 @@ export default function Settings() {
               ))}
             </TextField>
           </Grid>
-          <Grid item xs={2}></Grid>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
-            <SelectInput
+
+          {/* Brand Name */}
+          <Grid item xs={3}>
+            <TextField
               id="brandName"
-              label="Brand Name"
-              size="small"
-              sx={{ marginTop: "30px", minWidth: "100%" }}
               name="brandName"
               value={defaultBrandName}
               onChange={(e) => setDefaultBrandName(e.target.value)}
-              data={brandNameList}
-            />
+              label="Brand Name"
+              size="small"
+              select
+              sx={{ marginTop: "30px", minWidth: "100%" }}
+            >
+              {brandNameList.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
-          <Grid item>
+
+          {/* Edit Brand Name Icon */}
+          <Grid item xs={1}>
             <Tooltip title="Edit Brand Name">
               <IconButton
                 aria-label="edit"
-                onClick={() => handleEditForm(BRAND_NAME, "edit")} // Pass the selected brand name for editing
+                onClick={() => handleEditForm(BRAND_NAME, "edit")}
                 sx={{ marginTop: "30px" }}
               >
                 <EditIcon />
               </IconButton>
             </Tooltip>
           </Grid>
-          <Grid item>
+
+          {/* Add Brand Name Icon */}
+          <Grid item xs={1}>
             <Tooltip title="Add Brand Name">
               <IconButton
                 aria-label="edit"
@@ -437,7 +265,8 @@ export default function Settings() {
               </IconButton>
             </Tooltip>
           </Grid>
-          <Grid item xs={3}></Grid>
+
+          {/* Default On Sale */}
           <Grid item xs={6}>
             <FormControlLabel
               control={
@@ -452,8 +281,8 @@ export default function Settings() {
               label="Default On Sale"
             />
           </Grid>
-          <Grid item xs={2}></Grid>
-          {/* SUBMIT BUTTON */}
+
+          {/* Submit Button */}
           <Grid item xs={3}></Grid>
           <Grid item xs={6}>
             <Typography variant="h5" align="right">
