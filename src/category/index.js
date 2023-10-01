@@ -31,7 +31,7 @@ function CategoryDetails() {
   const [categoryModalData, setCategoryModalData] = useState(null);
   const [openInEditMode, setOpenInEditMode] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
-  const ref = collection(db, "CategoryAndSub");
+  const ref = collection(db, "category");
 
   useEffect(() => {
     getCategoryData();

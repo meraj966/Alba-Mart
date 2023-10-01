@@ -56,7 +56,7 @@ function AddNewCategory({
 
     if (!isEditMode) {
       // Check if category already exists in the database
-      const categoryRef = doc(db, 'CategoryAndSub', name);
+      const categoryRef = doc(db, 'category', name);
       const categorySnapshot = await getDoc(categoryRef);
 
       if (categorySnapshot.exists()) {
@@ -71,7 +71,7 @@ function AddNewCategory({
 
     if (isEditMode) {
       // Get the existing category document
-      const categoryDocRef = doc(db, 'CategoryAndSub', data.name);
+      const categoryDocRef = doc(db, 'category', data.name);
       const categoryDocSnapshot = await getDoc(categoryDocRef);
 
       if (categoryDocSnapshot.exists()) {
@@ -82,7 +82,7 @@ function AddNewCategory({
         await deleteDoc(categoryDocRef);
 
         // Create a new category document with the updated name
-        await setDoc(doc(db, 'CategoryAndSub', name), {
+        await setDoc(doc(db, 'category', name), {
           name,
           imageUrl,
           subCategory: subCategoryData, // Preserve the existing subCategory data
@@ -98,7 +98,7 @@ function AddNewCategory({
       }
     } else {
       // Add new Category
-      await setDoc(doc(collection(db, 'CategoryAndSub'), name), {
+      await setDoc(doc(collection(db, 'category'), name), {
         name,
         imageUrl, // Save imageUrl
       });

@@ -5,70 +5,57 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
 } from "@mui/material";
-import { collection, getDocs, doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import Firebase Storage
-import { db, storage } from "../../firebase-config"; // Make sure to import your Firebase configuration properly
+import { collection, doc, updateDoc, getDoc } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Swal from "sweetalert2";
+import { db, storage } from "../../firebase-config";
 
-function AddNewSubcategory({ closeModal }) {
-    const [subcategoryName, setSubcategoryName] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+function EditSubcategory({ closeModal, subcategoryData, categoryId }) {
+    const [editedSubcategoryName, setEditedSubcategoryName] = useState(subcategoryData.subcategoryName);
+    const [selectedCategory, setSelectedCategory] = useState(categoryId);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null); // Add this line to declare imagePreview state
+    const [editedImageUrl, setEditedImageUrl] = useState(subcategoryData.imageUrl);
 
     useEffect(() => {
-        // Fetch categories from "category" database
-        const fetchCategories = async () => {
-            const categoryRef = collection(db, "category");
-            try {
-                const querySnapshot = await getDocs(categoryRef);
-
-                const categoriesList = querySnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    name: doc.data().name,
-                }));
-
-                setCategories(categoriesList);
-                setLoading(false); // Set loading to false once data is fetched
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-                setLoading(false); // Set loading to false in case of an error
-            }
-        };
-
-        fetchCategories();
-    }, []);
+        setEditedSubcategoryName(subcategoryData.subcategoryName);
+        setEditedImageUrl(subcategoryData.imageUrl);
+    }, [subcategoryData]);
 
     const handleSubcategoryNameChange = (event) => {
-        setSubcategoryName(event.target.value);
+        setEditedSubcategoryName(event.target.value);
     };
 
     const handleCategoryChange = (event) => {
         setSelectedCategory(event.target.value);
     };
 
-    const handleImageChange = (event) => {
+    const handleImageChange = async (event) => {
         const file = event.target.files[0];
         setSelectedImage(file);
 
         const imageUrl = URL.createObjectURL(file);
-        setImagePreview(imageUrl);
-    };
+        setEditedImageUrl(imageUrl);
 
-    // ...
+        try {
+            const storageRef = ref(storage, `/images/${Math.random() + file.name}`);
+            await uploadBytesResumable(storageRef, file);
+            const newImageUrl = await getDownloadURL(storageRef);
+            setEditedImageUrl(newImageUrl);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            Swal.fire("Error", "An error occurred while uploading the image.", "error");
+        }
+    };
 
     const handleSave = async () => {
         try {
-            if (!subcategoryName || !selectedCategory || !selectedImage) {
+            if (!editedSubcategoryName || !selectedCategory) {
                 console.error("Please fill in all required fields.");
                 return;
             }
@@ -85,21 +72,20 @@ function AddNewSubcategory({ closeModal }) {
             const categoryData = categoryDoc.data() || {};
             const subcategoriesMap = categoryData.subCategory || {};
 
-            if (subcategoriesMap[subcategoryName]) {
-                console.error("Subcategory already exists.");
+            if (subcategoryData.subcategoryName !== editedSubcategoryName && subcategoriesMap[editedSubcategoryName]) {
+                console.error("Subcategory name already exists.");
                 return;
             }
 
-            const storageRef = ref(storage, `/images/${Math.random() + selectedImage.name}`);
-            await uploadBytesResumable(storageRef, selectedImage);
-            const imageUrl = await getDownloadURL(storageRef);
-            // const subcategoryDocRef = doc(categoryDocRef, "Subcategories", subcategoryName);
-            const subcategoryData = {
-                subcategoryName: subcategoryName,
-                imageUrl: imageUrl,
+            subcategoriesMap[editedSubcategoryName] = {
+                subcategoryName: editedSubcategoryName,
+                imageUrl: editedImageUrl,
             };
-            // await setDoc(subcategoryDocRef, subcategoryData);
-            subcategoriesMap[subcategoryName] = subcategoryData;
+
+            if (subcategoryData.subcategoryName !== editedSubcategoryName) {
+                delete subcategoriesMap[subcategoryData.subcategoryName];
+            }
+
             await updateDoc(categoryDocRef, {
                 subCategory: subcategoriesMap,
             });
@@ -112,10 +98,9 @@ function AddNewSubcategory({ closeModal }) {
         }
     };
 
-
     return (
         <Dialog open={true} onClose={closeModal} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Add Subcategory</DialogTitle>
+            <DialogTitle id="form-dialog-title">Edit Subcategory</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
@@ -123,7 +108,7 @@ function AddNewSubcategory({ closeModal }) {
                     id="subcategoryName"
                     label="Subcategory Name"
                     fullWidth
-                    value={subcategoryName}
+                    value={editedSubcategoryName}
                     onChange={handleSubcategoryNameChange}
                 />
                 <FormControl fullWidth>
@@ -134,15 +119,7 @@ function AddNewSubcategory({ closeModal }) {
                         value={selectedCategory}
                         onChange={handleCategoryChange}
                     >
-                        {loading ? (
-                            <MenuItem disabled>Loading categories...</MenuItem>
-                        ) : (
-                            categories.map((category) => (
-                                <MenuItem key={category.id} value={category.id}>
-                                    {category.name}
-                                </MenuItem>
-                            ))
-                        )}
+                        {/* Render your category options here */}
                     </Select>
                 </FormControl>
                 <input
@@ -154,14 +131,13 @@ function AddNewSubcategory({ closeModal }) {
                 />
                 <label htmlFor="image-upload">
                     <Button variant="outlined" component="span">
-                        Upload Image
+                        Upload New Image
                     </Button>
                 </label>
-                {/* Image Preview */}
-                {imagePreview && (
+                {editedImageUrl && (
                     <div>
                         <img
-                            src={imagePreview}
+                            src={editedImageUrl}
                             alt="Preview"
                             style={{ maxWidth: "100%", maxHeight: "200px" }}
                         />
@@ -169,10 +145,18 @@ function AddNewSubcategory({ closeModal }) {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={closeModal} color="primary">
+                <Button
+                    onClick={closeModal}
+                    color="primary"
+                    style={{ marginRight: "10px", backgroundColor: "#007bff", color: "white" }}
+                >
                     Cancel
                 </Button>
-                <Button onClick={handleSave} color="primary">
+                <Button
+                    onClick={handleSave}
+                    color="primary"
+                    style={{ backgroundColor: "#007bff", color: "white" }}
+                >
                     Save
                 </Button>
             </DialogActions>
@@ -180,4 +164,4 @@ function AddNewSubcategory({ closeModal }) {
     );
 }
 
-export default AddNewSubcategory;
+export default EditSubcategory;
