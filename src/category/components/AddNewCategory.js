@@ -6,7 +6,7 @@ import {
   setDoc,
   doc,
   getDoc,
-  deleteDoc, // Import deleteDoc from Firestore
+  deleteDoc,
 } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import {
@@ -24,6 +24,7 @@ import {
   CardContent,
 } from "@mui/material";
 import Swal from "sweetalert2";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import Firebase Storage
 
 function AddNewCategory({
   data,
@@ -51,6 +52,17 @@ function AddNewCategory({
     reader.readAsDataURL(file);
   };
 
+  const uploadImageToStorage = async (file) => {
+    try {
+      const storageRef = ref(storage, `/category-images/${file.name}`);
+      await uploadBytesResumable(storageRef, file);
+      return getDownloadURL(storageRef);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -69,43 +81,56 @@ function AddNewCategory({
       }
     }
 
-    if (isEditMode) {
-      // Get the existing category document
-      const categoryDocRef = doc(db, 'category', data.name);
-      const categoryDocSnapshot = await getDoc(categoryDocRef);
+    try {
+      let updatedImageUrl = imageUrl;
 
-      if (categoryDocSnapshot.exists()) {
-        // Extract the existing subCategory data
-        const subCategoryData = categoryDocSnapshot.data().subCategory || {};
-
-        // Delete the old category document
-        await deleteDoc(categoryDocRef);
-
-        // Create a new category document with the updated name
-        await setDoc(doc(db, 'category', name), {
-          name,
-          imageUrl,
-          subCategory: subCategoryData, // Preserve the existing subCategory data
-        });
-
-        Swal.fire('Successful!', 'Category updated', 'success');
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: `Category - '${name}' does not exist. Cannot update.`,
-        });
+      if (image) {
+        // If a new image is selected, upload it to Firebase Storage
+        updatedImageUrl = await uploadImageToStorage(image);
       }
-    } else {
-      // Add new Category
-      await setDoc(doc(collection(db, 'category'), name), {
-        name,
-        imageUrl, // Save imageUrl
-      });
-      Swal.fire('Successful!', 'Category added', 'success');
+
+      if (isEditMode) {
+        // Get the existing category document
+        const categoryDocRef = doc(db, 'category', data.name);
+        const categoryDocSnapshot = await getDoc(categoryDocRef);
+
+        if (categoryDocSnapshot.exists()) {
+          // Extract the existing subCategory data
+          const subCategoryData = categoryDocSnapshot.data().subCategory || {};
+
+          // Delete the old category document
+          await deleteDoc(categoryDocRef);
+
+          // Create a new category document with the updated name and image URL
+          await setDoc(doc(db, 'category', name), {
+            name,
+            imageUrl: updatedImageUrl, // Save updated imageUrl
+            subCategory: subCategoryData, // Preserve the existing subCategory data
+          });
+
+          Swal.fire('Successful!', 'Category updated', 'success');
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `Category - '${name}' does not exist. Cannot update.`,
+          });
+        }
+      } else {
+        // Add new Category with the new image URL
+        await setDoc(doc(collection(db, 'category'), name), {
+          name,
+          imageUrl: updatedImageUrl, // Save updated imageUrl
+        });
+        Swal.fire('Successful!', 'Category added', 'success');
+      }
+
+      refreshCategory();
+      handleClose();
+    } catch (error) {
+      console.error("Error saving data:", error);
+      Swal.fire("Error", "An error occurred while saving data.", "error");
     }
-    refreshCategory();
-    handleClose();
   };
 
   const handleCategoryChange = (event) => {
@@ -113,7 +138,14 @@ function AddNewCategory({
   };
 
   return (
-    <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "90vh", overflow: "auto" }}>
+    <Card
+      sx={{
+        marginTop: "25px",
+        border: "1px solid",
+        maxHeight: "90vh",
+        overflow: "auto",
+      }}
+    >
       <CardHeader title="Add Category" />
       <CardContent>
         <Grid container spacing={2}>
