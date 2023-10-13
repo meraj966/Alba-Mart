@@ -1,41 +1,107 @@
-/* Order Preview CSS for Thermal Printing */
+/* Default styles for the bill */
 .print-container {
-    font-family: monospace; /* Use a monospace font for consistent spacing */
-    max-width: 300px; /* Adjust the width as needed for your thermal printer */
-    margin: 0 auto; /* Center align the content on the page */
-    padding: 10px;
-    border: 1px solid #000; /* Add a border for better separation */
-    box-shadow: none; /* Remove any box shadow for printing */
+  font-family: monospace; /* Use a monospace font for consistent spacing */
+  max-width: 300px; /* Adjust the width as needed for your thermal printer */
+  margin: 0 auto; /* Center align the content on the page */
+  padding: 10px;
+  border: 1px solid #000; /* Add a border for better separation */
+  box-shadow: none; /* Remove any box shadow for printing */
+}
+
+.table-header {
+  font-weight: bold;
+  text-align: left;
+  padding: 8px;
+  margin-left: -5px; /* Add a negative margin to shift the headers slightly to the left */
+}
+
+.print-heading {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 0.4;
+}
+
+.print-fixheader {
+  font-size: 16px;
+  font-weight: lighter;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 0.4;
+}
+
+.print-albamart {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 0;
+}
+
+/* Style individual data points as needed */
+p {
+  font-size: 12px;
+  margin: 2px 0;
+}
+
+.separation-line {
+  border-top: 2px solid #000; /* Customize the border as needed */
+  margin: 10px 0; /* Adjust the margin to control the spacing */
+}
+
+.formatted-line {
+  font-family: monospace; /* Use a monospace font for consistent spacing */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0px 0;
+  white-space: nowrap; /* Prevent wrapping to the next line */
+}
+
+.formatted-line span {
+  text-align: right;
+  padding-left: 10px; /* Adjust as needed for the desired spacing */
+  flex: 1;
+}
+
+/* Custom styles for printing on 27x297mm paper size */
+@media print {
+  @page {
+    size: 82mm 297mm; /* Set the paper size to match the bill size exactly */
+    margin: 0;
   }
 
-  .table-header {
-    font-weight: bold;
-    text-align: left;
-    padding: 8px;
-    margin-left: -5px; /* Add a negative margin to shift the headers slightly to the left */
+  .print-container {
+    width: 297mm;
+    height: 297mm;
+    margin: 0;
+    padding: 5;
+    margin-top: 0; /* Remove top margin for .print-container */
   }
-  
+
+  .print-container::before {
+    content: "";
+    display: block;
+    margin-top: -5mm; /* Adjust this value as needed to move the content to the top */
+  }
+
+
   .print-heading {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  /* Style individual data points as needed */
-  p {
-    font-size: 12px;
-    margin: 2px 0;
+    font-size: 12px; /* Adjust font sizes as needed for the new dimensions */
   }
 
-  .separation-line {
-    border-top: 2px solid #000; /* Customize the border as needed */
-    margin: 20px 0; /* Adjust the margin to control the spacing */
+  .print-fixheader {
+    font-size: 12px;
   }
-  
-  .sub-total {
-    font-weight: bold;
+
+  .print-albamart {
+    font-size: 14px;
   }
-  
-  /* Add additional styling as per your requirements */
-  
+
+  p {
+    font-size: 10px;
+    margin: 2px 0; /* Adjust margins as needed */
+  }
+}

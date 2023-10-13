@@ -42,58 +42,94 @@ function OrderPreview() {
   return (
     <div>
       <div ref={componentRef} className="print-container">
-        <h2 className="print-heading">Order Details</h2>
-        <p>Order ID: {id}</p>
-        <p>Customer Name: {user?.name}</p>
-        <p>Customer Contact: {user?.phoneNo}</p>
-        <p>Address: {user?.address}</p>
-        <p>Landmark: {user?.landmark}</p>
-        <p>Delivery Date: {order?.date}</p>
-        <p>Delivery Slot: {order?.deleverySlot || "-"}</p>
+        <h2 className="print-fixheader">*** CASH MEMO ***</h2>
+        <h2 className="print-albamart">ALBA MART</h2>
+        <h2 className="print-fixheader">ALBA COLONY, RANIPUR ROAD</h2>
+        <h2 className="print-fixheader">PHULWARISHARIF, PATNA-801505</h2>
+        <h2 className="print-fixheader">MOB: 7004944881, 7488581099</h2>
 
-        <h3 className="print-heading">Products:</h3>
+        <div className="separation-line" />
+
+        <p>Order Id: {id}</p>
+        <p>Customer Name: {user?.name}</p>
+        <p>Mob: {user?.phoneNo}</p>
+        {order && order.orderDate && (
+          <>
+            <p>Date: {order.orderDate.split(" ")[0]}</p>
+          </>
+        )}
+        <p>Address: {user?.address}</p>
+
+        <div className="separation-line" />
+
+        {/* <h3 className="print-heading">Products:</h3> */}
         <table className="table">
           <thead>
             <tr>
+              <th>S No.</th>
               <th>Name</th>
-              <th>MRP</th>
-              <th>Sale Price</th>
-              <th>Amt</th>
               <th>Unit</th>
-              <th>Qt</th>
+              <th>Qty</th>
+              <th>Mrp</th>
+              <th>Price</th>
+              <th>Amt</th>
             </tr>
           </thead>
           <tbody>
-            {Object.keys(products).map((productId) => (
-              <tr key={productId}>
-                <td>{products[productId].name}</td>
-                <td>{products[productId].mrp}</td>
-                <td>{products[productId].rate}</td>
-                <td>{products[productId].amount}</td>
-                <td>{products[productId].unit}</td>
-                <td>{products[productId].quantity}</td>
-              </tr>
-            ))}
+            {Object.keys(products).map((productId, index) => {
+              const product = products[productId];
+              return (
+                <React.Fragment key={productId}>
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td colSpan="6">{product.name}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>{product.unit}</td>
+                    <td>{product.quantity}</td>
+                    <td>{product.mrp}</td>
+                    <td>{product.rate}</td>
+                    <td>{product.amount}</td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
 
         <div className="separation-line" />
 
-        <strong><p>Sub Total Price: {order?.totalMrp}</p>
-        <p>Tax: {0}</p>
-        <p>Delivery Charge: {0}</p>
-        <p>Net Amount: {order?.totalRate}</p>
-        <p>Total Discount Amount: {order?.totalMrp - order?.totalRate}</p></strong>
+        <strong>
+          <p className="formatted-line">Sub Total Price: <span>{order?.totalMrp}</span></p>
+          <p className="formatted-line">Tax: <span>0</span></p>
+          <p className="formatted-line">Delivery Charge: <span>0</span></p>
+          <p className="formatted-line">Net Amount: <span>{order?.totalRate}</span></p>
+          <p className="formatted-line">Total Discount Amount: <span>{order?.totalMrp - order?.totalRate}</span></p>
+        </strong>
+
+        <div className="separation-line" />
+        <strong>
+          <p>Term & Condition</p>
+        </strong>
+        <p>1. All Disputes Subject To Patna Jurisdiction Only</p>
+        <p>2. Price Includes Applicable Taxes</p>
+        <p>3. Goods Once Sold Not To Be Taken Back</p>
+        <p>4. Thank You For Visit</p>
+        <h2 className="print-fixheader">**********</h2>
       </div>
 
-      <Button variant="contained" 
+      <Button
+        variant="contained"
         sx={{
           position: "absolute",
           top: "20px",
           right: "20px",
-          zIndex: "1", // Ensure the button is above the content
-        }} 
-        onClick={handlePrint}>
+          zIndex: "1",
+        }}
+        onClick={handlePrint}
+      >
         Print
       </Button>
     </div>
