@@ -6,15 +6,10 @@ import { db } from "../firebase-config";
 const VariantPopup = ({ open, handleClose }) => {
   const [variantData, setVariantData] = useState({
     variantName: "",
-    variantValue: "",
     selectedProduct: "",
-    selectedCategory: "",
-    selectedSubCategory: "",
   });
 
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
     // Fetch products from Firestore
@@ -28,16 +23,7 @@ const VariantPopup = ({ open, handleClose }) => {
       setProducts(productData);
     };
 
-    // Fetch categories from Firestore
-    const fetchCategories = async () => {
-      const categoriesRef = collection(db, "category");
-      const categoriesSnapshot = await getDocs(categoriesRef);
-      const categoryData = categoriesSnapshot.docs.map((doc) => doc.id);
-      setCategories(categoryData);
-    };
-
     fetchProducts();
-    fetchCategories();
   }, []);
 
   const handleInputChange = (e) => {
@@ -70,15 +56,6 @@ const VariantPopup = ({ open, handleClose }) => {
           margin="normal"
         />
         <TextField
-          label="Variant Value"
-          variant="outlined"
-          name="variantValue"
-          value={variantData.variantValue}
-          onChange={handleInputChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
           label="Product Name"
           variant="outlined"
           name="selectedProduct"
@@ -91,38 +68,6 @@ const VariantPopup = ({ open, handleClose }) => {
           {products.map((product) => (
             <MenuItem key={product.id} value={product.name}>
               {product.name}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Category"
-          variant="outlined"
-          name="selectedCategory"
-          select
-          fullWidth
-          margin="normal"
-          value={variantData.selectedCategory}
-          onChange={handleInputChange}
-        >
-          {categories.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Subcategory"
-          variant="outlined"
-          name="selectedSubCategory"
-          select
-          fullWidth
-          margin="normal"
-          value={variantData.selectedSubCategory}
-          onChange={handleInputChange}
-        >
-          {subCategories.map((subcategory) => (
-            <MenuItem key={subcategory} value={subcategory}>
-              {subcategory}
             </MenuItem>
           ))}
         </TextField>
