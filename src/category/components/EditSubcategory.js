@@ -39,9 +39,6 @@ function EditSubcategory({ closeModal, subcategoryData, categoryId }) {
         const file = event.target.files[0];
         setSelectedImage(file);
 
-        const imageUrl = URL.createObjectURL(file);
-        setEditedImageUrl(imageUrl);
-
         try {
             const storageRef = ref(storage, `/images/${Math.random() + file.name}`);
             await uploadBytesResumable(storageRef, file);
