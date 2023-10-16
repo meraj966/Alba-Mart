@@ -137,6 +137,9 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                       <TableCell align="left">
                         {user && user.date ? user.date.split(" ")[0] : ""}
                       </TableCell>
+                      <TableCell align="left">
+                        {order.paymentType || "-"}
+                      </TableCell>
                       <TableCell align="left">{order.orderStatus}</TableCell>
                       <TableCell align="left">
                         {isEdit
