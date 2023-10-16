@@ -79,21 +79,6 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
     );
   };
 
-  const statusDropdown = (index, order) => {
-    if (isEdit) {
-      return <span>{order.orderStatus}</span>;
-    } else {
-      return (
-        <Dropdown
-          label="Status"
-          value={orders[index].orderStatus}
-          onChange={(e) => handleChange(e, index, order, "orderStatus")}
-          data={ORDER_TYPE_DROPDOWN_VALUES}
-        />
-      );
-    }
-  };
-
   const handleSave = async () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as "YYYY-MM-DD"
@@ -151,9 +136,6 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                       </TableCell>
                       <TableCell align="left">
                         {user && user.date ? user.date.split(" ")[0] : ""}
-                      </TableCell>
-                      <TableCell align="left">
-                        {order.paymentType || "-"}
                       </TableCell>
                       <TableCell align="left">{order.orderStatus}</TableCell>
                       <TableCell align="left">
