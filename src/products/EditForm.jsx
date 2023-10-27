@@ -163,10 +163,13 @@ export default function EditForm({ fid, closeEvent }) {
       quantity,
       brandName,
       measureUnit,
-      saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
-      salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
-      saleTag, // Include saleTag
-      realSalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
+      saleValue: onSale ? parseInt(saleValue) : 0,
+      salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0),
+      saleTag,
+      realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price),
+      realSaleValue: onSale && !saleTag ? saleValue : 0,
+      realOnSale: onSale && !saleTag ? onSale : false,
+      realSaleType: onSale && !saleTag ? saleType: "",
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -195,10 +198,13 @@ export default function EditForm({ fid, closeEvent }) {
       saleType,
       brandName,
       measureUnit,
-      saleValue: onSale ? parseInt(saleValue) : 0, // Set saleValue to 0 if onSale is false
-      salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0), // Consider updated saleValue
-      saleTag, // Include saleTag
-      realSalePrice: onSale ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price), // Include realSalePrice
+      saleValue: onSale ? parseInt(saleValue) : 0,
+      salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0),
+      saleTag,
+      realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price),
+      realSaleValue: onSale && !saleTag ? saleValue : 0,
+      realOnSale: onSale && !saleTag ? onSale : false,
+      realSaleType: onSale && !saleTag ? saleType: "",
     };
     await updateDoc(userDoc, newFields);
     getUsers();

@@ -111,13 +111,17 @@ function AddProductRow({
   const saveRowData = async (url) => {
     const menuRef = collection(db, "Menu");
     const realSalePrice = onSale && !saleTag ? getDiscountedPrice(saleType, price, saleValue) : price;
+    const realSaleValue = onSale && !saleTag ? saleValue : 0;
+    const realOnSale = onSale && !saleTag ? onSale : false;
+    const realSaleType = onSale && !saleTag ? saleType: "";
+
     const docData = await addDoc(menuRef, {
       name,
       description,
       price,
       onSale,
       saleType,
-      saleValue: parseInt(saleValue),
+      saleValue: onSale ? parseInt(saleValue) : 0,
       category,
       subCategory,
       measureUnit,
@@ -131,6 +135,9 @@ function AddProductRow({
       date: String(new Date()),
       salePrice: getDiscountedPrice(saleType, price, saleValue),
       realSalePrice,
+      realSaleValue,
+      realOnSale,
+      realSaleType,
       brandName,
       barcode: barcode,
     });
@@ -201,7 +208,7 @@ function AddProductRow({
       price,
       onSale,
       saleType,
-      saleValue: parseInt(saleValue),
+      saleValue: onSale ? parseInt(saleValue) : 0,
       category,
       subCategory,
       measureUnit,
@@ -212,6 +219,9 @@ function AddProductRow({
       brandName,
       salePrice: getDiscountedPrice(saleType, price, saleValue),
       realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, price, saleValue) : price,
+      realSaleValue: onSale && !saleTag ? saleValue : 0,
+      realOnSale: onSale && !saleTag ? onSale : false,
+      realSaleType: onSale && !saleTag ? saleType: "",
     };
     setProducts({ ...products, [index]: rowData });
   }, [

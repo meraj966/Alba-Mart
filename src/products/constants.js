@@ -183,16 +183,15 @@ export const getOrdersGridColumns = (
       field: "amount",
       headerName: "Total Amount",
       flex: 1,
-      // valueGetter: ({ row }) => sum(map(Object.values(row.products), "amount")),
       valueGetter: ({ row }) => {
         if (!row || !row.products) {
-          return 0; // Return a default value or handle the error appropriately
+          return 0;
         }
       
         const productValues = Object.values(row.products);
       
         if (!productValues) {
-          return 0; // Return a default value or handle the error appropriately
+          return 0;
         }
       
         const amounts = productValues.map(product => product.amount);
@@ -234,6 +233,12 @@ export const getOrdersGridColumns = (
         }
         return "--";
       },
+    },
+    {
+      field: "deliveryDate",
+      headerName: "Delivery Date",
+      flex: 1,
+      valueGetter: ({ row }) => row.deliveryDate || "--",
     },
     {
       field: "status",
