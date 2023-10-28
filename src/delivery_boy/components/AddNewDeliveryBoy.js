@@ -37,7 +37,12 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [dlImageFrontFile, setDlImageFrontFile] = useState(null);
   const [dlImageBackFile, setDlImageBackFile] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
-  const [deliveryBoyReward, setDeliveryBoyReward] = useState(isEditMode ? data.deliveryBoyReward : "");
+  const [deliveryBoyReward, setDeliveryBoyReward] = useState(isEditMode ? data.deliveryBoyReward : 0);
+  const [rejectedOrder, setRejectedOrder] = useState(0);
+  const [totalRewardEarns, setTotalRewardEarns] = useState(0);
+  const [canceledOrder, setCanceledOrder] = useState(0);
+  const [deliveredOrder, setDeliveredOrder] = useState(0);
+
 
 
   const formatDate = (obj) => {
@@ -54,7 +59,11 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
       joinDate: formatDate(joinDate),
       isActive: isActive,
       isAvailable: isAvailable,
-      deliveryBoyReward: deliveryBoyReward,
+      deliveryBoyReward: parseInt(deliveryBoyReward),
+      rejectedOrder: parseInt(rejectedOrder),
+      totalRewardEarns: parseInt(totalRewardEarns),
+      canceledOrder: parseInt(canceledOrder),
+      deliveredOrder: parseInt(deliveredOrder),
     };
 
     if (urls[0]) {
