@@ -93,7 +93,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                   />
                 </TableCell>
                 <TableCell align="left">
-                  <strong>{row.deliveryBoyReward.trim() === "" ? "-" : String(row.deliveryBoyReward)}</strong>
+                  <TableCell align="left">{String(row.deliveryBoyReward)}</TableCell>
                 </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
