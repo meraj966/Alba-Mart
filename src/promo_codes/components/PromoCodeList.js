@@ -16,7 +16,10 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
 function PromoCodeList({ openModal, promocodeData, handleDelete }) {
-
+  const sortedPromoCodes = promocodeData.slice().sort((a, b) => {
+    // Sort by Start Date in descending order
+    return new Date(b.startDate) - new Date(a.startDate);
+  });
 
   return (
     <>
@@ -45,7 +48,7 @@ function PromoCodeList({ openModal, promocodeData, handleDelete }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {promocodeData?.map((row) => (
+            {sortedPromoCodes.map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                 <TableCell align="left">{String(row.code)}</TableCell>
                 <TableCell align="left">{String(row.startDate)}</TableCell>

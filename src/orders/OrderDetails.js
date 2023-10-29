@@ -33,43 +33,33 @@ function OrderDetails() {
     }
   };
 
-  const isReturnOrder = order.orderStatus === "return";
+  const isReturnOrder = order.cancelComment === "return";
   const handleResetStock = async () => {
     try {
-      // Iterate through the products in the order
       for (const productId of Object.keys(order.products || {})) {
         const product = order.products[productId];
-
-        // Update the "stockValue" in the "Menu" database
         const menuDocRef = doc(db, "Menu", productId);
-
-        // Fetch the current stockValue
         const menuDocSnapshot = await getDoc(menuDocRef);
-        const currentStockValue = parseInt(menuDocSnapshot.data().stockValue || "0", 10); // Convert to integer
-
-        // Calculate the new stockValue by adding the product's quantity to the current value
+        const currentStockValue = parseInt(menuDocSnapshot.data().stockValue || "0", 10);
         const newStockValue = currentStockValue + product.quantity;
-
-        // Update the "stockValue" with the new value (as a string)
         await updateDoc(menuDocRef, {
-          stockValue: newStockValue.toString() // Convert back to string
+          stockValue: newStockValue
         });
       }
 
-      // Show a Swal message after successful update
+      await updateDoc(doc(db, "Order", id), {
+        cancelComment: "returned"
+      });
+
       Swal.fire({
         icon: "success",
         title: "Sale Value Updated",
         text: "The stock values have been updated successfully.",
       }).then((result) => {
-        // Handle the "OK" button click
         if (result.isConfirmed) {
-          // Hide the "Reset Stock" button
           setShowResetStockButton(false);
         }
       });
-
-      // Optionally, you can set a flag or perform other actions after updating the stock
     } catch (error) {
       console.log("Error resetting stock:", error);
     }
@@ -98,7 +88,7 @@ function OrderDetails() {
           Order ID:
         </Grid>
         <Grid item xs={10}>
-          {id}
+          {"AM-" + order?.orderNumber}
         </Grid>
         <Grid item xs={2}>
           Customer Name:
@@ -128,14 +118,36 @@ function OrderDetails() {
           Delivery Date:
         </Grid>
         <Grid item xs={4}>
-          {order?.date}
+          {order?.deliveryDate || "-"}
         </Grid>
         <Grid item xs={2}>
           Delivery Slot:
         </Grid>
         <Grid item xs={4}>
-          {order?.deleverySlot || "-"}
+          {order?.deliverySlotNumber || "-"}
         </Grid>
+        <Grid item xs={2}>
+          Delivery Time:
+        </Grid>
+        <Grid item xs={4}>
+          {order?.deliveryTime || "-"}
+        </Grid>
+        <Grid item xs={2}>
+          Order Status:
+        </Grid>
+        <Grid item xs={4}>
+          {order?.orderStatus || "-"}
+        </Grid>
+        {order?.orderStatus === "canceled" && (
+          <Grid item xs={2}>
+            Cancel Reason:
+          </Grid>
+        )}
+        {order?.orderStatus === "canceled" && (
+          <Grid item xs={2}>
+            {order?.cancelReason}
+          </Grid>
+        )}
         <Card sx={{ width: "100%", marginTop: "10px" }}>
           <TableContainer>
             <Table>
@@ -143,11 +155,11 @@ function OrderDetails() {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Image</TableCell>
+                  <TableCell>Unit</TableCell>
+                  <TableCell>Quantity</TableCell>
                   <TableCell>MRP</TableCell>
                   <TableCell>Sale Price</TableCell>
                   <TableCell>Amount</TableCell>
-                  <TableCell>Unit</TableCell>
-                  <TableCell>Quantity</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -164,11 +176,11 @@ function OrderDetails() {
                         loading="lazy"
                       />
                     </TableCell>
+                    <TableCell>{order.products[productId].unit}</TableCell>
+                    <TableCell>{order.products[productId].quantity}</TableCell>
                     <TableCell>{order.products[productId].mrp}</TableCell>
                     <TableCell>{order.products[productId].rate}</TableCell>
                     <TableCell>{order.products[productId].amount}</TableCell>
-                    <TableCell>{order.products[productId].unit}</TableCell>
-                    <TableCell>{order.products[productId].quantity}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -190,6 +202,11 @@ function OrderDetails() {
         </Grid>
         <Grid item xs={8} />
         <Grid item>{0}</Grid>
+        <Grid item xs={2}>
+          Promo Code:
+        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{order?.prmoCode || "-"}</Grid>
         <Grid item xs={2}>
           Net Amount:
         </Grid>

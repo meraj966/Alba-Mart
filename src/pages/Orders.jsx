@@ -102,21 +102,39 @@ export default function Orders() {
         </Button>
       </div>
       <div style={{ float: "right" }}>
-        <Button>
-          {isEdit ? (
-            <UndoIcon
-              style={{ marginLeft: "5px", fontSize: "20px", color: "black" }}
-              onClick={() => {
-                setIsEdit(false);
-              }}
-            />
-          ) : (
-            <EditIcon
-              style={{ marginLeft: "5px", fontSize: "20px" }}
-              onClick={() => setIsEdit(!isEdit)}
-            />
-          )}{" "}
-        </Button>
+        {isEdit ? (
+          <Button
+            onClick={() => setIsEdit(false)}
+            style={{
+              fontSize: "16px",
+              color: "white",
+              backgroundColor: "#1976d2",
+              padding: "5px 10px", // Adjust the padding for size
+              borderRadius: "5px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Update Delivery Boy
+            <UndoIcon style={{ marginLeft: "5px", fontSize: "16px", color: "black" }} />
+          </Button>
+        ) : (
+          <Button
+            onClick={() => setIsEdit(!isEdit)}
+            style={{
+              fontSize: "16px",
+              color: "white",
+              backgroundColor: "#1976d2",
+              padding: "5px 10px", // Adjust the padding for size
+              borderRadius: "5px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Update Delivery Boy
+            <EditIcon style={{ marginLeft: "5px", fontSize: "16px" }} />
+          </Button>
+        )}
       </div>
     </div>
   );
