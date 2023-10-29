@@ -50,7 +50,7 @@ function OrderPreview() {
 
         <div className="separation-line" />
 
-        <p>Order Id: {id}</p>
+        <p>Order Id: {"AM-" + order?.orderNumber}</p>
         <p>Customer Name: {user?.name}</p>
         <p>Mob: {user?.phoneNo}</p>
         {order && order.orderDate && (

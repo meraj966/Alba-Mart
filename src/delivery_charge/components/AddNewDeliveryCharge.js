@@ -19,6 +19,7 @@ function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess,
   const [maximumValue, setMaximumValue] = useState(isEditMode ? data.maximumValue : "");
   const [minimumValue, setMinimumValue] = useState(isEditMode ? data.minimumValue : "");
   const [fastDelivery, setFastDelivery] = useState(isEditMode ? data.fastDelivery : false);
+  const [activeNow, setActiveNow] = useState(isEditMode ? data.activeNow : false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,6 +31,7 @@ function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess,
         maximumValue: Number(maximumValue),
         minimumValue: Number(minimumValue),
         fastDelivery,
+        activeNow,
       }).then(() => {
         Swal.fire("Submitted!", "New Delivery Charges has been added", "success");
       })
@@ -40,6 +42,7 @@ function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess,
         maximumValue: Number(maximumValue),
         minimumValue: Number(minimumValue),
         fastDelivery,
+        activeNow,
       }).then(() => {
         Swal.fire("Submitted!", "New Delivery Charges has been added", "success");
       });
@@ -107,6 +110,15 @@ function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess,
               checked={fastDelivery}
               onChange={(e) => setFastDelivery(e.target.checked)}
               name="fastDelivery"
+              color="primary"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">Delivery Available Here?</Typography>
+            <Switch
+              checked={activeNow}
+              onChange={(e) => setActiveNow(e.target.checked)}
+              name="activeNow"
               color="primary"
             />
           </Grid>

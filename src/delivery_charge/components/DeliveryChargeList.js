@@ -46,6 +46,12 @@ function DeliveryChargeList({ openModal, deliveryChargeData, handleDelete }) {
               <TableCell align="left" style={{ minWidth: "100px" }}>
                 <strong>Delivery Charge</strong>
               </TableCell>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
+                <strong>Is It Fast Delivery</strong>
+              </TableCell>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
+                <strong>Is Delivery Available</strong>
+              </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
                 <strong>Action</strong>
               </TableCell>
@@ -58,6 +64,8 @@ function DeliveryChargeList({ openModal, deliveryChargeData, handleDelete }) {
                 <TableCell align="left">{String(row.maximumValue)}</TableCell>
                 <TableCell align="left">{String(row.minimumValue)}</TableCell>
                 <TableCell align="left">{String(row.charge)}</TableCell>
+                <TableCell align="left">{row.fastDelivery ? "Yes" : "No"}</TableCell>
+                <TableCell align="left">{row.activeNow ? "Yes" : "No"}</TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
                     <EditIcon

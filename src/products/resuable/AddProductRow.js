@@ -12,7 +12,7 @@ import {
   getDocs,
   updateDoc,
   setDoc,
-  query, // Add this import
+  query,
   where,
 } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
@@ -85,20 +85,13 @@ function AddProductRow({
     }
   };
 
-  // Function to handle generating and saving the barcode
   const handleGenerateBarcode = async () => {
-    // Get the last generated barcode from the database
     const lastGeneratedBarcode = await getLastGeneratedBarcode();
-
-    // Increment the last generated barcode by 1
     const newBarcodeNumber = (parseInt(lastGeneratedBarcode) + 1).toString().padStart(6, "0");
-
-    // Save the new barcode in the "Barcode" document with ID "Barcode"
     const barcodeRef = doc(db, "Barcode", "Barcode");
-
     try {
       await setDoc(barcodeRef, { code: newBarcodeNumber });
-      setBarcode(newBarcodeNumber); // Update the displayed barcode
+      setBarcode(newBarcodeNumber);
     } catch (error) {
       console.error("Error saving barcode: ", error);
     }
@@ -128,7 +121,7 @@ function AddProductRow({
       quantity,
       stockValue: parseInt(stockValue),
       maxLimit,
-      purchaseRate: parseInt(purchaseRate),
+      purchaseRate,
       url,
       showProduct,
       saleTag: "",
