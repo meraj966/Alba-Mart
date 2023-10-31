@@ -5,10 +5,11 @@ import OrdersList from "../orders/OrdersList";
 import PageTemplate from "./reusable/PageTemplate";
 import Dropdown from "../components/reusable/Dropdown";
 import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
-import { collection, getDocs } from "@firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where, doc, updateDoc } from "@firebase/firestore";
 import { db } from "../firebase-config";
 import UndoIcon from "@mui/icons-material/Undo";
 import { cloneDeep } from "lodash";
+import Swal from "sweetalert2";
 
 export default function Orders() {
   const [orderType, setOrderType] = useState("All Orders");
@@ -21,6 +22,11 @@ export default function Orders() {
   const [endDate, setEndDate] = useState(
     new Date().toISOString().split("T")[0] // Initialize with current date
   );
+
+  useEffect(() => {
+    getOrders();
+    listenForRejectedOrders(); // Add this line to listen for rejected orders
+  }, []);
 
   useEffect(() => {
     getOrders();
@@ -138,6 +144,47 @@ export default function Orders() {
       </div>
     </div>
   );
+
+  const listenForRejectedOrders = () => {
+    const ordersCollection = collection(db, "Order");
+    const q = query(ordersCollection, where("deliveryBoyResponse", "==", "reject"));
+  
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const orderData = doc.data();
+        const orderNumber = orderData.orderNumber;
+  
+        Swal.fire({
+          title: `Delivery Boy rejected to accept the order for AM-${orderNumber}`,
+          text: "Kindly reassign the delivery boy.",
+          icon: "warning",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await updateDeliveryBoyResponse(doc.id);
+          }
+        });
+      });
+    });
+  
+    return () => {
+      unsubscribe();
+    };
+  };
+  
+  const updateDeliveryBoyResponse = async (orderId) => {
+    const orderRef = doc(collection(db, "Order"), orderId);
+    const updatedData = {
+      deliveryBoyResponse: "none",
+    };
+  
+    try {
+      await updateDoc(orderRef, updatedData);
+      console.log("Document successfully updated!");
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
+  };
 
   const handleFilter = () => {
     // Filtering orders based on selected date range

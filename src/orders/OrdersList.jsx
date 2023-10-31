@@ -69,15 +69,31 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   };
 
   const deliveryBoyDropdown = (index, order) => {
-    return (
-      <Dropdown
-        label="Delivery Boy"
-        value={orders[index].deliveryBoy}
-        data={map(deliveryBoy, (i) => ({ value: i.id, label: i.name }))}
-        onChange={(e) => handleChange(e, index, order, "deliveryBoy")}
-      />
-    );
-  };
+    if (
+      (order.orderStatus === "placed" || order.orderStatus === "processing") &&
+      deliveryBoy.some((i) => i.isAvailable)
+    ) {
+      const availableDeliveryBoys = deliveryBoy
+        .filter((i) => i.isAvailable)
+        .map((i) => ({ value: i.id, label: i.name }));
+  
+      return (
+        <Dropdown
+          label="Delivery Boy"
+          value={orders[index].deliveryBoy}
+          data={availableDeliveryBoys}
+          onChange={(e) => handleChange(e, index, order, "deliveryBoy")}
+        />
+      );
+    } else {
+      // Display the current delivery boy name if not editable
+      return (
+        <span>
+          {deliveryBoy.find((i) => i.id === order.deliveryBoy)?.name || "-"}
+        </span>
+      );
+    }
+  };  
 
   const handleSave = async () => {
     const currentDate = new Date();
@@ -128,7 +144,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                   const user = users.find((i) => i.user === order.userID);
                   return (
                     <TableRow hover tabIndex={-1} key={order.id}>
-                      <TableCell align="left">{order.orderId}</TableCell>
+                      <TableCell align="left">AM-{order.orderNumber}</TableCell>
                       <TableCell align="left">{user?.name}</TableCell>
                       <TableCell align="left">{user?.phoneNo}</TableCell>
                       <TableCell align="left">

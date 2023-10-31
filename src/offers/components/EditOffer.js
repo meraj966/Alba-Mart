@@ -102,41 +102,44 @@ function EditOffer() {
   };
 
   const save = async () => {
-    let newProds = [...selectedProducts];
-    let selectedProdIds = [];
-    const currentOffer = doc(db, "Offers", id);
-    for (let i = 0; i < newProds.length; i++) {
-      let product = newProds[i];
-      if (product.isSelected) {
-        product["saleTag"] = id;
-        product["onSale"] = product.isSelected;
-        product["saleType"] = "%";
-        product["saleValue"] = discount;
-        product["salePrice"] = getDiscountedPrice("%", product["price"], discount);
-      } else {
-        if (product.saleTag === id) {
-          product["saleTag"] = "";
-          product["onSale"] = false;
-          product["saleType"] = "%";
-          product["saleValue"] = "";
-          product["salePrice"] = product["price"];
+    try {
+      const updateProductPromises = selectedProducts.map(async (product) => {
+        if (product.isSelected) {
+          product.saleTag = id;
+          product.onSale = true;
+          product.saleType = "%";
+          product.saleValue = discount;
+          product.salePrice = getDiscountedPrice("%", product.price, discount);
+        } else if (product.saleTag === id) {
+          product.saleTag = "";
+          product.onSale = product.realOnSale || false;
+          product.saleType = product.realSaleType || "%";
+          product.saleValue = product.realSaleValue || "";
+          product.salePrice = product.realSalePrice || product.Price;
         }
-      }
-      const prodDoc = doc(db, "Menu", product["id"]);
-      await updateDoc(prodDoc, { ...product });
-      if (product.isSelected) selectedProdIds.push(product["id"]);
-      delete product.isSelected;
-    }
-    await updateDoc(currentOffer, {
-      title: title,
-      bannerImage: uploadedImage || bannerImage,
-      products: selectedProdIds,
-      isOfferLive,
-      discountPercent: discount,
-      startDate: formatDate(startDate),
-      endDate: formatDate(endDate),
-      description: offerDescription,
-    }).then(() => {
+        const prodDoc = doc(db, "Menu", product.id);
+        return updateDoc(prodDoc, { ...product });
+      });
+  
+      await Promise.all(updateProductPromises);
+  
+      const selectedProdIds = selectedProducts
+        .filter((product) => product.isSelected)
+        .map((product) => product.id);
+  
+      const currentOfferDocRef = doc(db, "Offers", id);
+  
+      await updateDoc(currentOfferDocRef, {
+        title,
+        bannerImage: uploadedImage || bannerImage,
+        products: selectedProdIds,
+        isOfferLive,
+        discountPercent: discount,
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+        description: offerDescription,
+      });
+  
       Swal.fire("Successful", "Updated Offer Details", "success");
       setOfferData({
         ...offerData,
@@ -148,9 +151,12 @@ function EditOffer() {
         endDate: formatDate(endDate),
         description: offerDescription,
       });
-    });
-
-    getProductData();
+  
+      getProductData();
+    } catch (error) {
+      console.error("Error saving data: ", error);
+      Swal.fire("Error", "Failed to save data", "error");
+    }
   };
 
   return (
