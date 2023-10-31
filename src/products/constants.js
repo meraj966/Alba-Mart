@@ -163,10 +163,11 @@ export const getOrdersGridColumns = (
 
   return [
     {
-      field: "orderId",
+      field: "orderNumber",
       headerName: "Order ID",
       flex: 1,
-    },
+      valueFormatter: (params) => `AM-${params.value}`, // Add "AM-" before orderNumber
+    },    
     {
       field: "name",
       headerName: "Cust Name",
@@ -180,25 +181,9 @@ export const getOrdersGridColumns = (
       valueGetter: ({ row }) => getUserByOrder(row)?.phoneNo,
     },
     {
-      field: "amount",
+      field: "netPrice",
       headerName: "Total Amount",
       flex: 1,
-      valueGetter: ({ row }) => {
-        if (!row || !row.products) {
-          return 0;
-        }
-      
-        const productValues = Object.values(row.products);
-      
-        if (!productValues) {
-          return 0;
-        }
-      
-        const amounts = productValues.map(product => product.amount);
-        const totalAmount = amounts.reduce((total, amount) => total + amount, 0);
-        
-        return totalAmount;
-      }      
     },
     {
       field: "paymentMode",

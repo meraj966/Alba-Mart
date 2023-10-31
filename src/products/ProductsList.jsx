@@ -21,13 +21,14 @@ export default function ProductsList({
   isDetailView,
   handleSelectedProducts,
   isEditOffer,
-  isOrderDetailView
+  isOrderDetailView,
 }) {
   const [selectAll, setSelectAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedProductsOnTop, setSelectedProductsOnTop] = useState([]);
 
   useEffect(() => {
     const filtered = rows.filter((product) =>
@@ -36,34 +37,32 @@ export default function ProductsList({
     setFilteredRows(filtered);
   }, [rows, searchQuery]);
 
+  useEffect(() => {
+    const selected = filteredRows.filter((product) => product.isSelected);
+    const unselected = filteredRows.filter((product) => !product.isSelected);
+
+    setSelectedProductsOnTop([...selected, ...unselected]);
+  }, [filteredRows]);
+
   const productSelected = (id, checked) => {
-    let products = [...rows];
+    let products = [...filteredRows];
     products.map((prod) => {
       if (prod.id === id) {
         prod.isSelected = checked;
       }
     });
+    setFilteredRows([...products]);
     handleSelectedProducts([...products]);
   };
 
   const handleSelectAll = (e) => {
-    let products = [...rows];
+    let products = [...filteredRows];
     products.map((prod) => (prod["isSelected"] = e.target.checked));
+    setFilteredRows([...products]);
     handleSelectedProducts([...products]);
     setSelectAll(e.target.checked);
     setPage(0);
   };
-
-  const startIndex = page * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-
-  const selectedProducts = filteredRows.filter((product) => product.isSelected);
-  const unselectedProducts = filteredRows.filter((product) => !product.isSelected);
-
-  const displayedProducts = [...selectedProducts, ...unselectedProducts].slice(
-    startIndex,
-    endIndex
-  );
 
   return (
     <>
@@ -80,7 +79,7 @@ export default function ProductsList({
         />
       )}
 
-      {filteredRows.length > 0 && (
+      {selectedProductsOnTop.length > 0 && (
         <>
           <TableContainer>
             <Table stickyHeader aria-label="Products">
@@ -112,31 +111,33 @@ export default function ProductsList({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {displayedProducts.map((row) => {
-                  return (
-                    <Product
-                      data={row}
-                      {...row}
-                      isEditOffer={isEditOffer}
-                      setFormid={setFormid}
-                      handleEditOpen={handleEditOpen}
-                      deleteProd={getMenuData}
-                      isDetailView={isDetailView}
-                      productSelected={(checked) =>
-                        productSelected(row.id, checked)
-                      }
-                      isOrderDetailView={isOrderDetailView}
-                    />
-                  );
-                })}
+                {selectedProductsOnTop
+                  ?.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <Product
+                        data={row}
+                        {...row}
+                        isEditOffer={isEditOffer}
+                        setFormid={setFormid}
+                        handleEditOpen={handleEditOpen}
+                        deleteProd={getMenuData}
+                        isDetailView={isDetailView}
+                        productSelected={(checked) =>
+                          productSelected(row.id, checked)
+                        }
+                        isOrderDetailView={isOrderDetailView}
+                      />
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
 
           <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={filteredRows.length}
+            count={selectedProductsOnTop.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={(e, newPage) => setPage(newPage)}
@@ -148,7 +149,7 @@ export default function ProductsList({
         </>
       )}
 
-      {filteredRows.length === 0 && (
+      {selectedProductsOnTop.length === 0 && (
         <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
           <Box height={20} />
           <Skeleton variant="rectangular" width={"100%"} height={30} />
