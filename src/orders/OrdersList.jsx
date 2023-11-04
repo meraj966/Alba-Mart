@@ -76,7 +76,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       const availableDeliveryBoys = deliveryBoy
         .filter((i) => i.isAvailable)
         .map((i) => ({ value: i.id, label: i.name }));
-  
+
       return (
         <Dropdown
           label="Delivery Boy"
@@ -93,12 +93,12 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
         </span>
       );
     }
-  };  
+  };
 
   const handleSave = async () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as "YYYY-MM-DD"
-    
+
     updatedOrders.forEach(async (id) => {
       const orderToUpdate = orders.find((i) => i.id === id);
       const { deliveryBoy, ...restOrderData } = orderToUpdate;
@@ -117,6 +117,12 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
     setUpdatedOrders([]);
     refreshOrders();
   };
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    const dateA = new Date(a.orderDate);
+    const dateB = new Date(b.orderDate);
+    return dateB - dateA;
+  });
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -139,42 +145,41 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders &&
-                orders.map((order, index) => {
-                  const user = users.find((i) => i.user === order.userID);
-                  return (
-                    <TableRow hover tabIndex={-1} key={order.id}>
-                      <TableCell align="left">AM-{order.orderNumber}</TableCell>
-                      <TableCell align="left">{user?.name}</TableCell>
-                      <TableCell align="left">{user?.phoneNo}</TableCell>
-                      <TableCell align="left">
-                        {sum(map(Object.values(order.products), "amount"))}
-                      </TableCell>
-                      <TableCell align="left">
-                        {user && user.date ? user.date.split(" ")[0] : ""}
-                      </TableCell>
-                      <TableCell align="left">
-                        {order.paymentType || "-"}
-                      </TableCell>
-                      <TableCell align="left">{order.orderStatus}</TableCell>
-                      <TableCell align="left">
-                        {isEdit
-                          ? deliveryBoyDropdown(index, order)
-                          : deliveryBoy.find((i) => i.id === order.deliveryBoy)
-                            ?.name || "-"}
-                      </TableCell>
-                      <TableCell align="left">
-                        <Link
-                          to={`/order-details/${order.orderId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <OpenInNewIcon />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+              {sortedOrders.map((order, index) => {
+                const user = users.find((i) => i.user === order.userID);
+                return (
+                  <TableRow hover tabIndex={-1} key={order.id}>
+                    <TableCell align="left">AM-{order.orderNumber}</TableCell>
+                    <TableCell align="left">{user?.name}</TableCell>
+                    <TableCell align="left">{user?.phoneNo}</TableCell>
+                    <TableCell align="left">
+                      {sum(map(Object.values(order.products), "amount"))}
+                    </TableCell>
+                    <TableCell align="left">
+                      {order && order.orderDate ? order.orderDate.split(" ")[0] : ""}
+                    </TableCell>
+                    <TableCell align="left">
+                      {order.paymentType || "-"}
+                    </TableCell>
+                    <TableCell align="left">{order.orderStatus}</TableCell>
+                    <TableCell align="left">
+                      {isEdit
+                        ? deliveryBoyDropdown(index, order)
+                        : deliveryBoy.find((i) => i.id === order.deliveryBoy)
+                          ?.name || "-"}
+                    </TableCell>
+                    <TableCell align="left">
+                      <Link
+                        to={`/order-details/${order.orderId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <OpenInNewIcon />
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 
@@ -196,11 +201,11 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
         </TableContainer>
       ) : (
         <DataGrid
-          rows={orders}
+          rows={sortedOrders}
           columns={getOrdersGridColumns(
             users,
             isEdit,
-            null, // Pass null to prevent statusDropdown
+            null,
             deliveryBoy
           )}
           autoHeight={true}

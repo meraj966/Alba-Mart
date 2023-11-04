@@ -21,51 +21,38 @@ export default function ProductsList({
   isDetailView,
   handleSelectedProducts,
   isEditOffer,
-  isOrderDetailView,
+  isOrderDetailView
 }) {
   const [selectAll, setSelectAll] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredRows, setFilteredRows] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedProductsOnTop, setSelectedProductsOnTop] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for the search query
+  const [filteredRows, setFilteredRows] = useState([]); // State for filtered products
 
   useEffect(() => {
+    // Filter products based on the search query
     const filtered = rows.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredRows(filtered);
   }, [rows, searchQuery]);
-
-  useEffect(() => {
-    const selected = filteredRows.filter((product) => product.isSelected);
-    const unselected = filteredRows.filter((product) => !product.isSelected);
-
-    setSelectedProductsOnTop([...selected, ...unselected]);
-  }, [filteredRows]);
-
   const productSelected = (id, checked) => {
-    let products = [...filteredRows];
+    let products = [...rows];
     products.map((prod) => {
       if (prod.id === id) {
         prod.isSelected = checked;
       }
     });
-    setFilteredRows([...products]);
     handleSelectedProducts([...products]);
   };
-
   const handleSelectAll = (e) => {
-    let products = [...filteredRows];
+    let products = [...rows];
     products.map((prod) => (prod["isSelected"] = e.target.checked));
-    setFilteredRows([...products]);
     handleSelectedProducts([...products]);
     setSelectAll(e.target.checked);
-    setPage(0);
   };
 
   return (
     <>
+      {/* Add a search input field */}
       {isEditOffer && (
         <TextField
           type="text"
@@ -78,8 +65,7 @@ export default function ProductsList({
           sx={{ width: "250px" }}
         />
       )}
-
-      {selectedProductsOnTop.length > 0 && (
+      {filteredRows.length > 0 && (
         <>
           <TableContainer>
             <Table stickyHeader aria-label="Products">
@@ -94,11 +80,10 @@ export default function ProductsList({
                     </TableCell>
                   )}
                   <TableCell align="left">Name</TableCell>
-                  {!isOrderDetailView && (
+                  {!isOrderDetailView &&
                     <TableCell align="left">
                       <span className="hide-on-print">Prod Img</span>
-                    </TableCell>
-                  )}
+                    </TableCell>}
                   <TableCell align="left">MRP</TableCell>
                   <TableCell align="left">Sale Price</TableCell>
                   <TableCell align="left">Discount</TableCell>
@@ -111,9 +96,8 @@ export default function ProductsList({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {selectedProductsOnTop
-                  ?.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-                  .map((row) => {
+              {filteredRows?.length > 0 &&
+                  filteredRows?.map((row) => {
                     return (
                       <Product
                         data={row}
@@ -133,23 +117,10 @@ export default function ProductsList({
               </TableBody>
             </Table>
           </TableContainer>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={selectedProductsOnTop.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(e, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-          />
         </>
       )}
 
-      {selectedProductsOnTop.length === 0 && (
+{filteredRows.length === 0 && (
         <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
           <Box height={20} />
           <Skeleton variant="rectangular" width={"100%"} height={30} />
