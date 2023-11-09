@@ -53,9 +53,9 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
               <TableCell align="left" style={{ width: "100px" }}>
                 <strong>Action</strong>
               </TableCell>
-              {/* <TableCell align="left" style={{ width: "100px" }}>
+              <TableCell align="left" style={{ width: "100px" }}>
                 <strong>View Details</strong>
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -116,7 +116,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                     />
                   </Stack>
                 </TableCell>
-                {/* <TableCell align="center">
+                <TableCell align="center">
                   <Link
                     to={`/deliveryboy-details/${row.id}`}
                     target="_blank"
@@ -124,7 +124,7 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                   >
                     <OpenInNewIcon color="primary" />
                   </Link>
-                </TableCell> */}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
