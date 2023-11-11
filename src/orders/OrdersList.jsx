@@ -34,6 +34,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   const [deliveryBoy, setDeliveryBoy] = useState([]);
   const [updatedOrders, setUpdatedOrders] = useState([]);
   const [orders, setOrders] = useState([...orderData]);
+  const [selectedDeliveryBoys, setSelectedDeliveryBoys] = useState({});
 
   useEffect(() => {
     getData();
@@ -66,6 +67,10 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
     setUpdatedOrders([...updatedOrders, order.id]);
     orderdata[index][type] = e.target.value;
     setOrders([...orderdata]);
+    setSelectedDeliveryBoys({
+      ...selectedDeliveryBoys,
+      [order.id]: e.target.value,
+    });
   };
 
   const deliveryBoyDropdown = (index, order) => {
@@ -76,11 +81,11 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       const availableDeliveryBoys = deliveryBoy
         .filter((i) => i.isAvailable)
         .map((i) => ({ value: i.id, label: i.name }));
-
+  
       return (
         <Dropdown
           label="Delivery Boy"
-          value={orders[index].deliveryBoy}
+          value={selectedDeliveryBoys[order.id] || ""}
           data={availableDeliveryBoys}
           onChange={(e) => handleChange(e, index, order, "deliveryBoy")}
         />
@@ -94,33 +99,31 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       );
     }
   };
+  
 
   const handleSave = async () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as "YYYY-MM-DD"
-
+  
     updatedOrders.forEach(async (id) => {
-      const orderToUpdate = orders.find((i) => i.id === id);
-      const { deliveryBoy, ...restOrderData } = orderToUpdate;
-
-      // Update both the 'deliveryBoy' and 'deliveryBoyResponse' columns
       await updateDoc(doc(db, "Order", id), {
-        ...restOrderData,
-        deliveryBoy,
+        ...orders.find((i) => i.id === id),
+        deliveryBoy: selectedDeliveryBoys[id], // Save the selected delivery boy ID
         deliveryBoyResponse: "none",
-        orderStatus: "processing", // Update orderStatus to "processing"
-        processingDate: formattedDate, // Update processingDate to the current date
+        orderStatus: "processing",
+        processingDate: formattedDate,
       });
     });
-
+  
     setIsEdit(false);
     setUpdatedOrders([]);
+    setSelectedDeliveryBoys({}); // Reset selected delivery boys state
     refreshOrders();
-  };
+  };  
 
   const sortedOrders = [...orders].sort((a, b) => {
-    const dateA = new Date(a.orderDate);
-    const dateB = new Date(b.orderDate);
+    const dateA = new Date(a.orderDate)?.getTime() || 0;
+    const dateB = new Date(b.orderDate)?.getTime() || 0;
     return dateB - dateA;
   });
 

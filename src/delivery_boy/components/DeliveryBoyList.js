@@ -51,6 +51,9 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 <strong>Reward</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
+                <strong>Total Earned Reward</strong>
+              </TableCell>
+              <TableCell align="left" style={{ width: "100px" }}>
                 <strong>Action</strong>
               </TableCell>
               <TableCell align="left" style={{ width: "100px" }}>
@@ -94,6 +97,9 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                 </TableCell>
                 <TableCell align="left">
                   <TableCell align="left">{String(row.deliveryBoyReward)}</TableCell>
+                </TableCell>
+                <TableCell align="left">
+                  <TableCell align="left">{String(row.totalRewardEarns)}</TableCell>
                 </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
