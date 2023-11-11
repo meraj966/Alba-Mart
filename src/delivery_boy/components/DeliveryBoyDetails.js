@@ -104,7 +104,7 @@ function DeliveryBoyDetails() {
       <div>
         {deliveryBoy ? (
           <div>
-            <h2 style={{ marginTop: -60 }}>{`${deliveryBoy.name} Detail`}</h2>
+            <h2 style={{ marginTop: -60 }}>{`${deliveryBoy.name}'s Detail`}</h2>
             <div style={{ display: "flex", alignItems: "center" }}>
               <div style={{ marginRight: "10px", textAlign: "center" }}>
                 <p>Profile Image</p>
