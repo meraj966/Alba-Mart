@@ -33,6 +33,17 @@ export default function Orders() {
   }, []);
 
   useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "Order"), (snapshot) => {
+      const updatedOrders = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     if (orderType === "All Orders") {
       setFilteredOrders(null);
     } else {
@@ -148,12 +159,12 @@ export default function Orders() {
   const listenForRejectedOrders = () => {
     const ordersCollection = collection(db, "Order");
     const q = query(ordersCollection, where("deliveryBoyResponse", "==", "reject"));
-  
+
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const orderData = doc.data();
         const orderNumber = orderData.orderNumber;
-  
+
         Swal.fire({
           title: `Delivery Boy rejected to accept the order for AM-${orderNumber}`,
           text: "Kindly reassign the delivery boy.",
@@ -166,18 +177,20 @@ export default function Orders() {
         });
       });
     });
-  
+
     return () => {
       unsubscribe();
     };
   };
-  
+
   const updateDeliveryBoyResponse = async (orderId) => {
     const orderRef = doc(collection(db, "Order"), orderId);
     const updatedData = {
       deliveryBoyResponse: "none",
+      deliveryBoy: "",
+      orderStatus: "placed",
     };
-  
+
     try {
       await updateDoc(orderRef, updatedData);
       console.log("Document successfully updated!");

@@ -14,6 +14,7 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+import * as XLSX from "xlsx";
 
 function DeliveryBoyDetails() {
   const { id } = useParams();
@@ -39,8 +40,6 @@ function DeliveryBoyDetails() {
 
         if (selectedDeliveryBoy) {
           setDeliveryBoy(selectedDeliveryBoy);
-
-          // Fetch order data
           fetchOrderData(selectedDeliveryBoy.id);
         } else {
           console.log("Delivery boy not found");
@@ -83,13 +82,29 @@ function DeliveryBoyDetails() {
     setFilteredOrderData(null);
   };
 
+  const exportToExcel = () => {
+    const fileName = `DeliveryBoy_${id}_Details.xlsx`;
+    const ws = XLSX.utils.json_to_sheet((filteredOrderData || orderData).map((order) => ({
+      "Order Number": "AM-" + order.orderNumber,
+      "Cust Name": order.userName,
+      "Cust Number": order.userMoNo,
+      "Delivery Status": order.orderStatus,
+      "Amount": order.totalRate,
+      "Payment Mode": order.paymentType,
+      "Delivery Date": order.deliveryDate ? order.deliveryDate.split(" ")[0] : "",
+    })));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.writeFile(wb, fileName);
+  };
+
   return (
     <PageTemplate>
       <div>
         {deliveryBoy ? (
           <div>
-            <h2>{`${deliveryBoy.name} Detail`}</h2>
-            <hr />
+            <h2 style={{ marginTop: -60 }}>{`${deliveryBoy.name}'s Detail`}</h2>
             <div style={{ display: "flex", alignItems: "center" }}>
               <div style={{ marginRight: "10px", textAlign: "center" }}>
                 <p>Profile Image</p>
@@ -140,21 +155,19 @@ function DeliveryBoyDetails() {
               <p style={{ fontSize: "15px" }}>Address: {deliveryBoy.address}</p>
             </strong>
             <hr />
-
-            {/* Date Filtering */}
             <TextField
               type="date"
               label="Start Date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              sx={{ marginRight: '8px' }} // Add space to the right
+              sx={{ marginRight: '8px' }}
             />
             <TextField
               type="date"
               label="End Date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              sx={{ marginRight: '8px' }} // Add space to the right
+              sx={{ marginRight: '8px' }}
             />
             <Button variant="contained" onClick={handleFilter} sx={{ marginRight: '8px' }}>
               Filter
@@ -162,12 +175,17 @@ function DeliveryBoyDetails() {
             <Button
               variant="contained"
               onClick={handleClear}
-              sx={{ backgroundColor: 'red', color: 'white' }}
+              sx={{ backgroundColor: 'red', color: 'white', marginRight: '20px' }}
             >
               Clear
             </Button>
-
-            {/* Table for order details */}
+            <Button
+              variant="contained"
+              onClick={exportToExcel}
+              sx={{ backgroundColor: '#4caf50', color: 'white' }}
+            >
+              Export to Excel
+            </Button>
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
