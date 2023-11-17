@@ -148,6 +148,15 @@ function DeliveryBoyDetails() {
             </div>
             <hr />
             <strong style={{ fontSize: "15px" }}>
+              <p style={{
+                fontSize: "15px",
+                marginBottom: "0",
+                color: deliveryBoy.isAvailable ? "green" : "red",
+                border: "1px solid",
+                display: "inline-block",
+                padding: "2px 5px",
+                borderRadius: "5px"
+              }}>{deliveryBoy.isAvailable ? "Online" : "Offline"}</p>
               <p style={{ fontSize: "15px" }}>Name: {deliveryBoy.name}</p>
               <p style={{ fontSize: "15px" }}>DL Number: {deliveryBoy.dlnumber}</p>
               <p style={{ fontSize: "15px" }}>Phone Number: {deliveryBoy.phoneNumber}</p>
