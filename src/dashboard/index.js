@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Link, Modal } from "@mui/material";
+import { Grid, Link, Modal, Divider } from "@mui/material";
 import DashboardCard from "./reusable/DashboardCard";
 import DashboardCardStock from "./reusable/DashboardCardStock";
 import { PRODUCTS_UNAVAILABLE, PRODUCTS_LOW_STOCK } from "../Constants";
@@ -14,6 +14,7 @@ import Swal from "sweetalert2";
 import Button from "@mui/material/Button";
 import { writeFile } from "exceljs";
 import ExcelJS from "exceljs";
+import RevenueGraph from "./reusable/RevenueGraph";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -32,6 +33,8 @@ export default function Dashboard() {
   const [lowStockProd, setLowStockProd] = useState("");
   const [open, setOpen] = React.useState(false);
   const [modalType, setModalType] = useState("");
+  const [todayEarn, setTodayEarn] = useState(0);
+  const [todayOrderCount, setTodayOrderCount] = useState(0);
 
   const offersPastDue = (offers) =>
     offers.filter(
@@ -99,11 +102,26 @@ export default function Dashboard() {
   const getOrders = async () => {
     const data = await getDocs(collection(db, "Order"));
     const orderData = data.docs.map((doc) => ({ ...doc.data() }));
-    setTodayOrder(
-      orderData?.filter(
-        (i) => new Date(i.date).toDateString() === new Date().toDateString()
-      )
+
+    const todayDeliveredOrders = orderData.filter(
+      (i) =>
+        new Date(i.deliveryDate).toDateString() ===
+        new Date().toDateString() &&
+        i.orderStatus === "delivered"
     );
+
+    // Calculate the sum of totalRate for today's delivered orders
+    const todayEarnValue = sum(todayDeliveredOrders.map((i) => i.totalRate));
+
+    setTodayEarn(todayEarnValue);
+
+    const todayOrders = orderData.filter(
+      (i) => new Date(i.orderDate).toDateString() === new Date().toDateString()
+    );
+
+    setTodayOrder(todayOrders);
+    setTodayOrderCount(todayOrders.length);
+
     setPendingOrder(
       orderData.filter((i) => ["placed"].includes(i.orderStatus))
     );
@@ -125,7 +143,7 @@ export default function Dashboard() {
       }
     }, 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [orders.length]);
 
   const modal = () => (
     <Modal
@@ -227,14 +245,14 @@ export default function Dashboard() {
           <Grid item xs={3}>
             <Link underline="none">
               <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
-                <DashboardCard header="Today earn" value={`Rs. ${1000}`} />
+                <DashboardCard header="Today earn" value={`Rs. ${todayEarn}`} />
               </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
               <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
-                <DashboardCard header="Today order" value={todayOrder.length} />
+                <DashboardCard header="Today order" value={todayOrderCount} />
               </RouterLink>
             </Link>
           </Grid>
@@ -299,6 +317,12 @@ export default function Dashboard() {
             >
               Export Products in Low Stock
             </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider style={{ margin: "20px 0", backgroundColor: "darkgray" }} />
+          </Grid>
+          <Grid item xs={12}>
+            <RevenueGraph orders={orders} />
           </Grid>
         </Grid>
       </PageTemplate>
