@@ -19,21 +19,29 @@ const RevenueGraph = ({ orders }) => {
       const specificDateOrders = filteredOrders.filter(
         (order) => getFormattedDate(order.deliveryDate) === selectedSpecificDate
       );
-      processedData = specificDateOrders.map((order) => [
-        getFormattedDate(order.deliveryDate),
-        order.totalRate
-      ]);
+
+      // Include the date with zero revenue if there is no data
+      if (specificDateOrders.length > 0) {
+        processedData = specificDateOrders.map((order) => [
+          getFormattedDate(order.deliveryDate),
+          order.netPrice
+        ]);
+      } else {
+        processedData = [[selectedSpecificDate, 0]];
+      }
     } else {
       // Group data based on selected date range
       const groupedData = groupByDate(filteredOrders, selectedDateRange);
 
       processedData = Object.entries(groupedData).map(([date, orders]) => {
         const formattedDate = getFormattedDate(date, selectedDateRange);
-        return [formattedDate, sum(orders.map((order) => order.totalRate))];
+        return [formattedDate, sum(orders.map((order) => order.netPrice))];
       });
     }
 
-    setRevenueData([["Date", "Revenue"], ...processedData]);
+    // Set chartData to an empty array when there is data
+    const chartData = [["Date", "Revenue"], ...processedData];
+    setRevenueData(chartData);
   };
 
   const groupByDate = (orders, dateRange) => {
@@ -54,13 +62,15 @@ const RevenueGraph = ({ orders }) => {
       return firstDay.toISOString().split("T")[0];
     } else if (dateRange === "month") {
       // Display the last day of the month
-      const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
       return lastDay.toISOString().split("T")[0];
+    } else if (dateRange === "year") {
+      return date.getFullYear().toString();
     } else {
       // For date range, return the date as it is
       return date.toISOString().split("T")[0];
     }
-  };    
+  };  
 
   const clearFilters = () => {
     setSelectedDateRange("month");
@@ -79,6 +89,7 @@ const RevenueGraph = ({ orders }) => {
       >
         <option value="week">Weekly</option>
         <option value="month">Monthly</option>
+        <option value="year">Yearly</option>
       </select>
 
       <input
