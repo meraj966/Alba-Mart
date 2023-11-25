@@ -1,10 +1,10 @@
 /* Default styles for the bill */
 .print-container {
-  font-family: Calibri, sans-serif; /* Use a monospace font for consistent spacing */
+  font-family: monospace; /* Use a monospace font for consistent spacing */
   max-width: 300px; /* Adjust the width as needed for your thermal printer */
   margin: 0 auto; /* Center align the content on the page */
   padding: 10px;
-  border: 1px solid white;
+  border: 1px solid #000; /* Add a border for better separation */
   box-shadow: none; /* Remove any box shadow for printing */
 }
 
@@ -13,29 +13,6 @@
   text-align: left;
   padding: 8px;
   margin-left: -5px; /* Add a negative margin to shift the headers slightly to the left */
-}
-
-.bill-table {
-  width: 80%;
-  border-collapse: collapse; /* Collapse borders for better styling */
-  font-size: 13px;
-}
-
-/* Set a fixed width for each th element */
-.bill-table th {
-  width: 25%; /* Adjust the width as needed for equal sizes */
-  font-weight: bold;
-  text-align: left;
-  padding: 2px;
-  margin-left: -5px;
-}
-
-.custdetail {
-  max-height: 60px; /* Adjust the max height as needed */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 80%;
-  font-size: 13px;
 }
 
 .print-heading {
@@ -52,7 +29,6 @@
   text-align: center;
   margin-bottom: 10px;
   line-height: 0.4;
-  margin-left: -15px;
 }
 
 .print-albamart {
@@ -61,7 +37,6 @@
   text-align: center;
   margin-bottom: 10px;
   line-height: 0;
-  margin-left: -15px;
 }
 
 /* Style individual data points as needed */
@@ -72,38 +47,20 @@ p {
 
 .separation-line {
   border-top: 2px solid #000; /* Customize the border as needed */
-  margin: 5px 0; /* Adjust the margin to control the spacing */
+  margin: 10px 0; /* Adjust the margin to control the spacing */
 }
 
 .formatted-line {
-  font-family: Calibri, sans-serif; /* Use a monospace font for consistent spacing */
+  font-family: monospace; /* Use a monospace font for consistent spacing */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 80%;
+  width: 100%;
   padding: 0px 0;
   white-space: nowrap; /* Prevent wrapping to the next line */
-  font-size: 13px;
 }
 
 .formatted-line span {
-  text-align: right;
-  padding-left: 10px; /* Adjust as needed for the desired spacing */
-  flex: 1;
-}
-
-.noofitems {
-  font-family: Calibri, sans-serif; /* Use a monospace font for consistent spacing */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 37%;
-  padding: 0px 0;
-  white-space: nowrap; /* Prevent wrapping to the next line */
-  font-size: 13px;
-}
-
-.noofitems span {
   text-align: right;
   padding-left: 10px; /* Adjust as needed for the desired spacing */
   flex: 1;
@@ -122,7 +79,6 @@ p {
     margin: 0;
     padding: 5;
     margin-top: 0; /* Remove top margin for .print-container */
-    /* font-size: 12px; */
   }
 
   .print-container::before {

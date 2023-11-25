@@ -178,9 +178,9 @@ function OrderDetails() {
                     </TableCell>
                     <TableCell>{order.products[productId].unit}</TableCell>
                     <TableCell>{order.products[productId].quantity}</TableCell>
-                    <TableCell>{order.products[productId].mrp}.00</TableCell>
-                    <TableCell>{order.products[productId].rate}.00</TableCell>
-                    <TableCell>{order.products[productId].amount}.00</TableCell>
+                    <TableCell>{order.products[productId].mrp}</TableCell>
+                    <TableCell>{order.products[productId].rate}</TableCell>
+                    <TableCell>{order.products[productId].amount}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -191,32 +191,32 @@ function OrderDetails() {
           Sub Total Price:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{order?.totalMrp}.00</Grid>
+        <Grid item>{order?.totalMrp}</Grid>
         <Grid item xs={2}>
           Tax:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{0}.00</Grid>
+        <Grid item>{0}</Grid>
         <Grid item xs={2}>
           Delivery Charge:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{order?.deliveryCharge}.00</Grid>
+        <Grid item>{0}</Grid>
         <Grid item xs={2}>
           Promo Code:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{order?.promoCodeValue}.00</Grid>
-        <Grid item xs={2}>
-          Total Discount Amount:
-        </Grid>
-        <Grid item xs={8} />
-        <Grid item>{order?.totalMrp - order?.totalRate}.00</Grid>
+        <Grid item>{order?.prmoCode || "-"}</Grid>
         <Grid item xs={2}>
           Net Amount:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{order?.netPrice}.00</Grid>
+        <Grid item>{order?.totalRate}</Grid>
+        <Grid item xs={2}>
+          Total Discount Amount:
+        </Grid>
+        <Grid item xs={8} />
+        <Grid item>{order?.totalMrp - order?.totalRate}</Grid>
       </Grid>
     </PageTemplate>
   );

@@ -4,21 +4,13 @@ import { Button } from "@mui/material";
 import { doc, getDoc } from "@firebase/firestore";
 import { db } from "../firebase-config";
 import { useReactToPrint } from "react-to-print";
-import numberToWords from "number-to-words";
-import "./OrderPreview.css";
-import { capitalize } from "lodash";
-
-function capitalizeFirstLetter(sentence) {
-  return sentence.replace(/\b\w/g, (char) => char.toUpperCase());
-}
+import "./OrderPreview.css"; // Import custom CSS for printing
 
 function OrderPreview() {
   const { id } = useParams();
   const [order, setOrder] = useState({});
   const [products, setProducts] = useState({});
   const [user, setUser] = useState({});
-  const [netAmountInWords, setNetAmountInWords] = useState("");
-  const [totalQty, setTotalQty] = useState(0);
 
   useEffect(() => {
     getOrderDetail();
@@ -35,16 +27,6 @@ function OrderPreview() {
         setOrder(order);
         setUser(user);
         setProducts(order.products || {});
-
-        // Calculate total quantity
-        const qtyArray = Object.values(order.products).map(product => product.quantity);
-        const totalQtyValue = qtyArray.reduce((total, qty) => total + qty, 0);
-        setTotalQty(totalQtyValue);
-
-        // Convert Net Amount to words
-        const netAmountWords = numberToWords.toWords(order.netPrice);
-        const capitalizedNetAmountWords = capitalizeFirstLetter(netAmountWords);
-        setNetAmountInWords(capitalizedNetAmountWords);
       }
     } catch (error) {
       console.log("Error fetching order details:", error);
@@ -68,20 +50,20 @@ function OrderPreview() {
 
         <div className="separation-line" />
 
-        <p className="custdetail">Payment Mode: {order?.paymentType}</p>
-        <p className="custdetail">Order Id: {"AM-" + order?.orderNumber}</p>
-        <p className="custdetail">Customer Name: {user?.name}</p>
-        <p className="custdetail">Mob: {user?.phoneNo}</p>
+        <p>Order Id: {"AM-" + order?.orderNumber}</p>
+        <p>Customer Name: {user?.name}</p>
+        <p>Mob: {user?.phoneNo}</p>
         {order && order.orderDate && (
           <>
-            <p className="custdetail">Date: {order.orderDate.split(" ")[0]}</p>
+            <p>Date: {order.orderDate.split(" ")[0]}</p>
           </>
         )}
-        <p className="custdetail">Address: {user?.address}</p>
+        <p>Address: {user?.address}</p>
 
         <div className="separation-line" />
 
-        <table className="bill-table">
+        {/* <h3 className="print-heading">Products:</h3> */}
+        <table className="table">
           <thead>
             <tr>
               <th>S No.</th>
@@ -107,9 +89,9 @@ function OrderPreview() {
                     <td></td>
                     <td>{product.unit}</td>
                     <td>{product.quantity}</td>
-                    <td>{product.mrp}.00</td>
-                    <td>{product.rate}.00</td>
-                    <td>{product.amount}.00</td>
+                    <td>{product.mrp}</td>
+                    <td>{product.rate}</td>
+                    <td>{product.amount}</td>
                   </tr>
                 </React.Fragment>
               );
@@ -120,16 +102,11 @@ function OrderPreview() {
         <div className="separation-line" />
 
         <strong>
-          <p className="noofitems">No. of Items: <span>{totalQty}</span></p>
-          <div className="separation-line" />
-          <p className="formatted-line">Sub Total Price: <span>{order?.totalMrp}.00</span></p>
-          <p className="formatted-line">Tax: <span>0.00</span></p>
-          <p className="formatted-line">Delivery Charge: <span>{order?.deliveryCharge}.00</span></p>
-          <p className="formatted-line">Promo Code Discount: <span>- {order?.promoCodeValue}.00</span></p>
-          <p className="formatted-line">Total Discount Amount: <span>{order?.totalMrp - order?.totalRate}.00</span></p>
-          <p className="formatted-line">Net Amount: <span>{order?.netPrice}.00</span></p>
-          <p className="formatted-line">Rs {netAmountInWords}</p>
-          <p className="formatted-line">You Saved Rs {order?.totalMrp - order?.totalRate}.00 on this order</p>
+          <p className="formatted-line">Sub Total Price: <span>{order?.totalMrp}</span></p>
+          <p className="formatted-line">Tax: <span>0</span></p>
+          <p className="formatted-line">Delivery Charge: <span>0</span></p>
+          <p className="formatted-line">Net Amount: <span>{order?.totalRate}</span></p>
+          <p className="formatted-line">Total Discount Amount: <span>{order?.totalMrp - order?.totalRate}</span></p>
         </strong>
 
         <div className="separation-line" />
