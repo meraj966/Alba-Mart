@@ -124,11 +124,11 @@ function OrderPreview() {
           <div className="separation-line" />
           <p className="formatted-line">Sub Total Price: <span>{order?.totalMrp}.00</span></p>
           <p className="formatted-line">Tax: <span>0.00</span></p>
+          <p className="formatted-line">Total Discount Amount: <span>- {order?.totalMrp - order?.totalRate}.00</span></p>
           <p className="formatted-line">Delivery Charge: <span>{order?.deliveryCharge}.00</span></p>
           <p className="formatted-line">Promo Code Discount: <span>- {order?.promoCodeValue}.00</span></p>
-          <p className="formatted-line">Total Discount Amount: <span>{order?.totalMrp - order?.totalRate}.00</span></p>
           <p className="formatted-line">Net Amount: <span>{order?.netPrice}.00</span></p>
-          <p className="formatted-line">Rs {netAmountInWords}</p>
+          <p className="formatted-line">Rs {netAmountInWords} Only</p>
           <p className="formatted-line">You Saved Rs {order?.totalMrp - order?.totalRate}.00 on this order</p>
         </strong>
 

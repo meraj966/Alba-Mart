@@ -139,6 +139,15 @@ function AddProductRow({
   };
 
   const handleSave = async () => {
+    if (!name) {
+      alert("Name is a mandatory field. Please fill it before saving.");
+      return;
+    }
+  
+    if (!measureUnit) {
+      alert("Unit is a mandatory field. Please fill it before saving.");
+      return;
+    }
     let urls = await uploadImages(files);
     await saveRowData(urls).then(() => {
       setSaveDone([...saveDone, "SAVED"]);
