@@ -206,12 +206,12 @@ function OrderDetails() {
           Promo Code:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{order?.promoCodeValue}.00</Grid>
+        <Grid item>- {order?.promoCodeValue}.00</Grid>
         <Grid item xs={2}>
           Total Discount Amount:
         </Grid>
         <Grid item xs={8} />
-        <Grid item>{order?.totalMrp - order?.totalRate}.00</Grid>
+        <Grid item>- {order?.totalMrp - order?.totalRate}.00</Grid>
         <Grid item xs={2}>
           Net Amount:
         </Grid>

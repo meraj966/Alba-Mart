@@ -65,6 +65,25 @@ function AddProducts({ closeEvent }) {
   const handleUpload = () => {
     const files = Object.values(products).map((i) => i.files);
     console.log(products, files, "productssssssssss");
+  
+    // Validate Name and Unit fields for each product
+    const invalidProducts = Object.values(products).filter(
+      (product) => !product.name || !product.measureUnit
+    );
+  
+    if (invalidProducts.length > 0) {
+      const missingFields = invalidProducts.map((product) =>
+        !product.name ? "Name" : "Unit"
+      );
+      Swal.fire(
+        "Failed!",
+        `Please fill the mandatory fields (${missingFields.join(", ")}) for all products.`,
+        "error"
+      );
+      return;
+    }
+  
+    // Continue with the upload if all products have valid data
     if (
       files.includes(false) ||
       files.includes(null) ||
@@ -75,6 +94,7 @@ function AddProducts({ closeEvent }) {
       setSave(true);
     }
   };
+  
   return (
     <>
       <Box sx={{ width: "auto" }}>
