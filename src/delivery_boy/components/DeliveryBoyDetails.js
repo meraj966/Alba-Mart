@@ -98,6 +98,17 @@ function DeliveryBoyDetails() {
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     XLSX.writeFile(wb, fileName);
   };
+  const calculateTotalReward = (claimedRewards) => {
+    if (!claimedRewards || claimedRewards.length === 0) {
+      return 0;
+    }
+
+    return claimedRewards.reduce(
+      (acc, val) => acc + (parseInt(val) || 0),
+      0
+    );
+  };
+
 
   return (
     <PageTemplate>
@@ -161,6 +172,10 @@ function DeliveryBoyDetails() {
               <p style={{ fontSize: "15px" }}>DL Number: {deliveryBoy.dlnumber}</p>
               <p style={{ fontSize: "15px" }}>Phone Number: {deliveryBoy.phoneNumber}</p>
               <p style={{ fontSize: "15px" }}>Date Of Joining: {deliveryBoy.joinDate}</p>
+              <p style={{ fontSize: "15px" }}>Total Reward: {deliveryBoy.totalRewardEarns}</p>
+              <p style={{ fontSize: "15px" }}>
+                Reward Redeem: {calculateTotalReward(deliveryBoy.claimedReward)}
+              </p>
               <p style={{ fontSize: "15px" }}>Address: {deliveryBoy.address}</p>
             </strong>
             <hr />

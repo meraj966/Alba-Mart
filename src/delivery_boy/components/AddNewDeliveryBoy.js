@@ -39,9 +39,12 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [deliveryBoyReward, setDeliveryBoyReward] = useState(isEditMode ? data.deliveryBoyReward : 0);
   const [rejectedOrder, setRejectedOrder] = useState(0);
-  const [totalRewardEarns, setTotalRewardEarns] = useState(0);
+  const [totalRewardEarns, setTotalRewardEarns] = useState(
+    isEditMode ? data.totalRewardEarns : 0
+  );
   const [canceledOrder, setCanceledOrder] = useState(0);
   const [deliveredOrder, setDeliveredOrder] = useState(0);
+  const [claimedReward, setClaimedReward] = useState(isEditMode ? (data.claimedReward || []).join(', ') : '');
 
 
 
@@ -64,6 +67,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
       totalRewardEarns: parseInt(totalRewardEarns),
       canceledOrder: parseInt(canceledOrder),
       deliveredOrder: parseInt(deliveredOrder),
+      claimedReward: claimedReward.split(',').map(value => value.trim()),
     };
 
     if (urls[0]) {
@@ -91,21 +95,31 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
     }
     refreshDeliveryBoys();
     closeModal();
-  };  
+  };
 
   const submitNewDeliveryBoy = async () => {
-    let res = [];
+    let dlFrontUrls = [];
+    let dlBackUrls = [];
+    let profileImageUrls = [];
 
-    if (isEditMode) {
-      const imageFiles = [dlImageFrontFile, dlImageBackFile, profileImageFile];
-      res = await uploadImages(imageFiles.filter(file => file !== null));
-    } else {
-      const imageFiles = [dlImageFrontFile, dlImageBackFile, profileImageFile];
-      res = await uploadImages(imageFiles.filter(file => file !== null));
+    // Upload DL Front Image if provided during editing or adding new record
+    if (dlImageFrontFile) {
+      dlFrontUrls = await uploadImages([dlImageFrontFile]);
     }
 
-    await saveBoy(res);
-  }; 
+    // Upload DL Back Image if provided during editing or adding new record
+    if (dlImageBackFile) {
+      dlBackUrls = await uploadImages([dlImageBackFile]);
+    }
+
+    // Upload Profile Image if provided during editing or adding new record
+    if (profileImageFile) {
+      profileImageUrls = await uploadImages([profileImageFile]);
+    }
+
+    // Save the delivery boy data with the respective image URLs
+    await saveBoy([dlFrontUrls[0], dlBackUrls[0], profileImageUrls[0]]);
+  };
 
   const handleSubmit = () => {
     if (!name) Swal.fire("Validation Issue!", "Please add a Title", "error");
@@ -276,6 +290,18 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
               value={deliveryBoyReward} // Bind the value to the state
               onChange={(e) => setDeliveryBoyReward(e.target.value)} // Update the state
               label="Delivery Boy Reward" // Label for the new field
+              size="small"
+              sx={{ mb: 2 }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              error={false}
+              id="claimedReward"
+              name="claimedReward"
+              value={claimedReward}
+              onChange={(e) => setClaimedReward(e.target.value)}
+              label="Redeem Reward"
               size="small"
               sx={{ mb: 2 }}
             />

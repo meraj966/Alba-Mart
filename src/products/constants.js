@@ -213,12 +213,21 @@ export const getOrdersGridColumns = (
           if (timePart) {
             // Extract only the hours and minutes
             const hoursMinutes = timePart.substr(0, 5); // This will give you "11:59"
-            return hoursMinutes;
+    
+            // Convert 24-hour format to 12-hour format
+            const [hours, minutes] = hoursMinutes.split(":");
+            const period = parseInt(hours, 10) >= 12 ? "PM" : "AM";
+            const formattedHours = (parseInt(hours, 10) % 12) || 12;
+    
+            // Combine hours, minutes, and AM/PM
+            const formattedTime = `${formattedHours}:${minutes} ${period}`;
+            
+            return formattedTime;
           }
         }
         return "--";
       },
-    },
+    },    
     {
       field: "deliveryDate",
       headerName: "Delivery Date",

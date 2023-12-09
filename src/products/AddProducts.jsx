@@ -65,15 +65,15 @@ function AddProducts({ closeEvent }) {
   const handleUpload = () => {
     const files = Object.values(products).map((i) => i.files);
     console.log(products, files, "productssssssssss");
-  
+
     // Validate Name and Unit fields for each product
     const invalidProducts = Object.values(products).filter(
-      (product) => !product.name || !product.measureUnit
+      (product) => !product.name || !product.quantity
     );
-  
+
     if (invalidProducts.length > 0) {
       const missingFields = invalidProducts.map((product) =>
-        !product.name ? "Name" : "Unit"
+        !product.name ? "Name" : "Quantity"
       );
       Swal.fire(
         "Failed!",
@@ -82,7 +82,36 @@ function AddProducts({ closeEvent }) {
       );
       return;
     }
-  
+
+    // Check for negative quantity values
+    const negativeQuantityProducts = Object.values(products).filter(
+      (product) => parseInt(product.quantity, 10) < 0
+    );
+
+    if (negativeQuantityProducts.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "Unit quantity cannot be a negative number.",
+        "error"
+      );
+      return;
+    }
+
+    // Check if saleValue is greater than purchaseRate or price
+    const invalidSaleValue = Object.values(products).filter(
+      (product) => parseInt(product.saleValue, 10) > parseInt(product.price, 10) ||
+        parseInt(product.saleValue, 10) > parseInt(product.purchaseRate, 10)
+    );
+
+    if (invalidSaleValue.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "Sale value cannot be greater than purchase rate or price for any product.",
+        "error"
+      );
+      return;
+    }
+
     // Continue with the upload if all products have valid data
     if (
       files.includes(false) ||
@@ -94,11 +123,11 @@ function AddProducts({ closeEvent }) {
       setSave(true);
     }
   };
-  
+
   return (
     <>
       <Box sx={{ width: "auto" }}>
-         {save && <CircularProgress />}
+        {save && <CircularProgress />}
         <Typography variant="h5" align="center">
           Add Multiple Products
         </Typography>
