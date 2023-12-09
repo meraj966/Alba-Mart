@@ -145,6 +145,14 @@ export default function EditForm({ fid, closeEvent }) {
     setRows(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
   const createDoc = async () => {
+    if (!name) {
+      Swal.fire("Error", "Name is required field.", "error");
+      return;
+    }
+    if (!quantity) {
+      Swal.fire("Error", "Quantity is required field.", "error");
+      return;
+    }
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
       // id: doc.id,
@@ -169,8 +177,16 @@ export default function EditForm({ fid, closeEvent }) {
       realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price),
       realSaleValue: onSale && !saleTag ? saleValue : 0,
       realOnSale: onSale && !saleTag ? onSale : false,
-      realSaleType: onSale && !saleTag ? saleType: "",
+      realSaleType: onSale && !saleTag ? saleType : "",
     };
+    if (parseInt(saleValue, 10) > parseInt(price, 10) || parseInt(saleValue, 10) > parseInt(purchaseRate, 10)) {
+      Swal.fire(
+        "Error",
+        "Sale value cannot be greater than purchase rate or price.",
+        "error"
+      );
+      return;
+    }
     await updateDoc(userDoc, newFields);
     getUsers();
     closeEvent();
@@ -179,6 +195,14 @@ export default function EditForm({ fid, closeEvent }) {
 
   const saveDataWithUrl = async (url) => {
     console.log("urll", url)
+    if (!name) {
+      Swal.fire("Error", "Name is required field.", "error");
+      return;
+    }
+    if (!quantity) {
+      Swal.fire("Error", "Quantity is required field.", "error");
+      return;
+    }
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
       // id: doc.id,
@@ -204,7 +228,7 @@ export default function EditForm({ fid, closeEvent }) {
       realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price),
       realSaleValue: onSale && !saleTag ? saleValue : 0,
       realOnSale: onSale && !saleTag ? onSale : false,
-      realSaleType: onSale && !saleTag ? saleType: "",
+      realSaleType: onSale && !saleTag ? saleType : "",
     };
     await updateDoc(userDoc, newFields);
     getUsers();
@@ -213,37 +237,41 @@ export default function EditForm({ fid, closeEvent }) {
   };
 
   const handleUpload = async () => {
-    if (!file) 
+    if (!file) {
+      if (parseInt(quantity, 10) < 0) {
+        Swal.fire("Failed!", "Unit quantity cannot be a negative number.", "error");
+        return;
+      }
       createDoc();
-    //  else {
-    //   // const name = new Date().getTime() + file.name
-    //   const storageRef = ref(storage, `/images/${file.name + uuidv4()}`);
+      //  else {
+      //   // const name = new Date().getTime() + file.name
+      //   const storageRef = ref(storage, `/images/${file.name + uuidv4()}`);
 
-    //   // progress can be paused and resumed. It also exposes progress updates.
-    //   // Receives the storage reference and the file to upload.
-    //   const uploadTask = uploadBytesResumable(storageRef, file);
+      //   // progress can be paused and resumed. It also exposes progress updates.
+      //   // Receives the storage reference and the file to upload.
+      //   const uploadTask = uploadBytesResumable(storageRef, file);
 
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapshot) => {
-    //       const percent = Math.round(
-    //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-    //       );
+      //   uploadTask.on(
+      //     "state_changed",
+      //     (snapshot) => {
+      //       const percent = Math.round(
+      //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      //       );
 
-    //       // update progress
-    //       setPercent(percent);
-    //     },
-    //     (err) => console.log(err),
-    //     () => {
-    //       // download url
-    //       getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-    //         // console.log(url);
-    //         createUserWithFile(url);
-    //       });
-    //     }
-    //   );
-    // }
-    else {
+      //       // update progress
+      //       setPercent(percent);
+      //     },
+      //     (err) => console.log(err),
+      //     () => {
+      //       // download url
+      //       getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+      //         // console.log(url);
+      //         createUserWithFile(url);
+      //       });
+      //     }
+      //   );
+      // }
+    } else {
       console.log(file, "fileeess")
       let urls = await uploadImages(file);
       let x = Promise.resolve(urls)

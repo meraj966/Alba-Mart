@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [modalType, setModalType] = useState("");
   const [todayEarn, setTodayEarn] = useState(0);
   const [todayOrderCount, setTodayOrderCount] = useState(0);
+  const [todayCanceledOrderCount, setTodayCanceledOrderCount] = useState(0);
 
   const offersPastDue = (offers) =>
     offers.filter(
@@ -125,6 +126,15 @@ export default function Dashboard() {
     setPendingOrder(
       orderData.filter((i) => ["placed"].includes(i.orderStatus))
     );
+
+    // Calculate the count of canceled orders for the current date
+    const todayCanceledOrders = orderData.filter(
+      (i) =>
+        new Date(i.canceledDate).toDateString() === new Date().toDateString() &&
+        i.orderStatus === "canceled"
+    );
+
+    setTodayCanceledOrderCount(todayCanceledOrders.length);
     setOrders(orderData);
   };
 
@@ -271,10 +281,7 @@ export default function Dashboard() {
               <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
                 <DashboardCard
                   header="Today Declined"
-                  value={
-                    orders.filter((i) => ["Cancelled"].includes(i.orderStatus))
-                      .length
-                  }
+                  value={todayCanceledOrderCount}
                 />
               </RouterLink>
             </Link>

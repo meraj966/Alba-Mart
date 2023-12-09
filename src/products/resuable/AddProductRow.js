@@ -144,8 +144,8 @@ function AddProductRow({
       return;
     }
   
-    if (!measureUnit) {
-      alert("Unit is a mandatory field. Please fill it before saving.");
+    if (!quantity) {
+      alert("quantity is a mandatory field. Please fill it before saving.");
       return;
     }
     let urls = await uploadImages(files);
