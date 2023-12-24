@@ -23,6 +23,7 @@ import { getDiscountedPrice } from "../../utils";
 import SelectInput from "../../components/reusable/SelectInput";
 import ReactQuill from "react-quill";
 import BarcodeScanner from "./BarcodeScanner";
+import FormHelperText from '@mui/material/FormHelperText'; // Import FormHelperText
 
 function AddProductRow({
   saveDone,
@@ -106,7 +107,7 @@ function AddProductRow({
     const realSalePrice = onSale && !saleTag ? getDiscountedPrice(saleType, price, saleValue) : price;
     const realSaleValue = onSale && !saleTag ? saleValue : 0;
     const realOnSale = onSale && !saleTag ? onSale : false;
-    const realSaleType = onSale && !saleTag ? saleType: "";
+    const realSaleType = onSale && !saleTag ? saleType : "";
 
     const docData = await addDoc(menuRef, {
       name,
@@ -143,7 +144,7 @@ function AddProductRow({
       alert("Name is a mandatory field. Please fill it before saving.");
       return;
     }
-  
+
     if (!quantity) {
       alert("quantity is a mandatory field. Please fill it before saving.");
       return;
@@ -207,7 +208,7 @@ function AddProductRow({
     let rowData = {
       name,
       description,
-      price,
+      price: Number(price),
       onSale,
       saleType,
       saleValue: onSale ? parseInt(saleValue) : 0,
@@ -223,7 +224,9 @@ function AddProductRow({
       realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, price, saleValue) : price,
       realSaleValue: onSale && !saleTag ? saleValue : 0,
       realOnSale: onSale && !saleTag ? onSale : false,
-      realSaleType: onSale && !saleTag ? saleType: "",
+      realSaleType: onSale && !saleTag ? saleType : "",
+      purchaseRate,
+      stockValue: parseInt(stockValue),
     };
     setProducts({ ...products, [index]: rowData });
   }, [
@@ -240,6 +243,8 @@ function AddProductRow({
     files,
     brandName,
     showProduct,
+    purchaseRate,
+    stockValue,
   ]);
 
   return (

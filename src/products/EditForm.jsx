@@ -153,6 +153,28 @@ export default function EditForm({ fid, closeEvent }) {
       Swal.fire("Error", "Quantity is required field.", "error");
       return;
     }
+    if (!price) {
+      Swal.fire("Error", "Price is a required field.", "error");
+      return;
+    }
+
+    if (!purchaseRate) {
+      Swal.fire("Error", "Purchase Rate is a required field.", "error");
+      return;
+    }
+
+    if (!stockValue) {
+      Swal.fire("Error", "Stock Value is a required field.", "error");
+      return;
+    }
+    if (onSale && (!saleValue || parseInt(saleValue, 10) <= 0)) {
+      Swal.fire(
+        "Failed!",
+        "Please enter Sale Value for the product on sale.",
+        "error"
+      );
+      return;
+    }
     const userDoc = doc(db, "Menu", fid.id);
     const newFields = {
       // id: doc.id,
@@ -201,6 +223,28 @@ export default function EditForm({ fid, closeEvent }) {
     }
     if (!quantity) {
       Swal.fire("Error", "Quantity is required field.", "error");
+      return;
+    }
+    if (!price) {
+      Swal.fire("Error", "Price is a required field.", "error");
+      return;
+    }
+
+    if (!purchaseRate) {
+      Swal.fire("Error", "Purchase Rate is a required field.", "error");
+      return;
+    }
+
+    if (!stockValue) {
+      Swal.fire("Error", "Stock Value is a required field.", "error");
+      return;
+    }
+    if (onSale && (!saleValue || parseInt(saleValue, 10) <= 0)) {
+      Swal.fire(
+        "Failed!",
+        "Please enter Sale Value for the product on sale.",
+        "error"
+      );
       return;
     }
     const userDoc = doc(db, "Menu", fid.id);

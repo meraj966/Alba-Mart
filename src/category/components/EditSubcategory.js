@@ -52,8 +52,13 @@ function EditSubcategory({ closeModal, subcategoryData, categoryId }) {
 
     const handleSave = async () => {
         try {
-            if (!editedSubcategoryName || !selectedCategory) {
-                console.error("Please fill in all required fields.");
+            if (!editedSubcategoryName.trim() || !selectedCategory) {
+                // Check if editedSubcategoryName is empty
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter subcategory name and ensure all fields are filled.',
+                });
                 return;
             }
 

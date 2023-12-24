@@ -98,6 +98,10 @@ function AddNewOffer({ closeModal, getOfferData }) {
   const handleSubmit = () => {
     if (!title) {
       Swal.fire("Validation Issue!", "Please add a Title", "error");
+    } else if (discount < 0) {
+      Swal.fire("Validation Issue!", "Discount value cannot be negative", "error");
+    } else if (!endDate) {
+      Swal.fire("Validation Issue!", "Please select an End Date", "error");
     } else {
       submitNewOffer();
     }
@@ -117,6 +121,13 @@ function AddNewOffer({ closeModal, getOfferData }) {
               onChange={(e) => setTitle(e.target.value)}
               label="Title"
               size="small"
+              inputProps={{ maxLength: 15 }}  // Set the maximum length for the title
+              onInput={(e) => {
+                e.preventDefault();
+                if (e.target.value.length <= 15) {
+                  setTitle(e.target.value);
+                }
+              }}
               sx={{ minWidth: "100%" }}
             />
           </Grid>
@@ -142,6 +153,13 @@ function AddNewOffer({ closeModal, getOfferData }) {
               onChange={(e) => setDescription(e.target.value)}
               label="Description"
               size="small"
+              inputProps={{ maxLength: 25 }}  // Set the maximum length for the description
+              onInput={(e) => {
+                e.preventDefault();
+                if (e.target.value.length <= 25) {
+                  setDescription(e.target.value);
+                }
+              }}
               sx={{ minWidth: "100%" }}
             />
           </Grid>
