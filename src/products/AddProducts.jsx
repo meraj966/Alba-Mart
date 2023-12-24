@@ -66,18 +66,40 @@ function AddProducts({ closeEvent }) {
     const files = Object.values(products).map((i) => i.files);
     console.log(products, files, "productssssssssss");
 
-    // Validate Name and Unit fields for each product
+    // Validate Name, Quantity, Price, Purchase Rate, and Stock Value fields for each product
     const invalidProducts = Object.values(products).filter(
-      (product) => !product.name || !product.quantity
+      (product) => !product.name || !product.quantity || !product.price || !product.purchaseRate || !product.stockValue
     );
 
     if (invalidProducts.length > 0) {
-      const missingFields = invalidProducts.map((product) =>
-        !product.name ? "Name" : "Quantity"
-      );
+      const missingFields = invalidProducts.map((product) => {
+        if (!product.name) return "Name";
+        if (!product.quantity) return "Quantity";
+        if (!product.price) return "Price";
+        if (!product.purchaseRate) return "Purchase Rate";
+        if (!product.stockValue) return "Stock Value";
+        return "";
+      });
+
+      const uniqueMissingFields = Array.from(new Set(missingFields.filter(Boolean)));
+
       Swal.fire(
         "Failed!",
-        `Please fill the mandatory fields (${missingFields.join(", ")}) for all products.`,
+        `Please fill the mandatory fields (${uniqueMissingFields.join(", ")}) for all products.`,
+        "error"
+      );
+      return;
+    }
+
+    // Validate Sale Value when onSale is true
+    const invalidSaleValueOnSale = Object.values(products).filter(
+      (product) => product.onSale && (!product.saleValue || parseInt(product.saleValue, 10) <= 0)
+    );
+
+    if (invalidSaleValueOnSale.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "Please enter Sale Value for all products on sale.",
         "error"
       );
       return;
@@ -97,16 +119,72 @@ function AddProducts({ closeEvent }) {
       return;
     }
 
+    // Check for negative Price values
+    const negativePriceProducts = Object.values(products).filter(
+      (product) => parseInt(product.price, 10) < 0
+    );
+
+    if (negativePriceProducts.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "MRP or Price can not be a negative number.",
+        "error"
+      );
+      return;
+    }
+
+    // Check for negative Purchase Rate values
+    const negativePurchaseProducts = Object.values(products).filter(
+      (product) => parseInt(product.purchaseRate, 10) < 0
+    );
+
+    if (negativePurchaseProducts.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "Purchase Rate can not be a negative number.",
+        "error"
+      );
+      return;
+    }
+
+    // Check for negative stock values
+    const negativeStockValueProducts = Object.values(products).filter(
+      (product) => parseInt(product.stockValue, 10) < 0
+    );
+
+    if (negativeStockValueProducts.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "Product Stock Value can not be a negative number.",
+        "error"
+      );
+      return;
+    }
+
+    // Check for negative sale values
+    const negativeSaleValueProducts = Object.values(products).filter(
+      (product) => parseInt(product.saleValue, 10) < 0
+    );
+
+    if (negativeSaleValueProducts.length > 0) {
+      Swal.fire(
+        "Failed!",
+        "Sale Value can not be a negative number.",
+        "error"
+      );
+      return;
+    }
+
     // Check if saleValue is greater than purchaseRate or price
     const invalidSaleValue = Object.values(products).filter(
-      (product) => parseInt(product.saleValue, 10) > parseInt(product.price, 10) ||
-        parseInt(product.saleValue, 10) > parseInt(product.purchaseRate, 10)
+      (product) => parseInt(product.saleValue, 10) >= parseInt(product.price, 10) ||
+        parseInt(product.saleValue, 10) >= parseInt(product.purchaseRate, 10)
     );
 
     if (invalidSaleValue.length > 0) {
       Swal.fire(
         "Failed!",
-        "Sale value cannot be greater than purchase rate or price for any product.",
+        "Sale value cannot be greater than or equal to purchase rate or price for any product.",
         "error"
       );
       return;

@@ -68,8 +68,13 @@ function AddNewSubcategory({ closeModal }) {
 
     const handleSave = async () => {
         try {
-            if (!subcategoryName || !selectedCategory || !selectedImage) {
-                console.error("Please fill in all required fields.");
+            if (!subcategoryName.trim() || !selectedCategory || !selectedImage) {
+                // Check if subcategoryName is empty
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter subcategory name and ensure all fields are filled.',
+                });
                 return;
             }
 

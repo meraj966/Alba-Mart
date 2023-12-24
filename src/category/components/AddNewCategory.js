@@ -66,6 +66,16 @@ function AddNewCategory({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Check if the category name is empty
+    if (!name.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please Enter Category Name',
+      });
+      return;
+    }
+
     if (!isEditMode) {
       // Check if category already exists in the database
       const categoryRef = doc(db, 'category', name);

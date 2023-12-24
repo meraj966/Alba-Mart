@@ -102,6 +102,20 @@ function EditOffer() {
   };
 
   const save = async () => {
+    if (!title) {
+      Swal.fire("Validation Issue!", "Please add a Title", "error");
+      return;
+    }
+
+    if (discount < 0) {
+      Swal.fire("Validation Issue!", "Discount value cannot be negative", "error");
+      return;
+    }
+
+    if (!endDate) {
+      Swal.fire("Validation Issue!", "Please select an End Date", "error");
+      return;
+    }
     try {
       const updateProductPromises = selectedProducts.map(async (product) => {
         if (product.isSelected) {
@@ -120,15 +134,15 @@ function EditOffer() {
         const prodDoc = doc(db, "Menu", product.id);
         return updateDoc(prodDoc, { ...product });
       });
-  
+
       await Promise.all(updateProductPromises);
-  
+
       const selectedProdIds = selectedProducts
         .filter((product) => product.isSelected)
         .map((product) => product.id);
-  
+
       const currentOfferDocRef = doc(db, "Offers", id);
-  
+
       await updateDoc(currentOfferDocRef, {
         title,
         bannerImage: uploadedImage || bannerImage,
@@ -139,7 +153,7 @@ function EditOffer() {
         endDate: formatDate(endDate),
         description: offerDescription,
       });
-  
+
       Swal.fire("Successful", "Updated Offer Details", "success");
       setOfferData({
         ...offerData,
@@ -151,7 +165,7 @@ function EditOffer() {
         endDate: formatDate(endDate),
         description: offerDescription,
       });
-  
+
       getProductData();
     } catch (error) {
       console.error("Error saving data: ", error);
@@ -176,10 +190,15 @@ function EditOffer() {
             id="title"
             name="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 15) {
+                setTitle(e.target.value);
+              }
+            }}
             label="Title"
             size="small"
             sx={{ width: "200px" }}
+            inputProps={{ maxLength: 15 }}
           />
           <Box sx={{ width: "16px" }} />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -250,10 +269,15 @@ function EditOffer() {
           id="description"
           name="description"
           value={offerDescription}
-          onChange={(e) => setOfferDescription(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length <= 25) {
+              setOfferDescription(e.target.value);
+            }
+          }}
           label="Description"
           size="small"
           sx={{ width: "80%" }}
+          inputProps={{ maxLength: 25 }}
         />
       </div>
       {(uploadedImage || bannerImage) && (
