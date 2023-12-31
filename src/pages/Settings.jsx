@@ -155,7 +155,7 @@ export default function Settings() {
   };
 
   const handleBrandNameSave = async () => {
-    if (!brandName.trim()) {
+    if (!brandName || !brandName.trim()) {
       Swal.fire("Error!", "Brand Name cannot be blank.", "error");
       return;
     }
