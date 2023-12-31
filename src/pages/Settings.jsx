@@ -17,6 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import { BRAND_NAME, CATEGORY, SUBCATEGORY } from "../Constants";
@@ -37,14 +38,15 @@ export default function Settings() {
   const [onSale, setOnSale] = useState(false);
   const [unit, setUnit] = useState(false);
   const [unitList, setUnitList] = useState([]);
-  const [brandName, setBrandName] = useState("");
   const [defaultBrandName, setDefaultBrandName] = useState("");
+  const [brandName, setBrandName] = useState(defaultBrandName);
   const [brandNameList, setBrandNameList] = useState([]);
   const [saleType, setSaleType] = useState("");
   const [saleTypeList, setSaleTypeList] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [editType, setEditType] = useState("");
   const [type, setType] = useState("edit");
+  const [selectedBrandForEdit, setSelectedBrandForEdit] = useState(defaultBrandName);
 
   const dataRef = collection(db, "Settings");
 
@@ -96,10 +98,11 @@ export default function Settings() {
     );
   };
 
-  const handleEditForm = (editType, type) => {
-    setSelectedBrandName(selectedBrandName); // Set the selected brand name for editing
+  const handleEditForm = (editType, type, selectedBrand) => {
+    setSelectedBrandForEdit(selectedBrand);
     setType(type);
     setEditType(editType);
+    setBrandName(selectedBrand);
     setEditOpen(!editOpen);
   };
 
@@ -114,17 +117,72 @@ export default function Settings() {
     setIsBulkAdd(false);
   };
 
+  const handleDeleteBrandName = (brandNameToDelete) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you really want to delete the brand name "${brandNameToDelete}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // User confirmed, proceed with deletion
+        deleteBrandName(brandNameToDelete);
+      }
+    });
+  };
+
+  const deleteBrandName = async (brandNameToDelete) => {
+    // Find the index of the brand name to delete
+    const indexToDelete = brandNameList.indexOf(brandNameToDelete);
+    if (indexToDelete !== -1) {
+      // Create a new array without the deleted brand name
+      const updatedBrandNameList = [
+        ...brandNameList.slice(0, indexToDelete),
+        ...brandNameList.slice(indexToDelete + 1),
+      ];
+
+      // Update the brand name list in Firestore
+      const settingsDoc = doc(db, "Settings", "UserSettings");
+      await updateDoc(settingsDoc, { brandNameList: updatedBrandNameList });
+
+      // Update local state and provide feedback to the user
+      setBrandNameList(updatedBrandNameList);
+      Swal.fire("Deleted!", `Brand name "${brandNameToDelete}" has been deleted.`, "success");
+    }
+  };
+
   const handleBrandNameSave = async () => {
+    if (!brandName.trim()) {
+      Swal.fire("Error!", "Brand Name cannot be blank.", "error");
+      return;
+    }
+
     const brandNames = brandName.split(",").map((i) => i.trim());
-    let brandNameList = settings[0]?.brandNameList
-      ? [...brandNames, ...settings[0]?.brandNameList]
-      : [...brandNames];
+    let updatedBrandNameList;
+
+    if (selectedBrandForEdit) {
+      // Update existing brand name
+      const index = brandNameList.indexOf(selectedBrandForEdit);
+      updatedBrandNameList = [...brandNameList];
+      if (index !== -1) {
+        updatedBrandNameList[index] = brandNames[0];
+      }
+    } else {
+      // Add new brand name
+      updatedBrandNameList = settings[0]?.brandNameList
+        ? [...brandNames, ...settings[0]?.brandNameList]
+        : [...brandNames];
+    }
+
     const settingsDoc = doc(db, "Settings", "UserSettings");
-    await updateDoc(settingsDoc, { brandNameList }).then(() => {
+    await updateDoc(settingsDoc, { brandNameList: updatedBrandNameList }).then(() => {
       getDataFromFirestore();
       Swal.fire(
         "Updated!",
-        "You have successfully added Brands to your list",
+        "You have successfully modified/added Brands to your list",
         "success"
       );
       setEditOpen(!editOpen);
@@ -143,12 +201,12 @@ export default function Settings() {
             // onClose={handleEditClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
-            // onClose={() => handleEditForm("", "edit")}
+          // onClose={() => handleEditForm("", "edit")}
           >
             <Box sx={BOX_STYLE} className="editForm">
               {editType === BRAND_NAME && (
                 <SettingsEditForm
-                  title={"Add Brand Name"}
+                  title={"Edit Brand Name"}
                   onClose={closeSettingsForm}
                   submitButtonText={"SAVE"}
                   onSave={handleBrandNameSave}
@@ -232,11 +290,21 @@ export default function Settings() {
               select
               sx={{ marginTop: "30px", minWidth: "100%" }}
             >
-              {brandNameList.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
+              {brandNameList
+                .slice()
+                .sort()
+                .map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      onClick={() => handleDeleteBrandName(option)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </MenuItem>
+                ))}
             </TextField>
           </Grid>
 
@@ -245,7 +313,7 @@ export default function Settings() {
             <Tooltip title="Edit Brand Name">
               <IconButton
                 aria-label="edit"
-                onClick={() => handleEditForm(BRAND_NAME, "edit")}
+                onClick={() => handleEditForm(BRAND_NAME, "edit", defaultBrandName)}
                 sx={{ marginTop: "30px" }}
               >
                 <EditIcon />
