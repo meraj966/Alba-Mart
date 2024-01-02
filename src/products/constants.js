@@ -39,7 +39,7 @@ export const getProductDataGridColumns = (
           src={params.value}
           alt="Product"
           style={{ maxWidth: "90px", maxHeight: "50px" }}
-          />
+        />
       ),
     },
 
@@ -167,7 +167,7 @@ export const getOrdersGridColumns = (
       headerName: "Order ID",
       flex: 1,
       valueFormatter: (params) => `AM-${params.value}`, // Add "AM-" before orderNumber
-    },    
+    },
     {
       field: "name",
       headerName: "Cust Name",
@@ -213,21 +213,21 @@ export const getOrdersGridColumns = (
           if (timePart) {
             // Extract only the hours and minutes
             const hoursMinutes = timePart.substr(0, 5); // This will give you "11:59"
-    
+
             // Convert 24-hour format to 12-hour format
             const [hours, minutes] = hoursMinutes.split(":");
             const period = parseInt(hours, 10) >= 12 ? "PM" : "AM";
             const formattedHours = (parseInt(hours, 10) % 12) || 12;
-    
+
             // Combine hours, minutes, and AM/PM
             const formattedTime = `${formattedHours}:${minutes} ${period}`;
-            
+
             return formattedTime;
           }
         }
         return "--";
       },
-    },    
+    },
     {
       field: "deliveryDate",
       headerName: "Delivery Date",
@@ -238,8 +238,27 @@ export const getOrdersGridColumns = (
       field: "status",
       headerName: "Status",
       flex: 1,
-      valueGetter: (data) =>
-        isEdit ? statusDropdown(data.id, data.row) : data.row?.orderStatus,
+      renderCell: (params) => (
+        <div
+          style={{
+            padding: "8px",
+            border: "1px solid",
+            borderRadius: "4px",
+            color:
+              params.row.orderStatus === "delivered"
+                ? "green"
+                : params.row.orderStatus === "canceled"
+                  ? "red"
+                  : params.row.orderStatus === "placed"
+                    ? "blue"
+                    : params.row.orderStatus === "processing"
+                      ? "orange"
+                      : "black",
+          }}
+        >
+          {isEdit ? statusDropdown(params.id, params.row) : params.row?.orderStatus}
+        </div>
+      ),
     },
     {
       headerName: "Delivery Boy",

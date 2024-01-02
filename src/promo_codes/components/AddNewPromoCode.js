@@ -55,6 +55,52 @@ function AddNewPromoCode({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Validate required fields
+    const requiredFields = [
+      { field: 'Promo Code', value: promoCode },
+      { field: 'Message', value: message },
+      { field: 'No. of Users', value: numUsers },
+      { field: 'Min Order Amount', value: minOrderAmount },
+      { field: 'Start Date', value: startDate },
+      { field: 'End Date', value: endDate },
+      { field: 'Discount', value: discount },
+      { field: 'Max Discount', value: maxDiscount },
+    ];
+
+    const unfilledField = requiredFields.find(field => !field.value);
+
+    if (unfilledField) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Please fill in the '${unfilledField.field}' field.`,
+      });
+      return;
+    }
+
+    // Additional validation for date fields
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+
+    if (startDateObj > endDateObj) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'End Date cannot be before Start Date.',
+      });
+      return;
+    }
+
+    // Additional validation for date fields
+    if (startDate === "dd-mm-yyyy" || endDate === "dd-mm-yyyy") {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please fill in both Start Date and End Date.',
+      });
+      return;
+    }
+
     if (!isEditMode) {
       // Check if promo code already exists in the database
       const promoCodeRef = doc(db, 'PromoCode', promoCode);
