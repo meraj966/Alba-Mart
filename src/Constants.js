@@ -5,39 +5,39 @@ export const PRODUCTS_LOW_STOCK = "PRODUCTS_LOW_STOCK";
 export const PRODUCTS_UNAVAILABLE = "PRODUCTS_UNAVAILABLE";
 export const ORDER_TYPE_DROPDOWN_VALUES = [
   {
-    label: "All Orders",
+    label: <span style={{ color: 'black' }}>All Orders</span>,
     value: "All Orders",
   },
   {
-    label: "Placed",
+    label: <span style={{ color: 'blue' }}>Placed</span>,
     value: "placed",
   },
   // {
-  //   label: "Received",
+  //   label: <span style={{ color: 'orange' }}>Received</span>,
   //   value: "Received",
   // },
   {
-    label: "Processing",
+    label: <span style={{ color: 'orange' }}>Processing</span>,
     value: "processing",
   },
   {
-    label: "Shipped",
+    label: <span style={{ color: 'purple' }}>Shipped</span>,
     value: "shipped",
   },
   // {
-  //   label: "Ready to Pickup",
+  //   label: <span style={{ color: 'red' }}>Ready to Pickup</span>,
   //   value: "Ready to Pickup",
   // },
   {
-    label: "Delivered",
+    label: <span style={{ color: 'green' }}>Delivered</span>,
     value: "delivered",
   },
   {
-    label: "Cancelled",
+    label: <span style={{ color: 'red' }}>Cancelled</span>,
     value: "canceled",
   },
   {
-    label: "Returned",
+    label: <span style={{ color: 'brown' }}>Returned</span>,
     value: "returned",
   },
 ];

@@ -5,11 +5,12 @@ import OrdersList from "../orders/OrdersList";
 import PageTemplate from "./reusable/PageTemplate";
 import Dropdown from "../components/reusable/Dropdown";
 import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
-import { collection, getDocs, onSnapshot, query, where, doc, updateDoc } from "@firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where, doc, updateDoc, getDoc } from "@firebase/firestore";
 import { db } from "../firebase-config";
 import UndoIcon from "@mui/icons-material/Undo";
 import { cloneDeep } from "lodash";
 import Swal from "sweetalert2";
+import ExcelJS from "exceljs/dist/exceljs.min.js";
 
 export default function Orders() {
   const [orderType, setOrderType] = useState("All Orders");
@@ -62,6 +63,91 @@ export default function Orders() {
     await getOrders();
   };
 
+  const getOrderDeliveryBoyName = async (deliveryBoyId) => {
+    if (!deliveryBoyId) {
+      return ""; // Return empty string if deliveryBoyId is not provided
+    }
+  
+    try {
+      console.log("Fetching delivery boy name for ID:", deliveryBoyId);
+  
+      // Fetch the delivery boy name based on the ID from the "DeliveryBoys" collection
+      const deliveryBoyDoc = await getDoc(doc(db, "DeliveryBoy", deliveryBoyId));
+      
+      if (deliveryBoyDoc.exists()) {
+        const deliveryBoyName = deliveryBoyDoc.data().name; // Assuming the name is a field in the "DeliveryBoys" collection
+        console.log("Delivery boy name found:", deliveryBoyName);
+        return deliveryBoyName;
+      } else {
+        console.log("Delivery boy document not found");
+        return ""; // Return empty string if the document does not exist
+      }
+    } catch (error) {
+      console.error("Error fetching delivery boy name:", error);
+      return ""; // Return empty string in case of an error
+    }
+  }; 
+
+  const exportToExcel = async () => {
+    // Create a new Excel workbook and add a worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Orders");
+
+    // Define columns for the worksheet
+    const columns = [
+      { header: "Order Id", key: "id" },
+      { header: "Customer Name", key: "custName" },
+      { header: "Customer Contact", key: "customerContact" },
+      { header: "Total Amount", key: "totalAmount" },
+      { header: "Payment Mode", key: "paymentMode" },
+      { header: "Order Date", key: "orderDate" },
+      { header: "Order Time", key: "orderTime" },
+      { header: "Delivery Date", key: "deliveryDate" },
+      { header: "Status", key: "status" },
+      { header: "Delivery Boy", key: "deliveryBoy" },
+    ];
+
+    // Add columns to the worksheet
+    worksheet.columns = columns;
+
+    const dataRows = filteredOrder ? filteredOrder : orders;
+
+    for (const order of dataRows) {
+      const deliveryBoyName = await getOrderDeliveryBoyName(order.deliveryBoy);
+
+      // Extracting only the date and time from orderDate
+      const formattedDate = new Date(order.orderDate).toLocaleDateString();
+      const formattedTime = new Date(order.orderDate).toLocaleTimeString();
+
+      worksheet.addRow({
+        id: "AM" + order.orderNumber,
+        custName: order.userName,
+        customerContact: order.userMoNo,
+        totalAmount: order.netPrice,
+        paymentMode: order.paymentType,
+        orderDate: formattedDate,
+        orderTime: formattedTime,
+        deliveryDate: order.deliveryDate,
+        status: order.orderStatus,
+        deliveryBoy: deliveryBoyName,
+      });
+    }
+    // Create a blob from the workbook
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+
+      // Create a link and trigger a click event to download the Excel file
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Orders.xlsx";
+      a.click();
+
+      // Release the object URL
+      URL.revokeObjectURL(url);
+    });
+  };
+
   const toolbar = () => (
     <div
       style={{
@@ -109,6 +195,7 @@ export default function Orders() {
         <Button
           onClick={() => handleClear()}
           style={{
+            marginRight: "5px",
             fontSize: "15px",
             color: "black",
             background: "#f44336",
@@ -116,6 +203,16 @@ export default function Orders() {
           }}
         >
           Clear
+        </Button>
+        <Button
+          onClick={() => exportToExcel()}
+          style={{
+            fontSize: "15px",
+            color: "white",
+            backgroundColor: "#4caf50",
+          }}
+        >
+          Export
         </Button>
       </div>
       <div style={{ float: "right" }}>
