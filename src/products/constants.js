@@ -261,6 +261,23 @@ export const getOrdersGridColumns = (
       ),
     },
     {
+      field: 'refunded',
+      headerName: 'Refund Status',
+      flex: 1,
+      renderCell: (params) => {
+        const refunded = params.value;
+  
+        const style = {
+          padding: '4px',
+          textAlign: 'center',
+          color: refunded ? 'green' : refunded === false ? 'red' : 'black',
+          border: refunded ? '1px solid green' : refunded === false ? '1px solid red' : 'none',
+        };
+  
+        return <div style={style}>{refunded ? 'Yes' : refunded === false ? 'No' : '-'}</div>;
+      },
+    },
+    {
       headerName: "Delivery Boy",
       flex: 1,
       valueGetter: ({ row }) =>

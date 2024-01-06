@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Grid,
@@ -19,7 +19,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "../../firebase-config";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, getDoc } from "firebase/firestore";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { uploadImages } from "../../firebase_utils";
@@ -28,7 +28,9 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [name, setName] = useState(isEditMode ? data.name : "");
   const [phoneNumber, SetPhoneNumber] = useState(isEditMode ? data.phoneNumber : "");
   const [alternateNumber, SetAlternateNumber] = useState(isEditMode ? data.alternateNumber : "");
-  const [joinDate, setJoinDate] = useState(dayjs(new Date()));
+  const [joinDate, setJoinDate] = useState(
+    isEditMode ? data.joinDate : "dd-mm-yyyy"
+  );
   const [address, setAddress] = useState(isEditMode ? data.address : "");
   const [dlnumber, setDlNumber] = useState(isEditMode ? data.dlnumber : "");
   const [percent, setPercent] = useState("");
@@ -46,22 +48,52 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
   const [deliveredOrder, setDeliveredOrder] = useState(0);
   const [claimedReward, setClaimedReward] = useState(isEditMode ? (data.claimedReward || []).join(', ') : '');
 
-
-
-  const formatDate = (obj) => {
-    return `${obj.date()}/${obj.month()}/${obj.year()}`;
+  const handleJoinDateChange = (event) => {
+    setJoinDate(event.target.value);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isEditMode) {
+        const docRef = doc(db, 'DeliveryBoy', data.id);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
+          const existingData = docSnapshot.data();
+          setName(existingData.name || "");
+          SetPhoneNumber(existingData.phoneNumber || "");
+          SetAlternateNumber(existingData.alternateNumber || "");
+
+          // Keep joinDate as a string in "DD/MM/YYYY" format
+          setJoinDate(existingData.joinDate || "dd-mm-yyyy");
+
+          setAddress(existingData.address || "");
+          setDlNumber(existingData.dlnumber || "");
+          setIsActive(existingData.isActive || false);
+          setIsAvailable(existingData.isAvailable || false);
+          setDeliveryBoyReward(existingData.deliveryBoyReward || 0);
+          setRejectedOrder(existingData.rejectedOrder || 0);
+          setTotalRewardEarns(existingData.totalRewardEarns || 0);
+          setCanceledOrder(existingData.canceledOrder || 0);
+          setDeliveredOrder(existingData.deliveredOrder || 0);
+          setClaimedReward((existingData.claimedReward || []).join(', ') || '');
+        }
+      }
+    };
+
+    fetchData();
+  }, [isEditMode, data.id]);
 
   const saveBoy = async (urls) => {
     const updateData = {
       name,
-      address: address,
-      dlnumber: dlnumber,
-      phoneNumber: phoneNumber,
-      alternateNumber: alternateNumber,
-      joinDate: formatDate(joinDate),
-      isActive: isActive,
-      isAvailable: isAvailable,
+      address,
+      dlnumber,
+      phoneNumber,
+      alternateNumber,
+      joinDate,  // Keep joinDate as a string in "DD/MM/YYYY" format
+      isActive,
+      isAvailable,
       deliveryBoyReward: parseInt(deliveryBoyReward),
       rejectedOrder: parseInt(rejectedOrder),
       totalRewardEarns: parseInt(totalRewardEarns),
@@ -130,9 +162,6 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
     setIsActive(!isActive);
   };
 
-  const handleToggleChangeAvailabel = () => {
-    setIsAvailable(!isAvailable);
-  };
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "90vh", overflow: "auto" }}>
@@ -196,13 +225,13 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
             />
           </Grid>
           <Grid item xs={4}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Joining Date"
-                value={joinDate}
-                onChange={(value) => setJoinDate(value)}
-              />
-            </LocalizationProvider>
+            <TextField
+              label="Join Date"
+              type="date"
+              value={joinDate}
+              onChange={handleJoinDateChange}
+              sx={{ mb: 2, display: "block" }}
+            />
           </Grid>
 
           <Grid item xs={12}>
@@ -265,31 +294,16 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="subtitle1" sx={{ ml: 1 }}>
-              Is Boy Available?
-            </Typography>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isAvailable}
-                  onChange={handleToggleChangeAvailabel}
-                  name="isAvailable"
-                />
-              }
-              label="Active/Deactive"
-            />
-          </Grid>
-          <Grid item xs={12}>
             <Divider sx={{ mt: 2, mb: 2 }} /> {/* Add the Divider */}
           </Grid>
           <Grid item xs={12}>
             <TextField
               error={false}
-              id="deliveryBoyReward" // Add the id for the new field
-              name="deliveryBoyReward" // Add the name for the new field
-              value={deliveryBoyReward} // Bind the value to the state
-              onChange={(e) => setDeliveryBoyReward(e.target.value)} // Update the state
-              label="Delivery Boy Reward" // Label for the new field
+              id="deliveryBoyReward"
+              name="deliveryBoyReward"
+              value={deliveryBoyReward}
+              onChange={(e) => setDeliveryBoyReward(e.target.value)}
+              label="Delivery Boy Reward"
               size="small"
               sx={{ mb: 2 }}
             />
