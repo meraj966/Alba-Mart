@@ -260,7 +260,7 @@ function OrderDetails() {
         </Grid>
 
         {/* Refund Form order*/}
-        {((order?.orderStatus === "canceled") || (order?.orderStatus === "delivered" && order?.deliveryComment === "One or more item missing from order corresponding amount will be refunded")) && (
+        {((order?.orderStatus === "canceled" && order?.paymentStatus === "| Amount will be refunded to original payment_method in 48 working hours") || (order?.orderStatus === "delivered" && order?.deliveryComment === "One or more item missing from order corresponding amount will be refunded")) && (
           <form onSubmit={handleRefundSubmit} style={{ marginBottom: "10px" }}>
             <Grid container spacing={2}>
               <Grid item xs={2}>
