@@ -76,12 +76,12 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
   const deliveryBoyDropdown = (index, order) => {
     if (
       (order.orderStatus === "placed" || order.orderStatus === "processing") &&
-      deliveryBoy.some((i) => i.isAvailable)
+      deliveryBoy.some((i) => i.isAvailable && i.isActive)
     ) {
       const availableDeliveryBoys = deliveryBoy
-        .filter((i) => i.isAvailable)
+        .filter((i) => i.isAvailable && i.isActive)
         .map((i) => ({ value: i.id, label: i.name }));
-  
+
       return (
         <Dropdown
           label="Delivery Boy"
@@ -99,27 +99,32 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
       );
     }
   };
-  
 
   const handleSave = async () => {
     const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as "YYYY-MM-DD"
-  
+
+    const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')} ${currentDate.toLocaleTimeString('en-US', { hour12: false })}.${currentDate.getMilliseconds().toString().padStart(6, '0')}`;
+
     updatedOrders.forEach(async (id) => {
+      const deliveryBoyDoc = await getDoc(doc(db, "DeliveryBoy", selectedDeliveryBoys[id]));
+      const deliveryBoyData = deliveryBoyDoc.data();
+      const deliveryBoyFCM = deliveryBoyData?.FCM || "";
+
       await updateDoc(doc(db, "Order", id), {
         ...orders.find((i) => i.id === id),
-        deliveryBoy: selectedDeliveryBoys[id], // Save the selected delivery boy ID
+        deliveryBoy: selectedDeliveryBoys[id],
+        deliveryBoyFCM,
         deliveryBoyResponse: "none",
         orderStatus: "processing",
         processingDate: formattedDate,
       });
     });
-  
+
     setIsEdit(false);
     setUpdatedOrders([]);
-    setSelectedDeliveryBoys({}); // Reset selected delivery boys state
+    setSelectedDeliveryBoys({});
     refreshOrders();
-  };  
+  };
 
   const sortedOrders = [...orders].sort((a, b) => {
     const dateA = new Date(a.orderDate)?.getTime() || 0;
@@ -155,9 +160,7 @@ function OrdersList({ orderData, isEdit, setIsEdit, refreshOrders }) {
                     <TableCell align="left">AM-{order.orderNumber}</TableCell>
                     <TableCell align="left">{user?.name}</TableCell>
                     <TableCell align="left">{user?.phoneNo}</TableCell>
-                    <TableCell align="left">
-                      {sum(map(Object.values(order.products), "amount"))}
-                    </TableCell>
+                    <TableCell align="left">{order.netPrice}</TableCell>
                     <TableCell align="left">
                       {order && order.orderDate ? order.orderDate.split(" ")[0] : ""}
                     </TableCell>

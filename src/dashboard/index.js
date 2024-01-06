@@ -112,7 +112,7 @@ export default function Dashboard() {
     );
 
     // Calculate the sum of totalRate for today's delivered orders
-    const todayEarnValue = sum(todayDeliveredOrders.map((i) => i.totalRate));
+    const todayEarnValue = sum(todayDeliveredOrders.map((i) => i.netPrice));
 
     setTodayEarn(todayEarnValue);
 
@@ -290,7 +290,7 @@ export default function Dashboard() {
             <Link underline="none">
               <DashboardCard
                 header="Today Sale"
-                value={sum(todayOrder.map((i) => i.totalRate))}
+                value={sum(todayOrder.map((i) => i.netPrice))}
               />
             </Link>
           </Grid>

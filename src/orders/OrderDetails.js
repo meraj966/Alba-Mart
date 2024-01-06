@@ -12,6 +12,27 @@ function OrderDetails() {
   const [user, setUser] = useState({});
   const [subTotal, setSubTotal] = useState(0);
   const [showResetStockButton, setShowResetStockButton] = useState(true); // State variable to control button visibility
+  const [refundComment, setRefundComment] = useState("");
+  const [refundedValue, setRefundedValue] = useState("yes");
+  const [isFormDisabled, setFormDisabled] = useState(false); // Added state to track form disabled state
+
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        const orderData = await getDoc(doc(db, "Order", id));
+        const order = orderData.data();
+
+        // Check the refunded field value and disable the form accordingly
+        if (order && order.refunded) {
+          setFormDisabled(true);
+        }
+      } catch (error) {
+        console.log("Error fetching order details:", error);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [id]);
 
   useEffect(() => {
     getOrderDetail();
@@ -64,6 +85,48 @@ function OrderDetails() {
       console.log("Error resetting stock:", error);
     }
   };
+
+  const handleRefundSubmit = async (event) => {
+    event.preventDefault();
+  
+    try {
+      let updateFields = {
+        refunded: refundedValue === "yes", // Storing a boolean value based on the radio button
+      };
+  
+      if (order?.orderStatus === "canceled") {
+        // For canceled orders, update paymentStatus
+        updateFields.paymentStatus = refundComment;
+      } else if (order?.orderStatus === "delivered" && order?.deliveryComment === "One or more item missing from order corresponding amount will be refunded") {
+        // For delivered orders with specific condition, update deliveryComment
+        updateFields.deliveryComment = refundComment;
+      }
+  
+      // Update the order in the database with the appropriate fields
+      await updateDoc(doc(db, "Order", id), updateFields);
+  
+      // Display SweetAlert confirmation
+      Swal.fire({
+        icon: "success",
+        title: "Form Submitted!",
+        text: "Refund information has been successfully submitted.",
+      });
+  
+      // Update the state to indicate form submission
+      setFormDisabled(true);
+  
+      console.log("Order updated successfully with refund comment and refunded value.");
+    } catch (error) {
+      console.error("Error updating order:", error);
+  
+      // Display SweetAlert error message
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "There was an error while updating the order. Please try again.",
+      });
+    }
+  };  
 
   return (
     <PageTemplate
@@ -144,10 +207,113 @@ function OrderDetails() {
           </Grid>
         )}
         {order?.orderStatus === "canceled" && (
-          <Grid item xs={2}>
+          <Grid item xs={4}>
             {order?.cancelReason}
           </Grid>
         )}
+        {order?.orderStatus === "canceled" && (
+          <Grid item xs={2}>
+            Refund Comment:
+          </Grid>
+        )}
+        {order?.orderStatus === "canceled" && (
+          <Grid item xs={4}>
+            {order?.paymentStatus}
+          </Grid>
+        )}
+        {(order?.orderStatus === "canceled") || (order?.orderStatus === "delivered" && order?.refunded === true) && (
+          <Grid item xs={2}>
+            Refund ?:
+          </Grid>
+        )}
+        {(order?.orderStatus === "canceled") || (order?.orderStatus === "delivered" && order?.refunded === true) && (
+          <Grid item xs={4}>
+            {order?.refunded ? 'Yes' : 'No'}
+          </Grid>
+        )}
+        {order?.orderStatus === "delivered" && (
+          <>
+            <Grid item xs={2}>
+              Delivery Comment:
+            </Grid>
+            <Grid item xs={4}>
+              {order?.deliveryComment}
+            </Grid>
+          </>
+        )}
+        <Grid item xs={2}>
+          Transaction ID:
+        </Grid>
+        <Grid item xs={4}>
+          {order?.orderId}
+        </Grid>
+
+        <Grid item xs={2}>
+          Reference Transaction ID:
+        </Grid>
+        <Grid item xs={2}>
+          {order?.TransactionId}
+        </Grid>
+
+        <Grid item xs={20}>
+          <hr></hr>
+        </Grid>
+
+        {/* Refund Form order*/}
+        {((order?.orderStatus === "canceled") || (order?.orderStatus === "delivered" && order?.deliveryComment === "One or more item missing from order corresponding amount will be refunded")) && (
+          <form onSubmit={handleRefundSubmit} style={{ marginBottom: "10px" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={2}>
+                <label>Refund Comment:</label>
+              </Grid>
+              <Grid item xs={8}>
+                <input
+                  type="text"
+                  placeholder="Refund Comment"
+                  value={refundComment}
+                  onChange={(e) => setRefundComment(e.target.value)}
+                  style={{ width: "100%", padding: "8px" }}
+                  disabled={isFormDisabled}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <label>Refunded ?</label>
+              </Grid>
+              <Grid item xs={4} style={{ display: "flex", alignItems: "center" }}>
+                <label style={{ marginRight: "10px" }}>
+                  <input
+                    type="radio"
+                    value="yes"
+                    checked={refundedValue === "yes"}
+                    onChange={() => setRefundedValue("yes")}
+                    disabled={isFormDisabled}
+                  />
+                  Yes
+                </label>
+              </Grid>
+              <Grid item xs={12}>
+                <button
+                  type="submit"
+                  disabled={isFormDisabled}
+                  style={{
+                    backgroundColor: "#4CAF50", // Green color
+                    color: "white",
+                    padding: "10px 15px",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Submit
+                </button>
+              </Grid>
+              <Grid item xs={20}>
+                <hr></hr>
+              </Grid>
+            </Grid>
+          </form>
+        )}
+
         <Card sx={{ width: "100%", marginTop: "10px" }}>
           <TableContainer>
             <Table>
