@@ -56,77 +56,108 @@ function OrderDetails() {
 
   const isReturnOrder = order.cancelComment === "return";
   const handleResetStock = async () => {
-    try {
-      for (const productId of Object.keys(order.products || {})) {
-        const product = order.products[productId];
-        const menuDocRef = doc(db, "Menu", productId);
-        const menuDocSnapshot = await getDoc(menuDocRef);
-        const currentStockValue = parseInt(menuDocSnapshot.data().stockValue || "0", 10);
-        const newStockValue = currentStockValue + product.quantity;
-        await updateDoc(menuDocRef, {
-          stockValue: newStockValue
+    // Display SweetAlert confirmation
+    const confirmation = await Swal.fire({
+      icon: 'warning',
+      title: 'Are you sure?',
+      text: 'Resetting stock will update the stock values. Do you really want to proceed?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, reset stock!'
+    });
+
+    if (confirmation.isConfirmed) {
+      try {
+        for (const productId of Object.keys(order.products || {})) {
+          const product = order.products[productId];
+          const menuDocRef = doc(db, "Menu", productId);
+          const menuDocSnapshot = await getDoc(menuDocRef);
+          const currentStockValue = parseInt(menuDocSnapshot.data().stockValue || "0", 10);
+          const newStockValue = currentStockValue + product.quantity;
+          await updateDoc(menuDocRef, {
+            stockValue: newStockValue
+          });
+        }
+
+        await updateDoc(doc(db, "Order", id), {
+          cancelComment: "returned"
+        });
+
+        // Display SweetAlert success message
+        Swal.fire({
+          icon: "success",
+          title: "Sale Value Updated",
+          text: "The stock values have been updated successfully.",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setShowResetStockButton(false);
+          }
+        });
+      } catch (error) {
+        console.log("Error resetting stock:", error);
+
+        // Display SweetAlert error message
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "There was an error while resetting the stock. Please try again.",
         });
       }
-
-      await updateDoc(doc(db, "Order", id), {
-        cancelComment: "returned"
-      });
-
-      Swal.fire({
-        icon: "success",
-        title: "Sale Value Updated",
-        text: "The stock values have been updated successfully.",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setShowResetStockButton(false);
-        }
-      });
-    } catch (error) {
-      console.log("Error resetting stock:", error);
     }
   };
 
   const handleRefundSubmit = async (event) => {
     event.preventDefault();
-  
-    try {
-      let updateFields = {
-        refunded: refundedValue === "yes", // Storing a boolean value based on the radio button
-      };
-  
-      if (order?.orderStatus === "canceled") {
-        // For canceled orders, update paymentStatus
-        updateFields.paymentStatus = refundComment;
-      } else if (order?.orderStatus === "delivered" && order?.deliveryComment === "One or more item missing from order corresponding amount will be refunded") {
-        // For delivered orders with specific condition, update deliveryComment
-        updateFields.deliveryComment = refundComment;
+
+    // Display SweetAlert confirmation
+    const confirmation = await Swal.fire({
+      icon: 'warning',
+      title: 'Are you sure?',
+      text: 'Do you really want to submit the refund information?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, submit it!'
+    });
+
+    if (confirmation.isConfirmed) {
+      try {
+        let updateFields = {
+          refunded: refundedValue === "yes",
+        };
+
+        if (order?.orderStatus === "canceled") {
+          updateFields.paymentStatus = refundComment;
+        } else if (order?.orderStatus === "delivered" && order?.deliveryComment === "One or more item missing from order corresponding amount will be refunded") {
+          updateFields.deliveryComment = refundComment;
+        }
+
+        await updateDoc(doc(db, "Order", id), updateFields);
+
+        // Display SweetAlert success message
+        Swal.fire({
+          icon: "success",
+          title: "Form Submitted!",
+          text: "Refund information has been successfully submitted.",
+        });
+
+        // Update the state to indicate form submission
+        setFormDisabled(true);
+
+        console.log("Order updated successfully with refund comment and refunded value.");
+      } catch (error) {
+        console.error("Error updating order:", error);
+
+        // Display SweetAlert error message
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "There was an error while updating the order. Please try again.",
+        });
       }
-  
-      // Update the order in the database with the appropriate fields
-      await updateDoc(doc(db, "Order", id), updateFields);
-  
-      // Display SweetAlert confirmation
-      Swal.fire({
-        icon: "success",
-        title: "Form Submitted!",
-        text: "Refund information has been successfully submitted.",
-      });
-  
-      // Update the state to indicate form submission
-      setFormDisabled(true);
-  
-      console.log("Order updated successfully with refund comment and refunded value.");
-    } catch (error) {
-      console.error("Error updating order:", error);
-  
-      // Display SweetAlert error message
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "There was an error while updating the order. Please try again.",
-      });
     }
-  };  
+  };
 
   return (
     <PageTemplate
@@ -150,8 +181,14 @@ function OrderDetails() {
         <Grid item xs={2}>
           Order ID:
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={4}>
           {"AM-" + order?.orderNumber}
+        </Grid>
+        <Grid item xs={2}>
+          Payment Mode:
+        </Grid>
+        <Grid item xs={4}>
+          {order?.paymentType}
         </Grid>
         <Grid item xs={2}>
           Customer Name:
@@ -267,12 +304,11 @@ function OrderDetails() {
                 <label>Refund Comment:</label>
               </Grid>
               <Grid item xs={8}>
-                <input
-                  type="text"
+                <textarea
                   placeholder="Refund Comment"
                   value={refundComment}
                   onChange={(e) => setRefundComment(e.target.value)}
-                  style={{ width: "100%", padding: "8px" }}
+                  style={{ width: "100%", height: "80px", padding: "8px" }}
                   disabled={isFormDisabled}
                 />
               </Grid>
