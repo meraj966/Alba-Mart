@@ -181,6 +181,12 @@ export const getOrdersGridColumns = (
       valueGetter: ({ row }) => getUserByOrder(row)?.phoneNo,
     },
     {
+      field: "primaryNumber",
+      headerName: "Primary Number",
+      flex: 1,
+      valueGetter: ({ row }) => getUserByOrder(row)?.primaryContact || "-",
+    },
+    {
       field: "netPrice",
       headerName: "Total Amount",
       flex: 1,
