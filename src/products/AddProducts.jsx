@@ -68,7 +68,7 @@ function AddProducts({ closeEvent }) {
 
     // Validate Name, Quantity, Price, Purchase Rate, and Stock Value fields for each product
     const invalidProducts = Object.values(products).filter(
-      (product) => !product.name || !product.quantity || !product.price || !product.purchaseRate || !product.stockValue
+      (product) => !product.name || !product.quantity || !product.price || !product.purchaseRate || !product.stockValue || !product.category || !product.subCategory
     );
 
     if (invalidProducts.length > 0) {
@@ -78,6 +78,8 @@ function AddProducts({ closeEvent }) {
         if (!product.price) return "Price";
         if (!product.purchaseRate) return "Purchase Rate";
         if (!product.stockValue) return "Stock Value";
+        if (!product.category) return "Category";
+        if (!product.subCategory) return "Sub Category";
         return "";
       });
 

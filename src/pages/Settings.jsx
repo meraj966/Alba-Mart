@@ -9,6 +9,7 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
@@ -50,7 +51,7 @@ export default function Settings() {
 
   const dataRef = collection(db, "Settings");
 
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState([]);
 
   const [isBulkAdd, setIsBulkAdd] = useState(false);
   const [selectedBrandName, setSelectedBrandName] = useState("");
@@ -58,7 +59,7 @@ export default function Settings() {
   const [file, setFile] = useState(null);
 
   useEffect(() => {
-    if (settings) {
+    if (settings && settings.length > 0) {
       console.log("SETTINGS=>", settings);
       const data = settings[0];
       setOnSale(data.onSale);

@@ -286,6 +286,30 @@ export default function EditForm({ fid, closeEvent }) {
         Swal.fire("Failed!", "Unit quantity cannot be a negative number.", "error");
         return;
       }
+
+      // Check for negative Price values
+      if (parseInt(price, 10) < 0) {
+        Swal.fire("Failed!", "MRP or Price cannot be a negative number.", "error");
+        return;
+      }
+
+      // Check for negative Purchase Rate values
+      if (parseInt(purchaseRate, 10) < 0) {
+        Swal.fire("Failed!", "Purchase Rate cannot be a negative number.", "error");
+        return;
+      }
+
+      // Check for negative stock values
+      if (parseInt(stockValue, 10) < 0) {
+        Swal.fire("Failed!", "Product Stock Value cannot be a negative number.", "error");
+        return;
+      }
+
+      // Check for negative sale values when onSale is true
+      if (onSale && parseInt(saleValue, 10) < 0) {
+        Swal.fire("Failed!", "Sale Value cannot be a negative number.", "error");
+        return;
+      }
       createDoc();
       //  else {
       //   // const name = new Date().getTime() + file.name
