@@ -54,7 +54,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
 
   useEffect(() => {
     const fetchData = async () => {
-      if (isEditMode) {
+      if (isEditMode && data?.id) {
         const docRef = doc(db, 'DeliveryBoy', data.id);
         const docSnapshot = await getDoc(docRef);
 
@@ -82,7 +82,7 @@ function AddNewDeliveryBoy({ closeModal, isEditMode, refreshDeliveryBoys, data }
     };
 
     fetchData();
-  }, [isEditMode, data.id]);
+  }, [isEditMode, data?.id]);
 
   const saveBoy = async (urls) => {
     const updateData = {
