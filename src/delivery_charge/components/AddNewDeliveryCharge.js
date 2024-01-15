@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { db } from "../../firebase-config";
-import { addDoc, collection, doc, updateDoc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess, data }) {
   const [charge, setCharge] = useState(isEditMode ? data.charge : "");
@@ -23,33 +23,43 @@ function AddNewDeliveryCharge({ closeModal, isEditMode, refreshDeliveryChargess,
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
+    const updatedData = {
+      charge: Number(charge),
+      maximumValue: Number(maximumValue),
+      minimumValue: Number(minimumValue),
+      fastDelivery,
+      activeNow,
+      pincode: Number(pincode)
+    };
+  
     if (isEditMode) {
-      await updateDoc(doc(db, 'DeliveryCharge', data.id), {
-        charge: Number(charge),
-        pincode: Number(pincode),
-        maximumValue: Number(maximumValue),
-        minimumValue: Number(minimumValue),
-        fastDelivery,
-        activeNow,
-      }).then(() => {
-        Swal.fire("Submitted!", "New Delivery Charges has been added", "success");
-      })
+      // Check if pincode has been modified
+      if (pincode !== data.pincode) {
+        // Delete the existing document with the old pincode
+        await deleteDoc(doc(db, 'DeliveryCharge', data.id));
+        
+        // Set the new document with the updated pincode
+        await setDoc(doc(collection(db, "DeliveryCharge"), pincode), updatedData);
+      } else {
+        // Update the existing document with the same pincode
+        await updateDoc(doc(db, 'DeliveryCharge', data.id), updatedData);
+      }
+  
+      Swal.fire("Submitted!", "Delivery Charges have been updated", "success");
     } else {
+      // Add new document with the specified pincode
       await setDoc(doc(collection(db, "DeliveryCharge"), pincode), {
-        charge: Number(charge),
         pincode: Number(pincode),
-        maximumValue: Number(maximumValue),
-        minimumValue: Number(minimumValue),
-        fastDelivery,
-        activeNow,
-      }).then(() => {
-        Swal.fire("Submitted!", "New Delivery Charges has been added", "success");
+        ...updatedData,
       });
+  
+      Swal.fire("Submitted!", "New Delivery Charges have been added", "success");
     }
+  
     refreshDeliveryChargess();
     closeModal();
-  };
+  };  
 
   return (
     <Card sx={{ marginTop: "25px", border: "1px solid", maxHeight: "80vh", overflow: "auto" }}>
