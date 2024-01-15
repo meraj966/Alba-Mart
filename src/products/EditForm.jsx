@@ -197,7 +197,7 @@ export default function EditForm({ fid, closeEvent }) {
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0),
       saleTag,
       realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price),
-      realSaleValue: onSale && !saleTag ? saleValue : 0,
+      realSaleValue: onSale && !saleTag ? parseInt(saleValue) : 0,
       realOnSale: onSale && !saleTag ? onSale : false,
       realSaleType: onSale && !saleTag ? saleType : "",
     };
@@ -270,7 +270,7 @@ export default function EditForm({ fid, closeEvent }) {
       salePrice: getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0),
       saleTag,
       realSalePrice: onSale && !saleTag ? getDiscountedPrice(saleType, Number(price), onSale ? saleValue : 0) : Number(price),
-      realSaleValue: onSale && !saleTag ? saleValue : 0,
+      realSaleValue: onSale && !saleTag ? parseInt(saleValue) : 0,
       realOnSale: onSale && !saleTag ? onSale : false,
       realSaleType: onSale && !saleTag ? saleType : "",
     };
