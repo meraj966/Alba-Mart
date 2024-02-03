@@ -280,6 +280,16 @@ export default function EditForm({ fid, closeEvent }) {
     Swal.fire("Submitted!", "Your file has been updated.", "success");
   };
 
+  // Function to check if barcode already exists in the Menu collection
+  const checkBarcodeExists = async (barcode) => {
+    if (!barcode) {
+      return false; // If barcode is empty, consider it does not exist
+    }
+
+    const menuDocs = await getDocs(empCollectionRef);
+    return menuDocs.docs.some((doc) => doc.data().barcode === barcode && doc.id !== fid.id);
+  };
+
   const handleUpload = async () => {
     if (!file) {
       if (parseInt(quantity, 10) < 0) {
@@ -310,6 +320,14 @@ export default function EditForm({ fid, closeEvent }) {
         Swal.fire("Failed!", "Sale Value cannot be a negative number.", "error");
         return;
       }
+      // Check if barcode already exists in the Menu collection
+      const barcodeExists = await checkBarcodeExists(barcode);
+
+      if (barcodeExists) {
+        Swal.fire("Failed!", "Barcode already exists in another product.", "error");
+        return;
+      }
+
       createDoc();
       //  else {
       //   // const name = new Date().getTime() + file.name
