@@ -64,6 +64,36 @@ function AddProductRow({
 
   const [barcode, setBarcode] = useState(""); // State to store scanned barcode
   const [lastGeneratedBarcode, setLastGeneratedBarcode] = useState(0);
+  const [barcodeError, setBarcodeError] = useState("");
+  const [isSaveDisabled, setIsSaveDisabled] = useState(false);
+
+  const checkExistingBarcode = async (enteredBarcode) => {
+    const menuRef = collection(db, "Menu");
+    const barcodeQuery = query(menuRef, where("barcode", "==", enteredBarcode));
+
+    try {
+      const querySnapshot = await getDocs(barcodeQuery);
+      return querySnapshot.size > 0;
+    } catch (error) {
+      console.error("Error checking existing barcode: ", error);
+      return false;
+    }
+  };
+
+  const handleBarcodeChange = async (enteredBarcode) => {
+    setBarcodeError(""); // Reset error when barcode changes
+    setBarcode(enteredBarcode);
+
+    // Check if the entered barcode already exists
+    const exists = await checkExistingBarcode(enteredBarcode);
+    if (exists) {
+      // Barcode already exists, handle this case, e.g., show an error message
+      setBarcodeError("This is an existing Barcode. Please enter a unique barcode.");
+      setIsSaveDisabled(true); // Disable save button
+    } else {
+      setIsSaveDisabled(false); // Enable save button if barcode is unique
+    }
+  };
 
   const handleBarcodeScanned = (scannedBarcode) => {
     setBarcode(scannedBarcode);
@@ -380,14 +410,17 @@ function AddProductRow({
         </Grid>
         <Grid item xs={3}>
           <TextField
-            error={false}
+            error={Boolean(barcodeError)}
             id="barcode"
             label="Barcode"
             value={barcode}
-            onChange={(e) => setBarcode(e.target.value)}
+            onChange={(e) => handleBarcodeChange(e.target.value)}
             size="small"
             sx={{ minWidth: "100%" }}
           />
+          {barcodeError && (
+            <FormHelperText error>{barcodeError}</FormHelperText>
+          )}
           {!barcode && (
             <Button
               variant="contained"

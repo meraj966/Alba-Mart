@@ -235,11 +235,13 @@ export default function Products() {
       { header: "Name", key: "name", width: 20 },
       { header: "Category", key: "category", width: 20 },
       { header: "SubCategory", key: "subCategory", width: 20 },
+      { header: "Quantity", key: "quantity", width: 20 },
       { header: "MRP", key: "price", width: 15 },
       { header: "SalePrice", key: "salePrice", width: 15 },
       { header: "Purchase Rate", key: "purchaseRate", width: 15 },
       { header: "Stock Value", key: "stockValue", width: 15 },
       { header: "Barcode", key: "barcode", width: 15 },
+      { header: "MaxLimit", key: "maxLimit", width: 15 },
     ];
 
     // Add the column headers to the worksheet
@@ -251,11 +253,13 @@ export default function Products() {
         name: row.name,
         category: row.category,
         subCategory: row.subCategory,
+        quantity: row.quantity + ' ' + row.measureUnit,
         price: row.price,
         salePrice: row.salePrice,
         purchaseRate: row.purchaseRate,
         stockValue: row.stockValue,
         barcode: row.barcode,
+        maxLimit: row.maxLimit,
       });
     });
 

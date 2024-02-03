@@ -11,11 +11,13 @@ import {
   Select,
   InputLabel,
   FormControl,
+  InputAdornment,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { getDocs, collection, doc, updateDoc, addDoc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import { uploadImages } from "../../firebase_utils";
+import SearchIcon from "@mui/icons-material/Search";
 
 function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
   const [body, setBody] = useState(isEditMode ? data.body : "");
@@ -29,9 +31,23 @@ function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
 
   const [productsData, setProductsData] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
+  const [filteredProducts, setFilteredProducts] = useState([]); // New state for filtered products
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    // Filter products when search term changes
+    const filtered = productsData.filter((product) =>
+      `${product.name} - ${product.quantity} ${product.measureUnit}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchTerm, productsData]);
+
 
   const fetchProducts = async () => {
     const productsCollectionRef = collection(db, "Menu");
@@ -159,13 +175,31 @@ function AddMessage({ closeModal, isEditMode, refreshMessages, data }) {
                     name: "product",
                     id: "product",
                   }}
+                  // Open the dropdown menu by setting the MenuProps prop
+                  MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
                 >
-                  {productsData.map((product) => (
+                  {/* Use filteredProducts instead of productsData */}
+                  {filteredProducts.map((product) => (
                     <MenuItem key={product.id} value={product.id}>
-                      {product.name}
+                      {`${product.name} - ${product.quantity} ${product.measureUnit}`}
                     </MenuItem>
                   ))}
                 </Select>
+                {/* Search input for filtering products */}
+                <TextField
+                  id="search-product"
+                  label="Search Product"
+                  size="small"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               </FormControl>
             </Grid>
           )}
