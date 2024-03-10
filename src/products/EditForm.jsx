@@ -324,8 +324,21 @@ export default function EditForm({ fid, closeEvent }) {
       const barcodeExists = await checkBarcodeExists(barcode);
 
       if (barcodeExists) {
-        Swal.fire("Failed!", "Barcode already exists in another product.", "error");
-        return;
+        // Prompt user with option to proceed or cancel
+        Swal.fire({
+          title: 'Duplicate Barcode',
+          text: 'Barcode already exists in another product. Do you want to continue with this duplicate?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Proceed',
+          cancelButtonText: 'Cancel',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // If user chooses to proceed, call createDoc() function
+            createDoc();
+          }
+        });
+        return; // Return to exit function execution
       }
 
       createDoc();
