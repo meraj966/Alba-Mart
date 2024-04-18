@@ -63,7 +63,7 @@ export default function Register() {
   const getConfigData = async () => {
     const configData = await getDocs(configRef);
     const data = configData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    setConfigData(data);
+    setConfigData(data[0]);
   };
 
   useEffect(() => {
