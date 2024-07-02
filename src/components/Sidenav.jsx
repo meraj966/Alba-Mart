@@ -25,6 +25,7 @@ import SendIcon from '@mui/icons-material/Send';
 import PolicyIcon from '@mui/icons-material/Policy';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import CategoryIcon from '@mui/icons-material/Category';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 
 const drawerWidth = 240;
 
@@ -129,6 +130,11 @@ export default function Sidenav() {
           label={"Products"}
           Icon={<ShoppingCartIcon />}
           navigationUrl={"/products"}
+        />
+        <SideNavListItem
+          label={"Varient"}
+          Icon={<AutoAwesomeMotionIcon />}
+          navigationUrl={"/varient"}
         />
         <SideNavListItem
           label={"Users"}
