@@ -26,6 +26,8 @@ import CategoryDetails from "./category";
 import ContactDetails from "./contact_us";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 import OrderPreview from "./orders/OrderPreview"; // Import the OrderPreview component
+import Variant from "./varient";
+import VariantDetails from "./varient/components/VariantDetails";
 
 export default function App() {
   const protectedElement = (element) => (
@@ -73,9 +75,26 @@ export default function App() {
             exact
             element={protectedElement(<Dashboard />)}
           />
-          <Route path="/products" exact element={protectedElement(<Products />)} />
-          <Route path="/users" exact element={protectedElement(<Users />)} />
-          <Route path="/orders" exact element={protectedElement(<Orders />)} />
+          <Route 
+            path="/products"
+            exact
+            element={protectedElement(<Products />)}
+          />
+          <Route
+            path="/varient"
+            exact
+            element={protectedElement(<Variant />)}
+          />
+          <Route
+            path="/users"
+            exact
+            element={protectedElement(<Users />)}
+          />
+          <Route
+            path="/orders"
+            exact
+            element={protectedElement(<Orders />)}
+          />
           <Route
             path="/settings"
             exact
@@ -125,6 +144,11 @@ export default function App() {
             path="/deliveryboy-details/:id"
             exact
             element={protectedElement(<DeliveryBoyDetails />)}
+          />
+          <Route
+            path="/variant-details/:id"
+            exact
+            element={protectedElement(<VariantDetails />)}
           />
           <Route
             path="/subCategory/:id"
