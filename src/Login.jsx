@@ -79,6 +79,7 @@ export default function Login() {
         window.localStorage.setItem("token", user.accessToken);
         window.localStorage.setItem("userId", user.uid);
         window.localStorage.setItem("email", user.email);
+        console.log(user, "USERRRRRRRRRRRR")
         navigate("/dashboard");
       })
       .catch((error) => {

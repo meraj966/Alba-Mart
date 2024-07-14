@@ -26,6 +26,7 @@ import CategoryDetails from "./category";
 import ContactDetails from "./contact_us";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 import OrderPreview from "./orders/OrderPreview"; // Import the OrderPreview component
+import Admin from "./admin/Admin";
 
 export default function App() {
   const protectedElement = (element) => (
@@ -37,6 +38,7 @@ export default function App() {
         <Routes>
           <Route path="/" exact element={<Login />} />
           <Route path="/register" exact element={<Register />} />
+          <Route path="/admin" exact element={protectedElement(<Admin />)} />
           <Route
             path="/reset-password"
             exact
