@@ -1,4 +1,3 @@
-import Sidenav from "../components/Sidenav";
 import { Box, Typography } from "@mui/material";
 import "../Dash.css";
 import { db } from "../firebase-config";

@@ -1,14 +1,28 @@
 import React from "react";
+import { useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { AppContext } from "../context";
+import {
+  generalAccessURLS,
+  isAdminUser,
+  userHasViewAccessToRoute,
+} from "./utils";
+import AccessDenied from "../components/reusable/AccessDenied";
+import { ADMIN_URL } from "../urls";
 
 const ProtectedRoute = ({ children }) => {
+  const { userInfo, accessKeyMapping } = useContext(AppContext);
   const user = window.localStorage.getItem("token");
   let location = useLocation();
-  console.log("is User logged in =>", user);
+  const hasAccess = generalAccessURLS.includes(location.pathname)
+    ? true
+    : location.pathname != ADMIN_URL
+    ? userHasViewAccessToRoute(userInfo, accessKeyMapping, location.pathname)
+    : isAdminUser(userInfo);
   if (!user) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
-  return children;
+  return hasAccess ? children : <AccessDenied />;
 };
 
 export default ProtectedRoute;

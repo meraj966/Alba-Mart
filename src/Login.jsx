@@ -24,6 +24,7 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase-config";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { createLoggedInUserProfile } from "./api";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -79,6 +80,7 @@ export default function Login() {
         window.localStorage.setItem("token", user.accessToken);
         window.localStorage.setItem("userId", user.uid);
         window.localStorage.setItem("email", user.email);
+        createLoggedInUserProfile(user)
         navigate("/dashboard");
       })
       .catch((error) => {

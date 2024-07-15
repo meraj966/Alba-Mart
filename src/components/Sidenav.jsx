@@ -21,11 +21,16 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import SendIcon from '@mui/icons-material/Send';
-import PolicyIcon from '@mui/icons-material/Policy';
-import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
-import CategoryIcon from '@mui/icons-material/Category';
-import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import SendIcon from "@mui/icons-material/Send";
+import PolicyIcon from "@mui/icons-material/Policy";
+import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
+import CategoryIcon from "@mui/icons-material/Category";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import * as URLS from "../urls";
+import { useContext } from "react";
+import { AppContext } from "../context";
+import { isAdminUser, userHasViewAccessToRoute } from "../authentication/utils";
 
 const drawerWidth = 240;
 
@@ -78,44 +83,43 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Sidenav() {
   const navigate = useNavigate();
+  const { userInfo, accessKeyMapping } = useContext(AppContext);
   const open = useAppStore((state) => state.dopen);
 
   const SideNavListItem = ({
     navigationUrl,
     Icon,
     label,
+    hasAccess,
     onClick = () => navigate(navigationUrl),
-  }) => (
-    <ListItem
-      disablePadding
-      sx={{ display: "block" }}
-      onClick={onClick}
-    >
-      <ListItemButton
-        sx={{
-          minHeight: 48,
-          justifyContent: open ? "initial" : "center",
-          px: 2.5,
-        }}
-      >
-        <ListItemIcon
+  }) =>
+    hasAccess ? (
+      <ListItem disablePadding sx={{ display: "block" }} onClick={onClick}>
+        <ListItemButton
           sx={{
-            minWidth: 0,
-            mr: open ? 3 : "auto",
-            justifyContent: "center",
+            minHeight: 48,
+            justifyContent: open ? "initial" : "center",
+            px: 2.5,
           }}
         >
-          {Icon}
-        </ListItemIcon>
-        <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
-      </ListItemButton>
-    </ListItem>
-  );
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: open ? 3 : "auto",
+              justifyContent: "center",
+            }}
+          >
+            {Icon}
+          </ListItemIcon>
+          <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
+        </ListItemButton>
+      </ListItem>
+    ) : null;
 
   const handleLogout = async () => {
-    window.localStorage.setItem("token", "")
-      navigate("/")
-  }
+    window.localStorage.setItem("token", "");
+    navigate("/");
+  };
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -124,93 +128,185 @@ export default function Sidenav() {
         <SideNavListItem
           label={"Dashboard"}
           Icon={<DashboardIcon />}
-          navigationUrl={"/Dashboard"}
+          navigationUrl={URLS.DASHBOARD_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.DASHBOARD_URL
+          )}
         />
         <SideNavListItem
           label={"Products"}
           Icon={<ShoppingCartIcon />}
-          navigationUrl={"/products"}
+          navigationUrl={URLS.PRODUCTS_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.PRODUCTS_URL
+          )}
         />
         <SideNavListItem
-          label={"Varient"}
+          label={"Variant"}
           Icon={<AutoAwesomeMotionIcon />}
-          navigationUrl={"/varient"}
+          navigationUrl={URLS.VARIANT_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.VARIANT_URL
+          )}
         />
         <SideNavListItem
           label={"Users"}
           Icon={<GroupIcon />}
-          navigationUrl={"/users"}
+          navigationUrl={URLS.USERS_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.PRODUCTS_URL
+          )}
         />
         <SideNavListItem
           label={"Orders"}
           Icon={<ListAltIcon />}
-          navigationUrl={"/orders"}
+          navigationUrl={URLS.ORDERS_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.ORDERS_URL
+          )}
         />
         <SideNavListItem
           label={"Promo Code"}
           Icon={<BookOnlineOutlinedIcon />}
-          navigationUrl={"/promo-codes"}
+          navigationUrl={URLS.PROMOCODE_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.PROMOCODE_URL
+          )}
         />
         <SideNavListItem
           label={"Delivery Slot"}
           Icon={<LocalShippingIcon />}
-          navigationUrl={"/delivery_slot"}
+          navigationUrl={URLS.DELIVERY_SLOT_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.DELIVERY_SLOT_URL
+          )}
         />
         <SideNavListItem
           label={"Delivery Boy"}
           Icon={<PersonAddIcon />}
-          navigationUrl={"/delivery_boy"}
+          navigationUrl={URLS.DELIVERY_BOY_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.DELIVERY_BOY_URL
+          )}
         />
         <SideNavListItem
           label={"Offer Settings"}
           Icon={<LocalOfferIcon />}
-          navigationUrl={"/offer-settings"}
+          navigationUrl={URLS.OFFER_SETTINGS_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.OFFER_SETTINGS_URL
+          )}
         />
         <SideNavListItem
           label={"Delivery Charges"}
           Icon={<CurrencyRupeeIcon />}
-          navigationUrl={"/delivery_charge"}
+          navigationUrl={URLS.DELIVERY_CHARGE_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.DELIVERY_CHARGE_URL
+          )}
         />
         <SideNavListItem
           label={"Category"}
           Icon={<CategoryIcon />}
-          navigationUrl={"/category"}
+          navigationUrl={URLS.CATEGORY_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.CATEGORY_URL
+          )}
+        />
+        <SideNavListItem
+          label={"Admin"}
+          Icon={<AdminPanelSettingsIcon />}
+          navigationUrl={URLS.ADMIN_URL}
+          hasAccess={isAdminUser(userInfo)}
         />
         <SideNavListItem
           label={"Settings"}
           Icon={<Settings />}
-          navigationUrl={"/settings"}
+          navigationUrl={URLS.SETTINGS_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.SETTINGS_URL
+          )}
         />
         <SideNavListItem
           label={"Terms & Conditions"}
           Icon={<MenuBookIcon />}
-          navigationUrl={"/terms_and_conditions"}
+          navigationUrl={URLS.TERMS_AND_CONDITIONS_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.TERMS_AND_CONDITIONS_URL
+          )}
         />
         <SideNavListItem
           label={"F & Q"}
           Icon={<QuestionAnswerIcon />}
-          navigationUrl={"/f_and_q"}
+          navigationUrl={URLS.FAQ_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.FAQ_URL
+          )}
         />
         <SideNavListItem
           label={"Send Notification"}
           Icon={<SendIcon />}
-          navigationUrl={"/push_notification"}
+          navigationUrl={URLS.PUSH_NOTIFICATION_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.PUSH_NOTIFICATION_URL
+          )}
         />
         <SideNavListItem
           label={"Privacy & Policy"}
           Icon={<PolicyIcon />}
-          navigationUrl={"/privacy_and_policy"}
+          navigationUrl={URLS.PRIVACY_POLICY_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.PRIVACY_POLICY_URL
+          )}
         />
         <SideNavListItem
           label={"Contact Us"}
           Icon={<ContactPhoneIcon />}
-          navigationUrl={"/contact_us"}
+          navigationUrl={URLS.CONTACT_US_URL}
+          hasAccess={userHasViewAccessToRoute(
+            userInfo,
+            accessKeyMapping,
+            URLS.CONTACT_US_URL
+          )}
         />
         <SideNavListItem
           label={"Logout"}
           Icon={<LogoutIcon />}
-          navigationUrl={"/"}
+          navigationUrl={URLS.HOME_URL}
           onClick={handleLogout}
+          hasAccess={true}
         />
       </List>
     </Drawer>

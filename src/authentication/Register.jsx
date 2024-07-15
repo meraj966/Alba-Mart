@@ -69,7 +69,6 @@ export default function Register() {
     event.preventDefault();
     await createUserWithEmailAndPassword(auth, email, password).then(async cred=>{
       const user = cred.user
-      console.log(user)
       await setDoc(doc(db, "AdminUser", user.uid), {id: user.uid, email: user.email}).then(i=> navigate("/"))
     }).catch((error) => {
       const errorMessage = error.message;
