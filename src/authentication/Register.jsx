@@ -11,7 +11,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { useState, forwardRef } from "react";
+import { useState, forwardRef, useEffect } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
@@ -19,7 +19,7 @@ import Slide from "@mui/material/Slide";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase-config";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -52,11 +52,26 @@ export default function Register() {
   const [error, setError] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [remember, setRemember] = useState(false);
+  const [passcode, setPasscode] = useState("");
+  const [configData, setConfigData] = useState(null);
+
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
+  const configRef = collection(db, "Config");
 
+  const getConfigData = async () => {
+    const configData = await getDocs(configRef);
+    const data = configData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setConfigData(data[0]);
+  };
+
+  useEffect(() => {
+    getConfigData();
+  }, []);
+
+  //Below config Data should have - {passcode: "PASSCODEOF12Digits"}
+  console.log(configData, "==============");
   // If already logged in send to dashboard -
   const user = window.localStorage.getItem("token");
   let location = useLocation();
@@ -67,14 +82,24 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await createUserWithEmailAndPassword(auth, email, password).then(async cred=>{
-      const user = cred.user
-      console.log(user)
-      await setDoc(doc(db, "AdminUser", user.uid), {id: user.uid, email: user.email}).then(i=> navigate("/"))
-    }).catch((error) => {
-      const errorMessage = error.message;
-      setError(errorMessage)
-  });
+    if (configData?.passcode == passcode) {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then(async (cred) => {
+          const user = cred.user;
+          console.log(user);
+          await setDoc(doc(db, "AdminUser", user.uid), {
+            id: user.uid,
+            email: user.email,
+          }).then((i) => navigate("/"));
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          setError(errorMessage);
+        });
+    } else
+      setError(
+        "You are unauthorized to register. Please contact administrator to know more."
+      );
   };
 
   const handleClose = (event, reason) => {
@@ -99,8 +124,16 @@ export default function Register() {
       !e.target.value.includes(".")
     )
       setError("Invalid Email! Please enter correct email");
-    else setEmail(e.target.value.trim())
+    else setEmail(e.target.value.trim());
   };
+
+  const onPasscodeChange = (e) => {
+    const passcodeEntered = e.target.value;
+    if (passcodeEntered?.length != 12)
+      setError("Incorrect Passcode! Passcode should be of 12 digits");
+    setPasscode(passcodeEntered);
+  };
+
   return (
     <>
       <Snackbar
@@ -187,7 +220,7 @@ export default function Register() {
                             type="password"
                             id="password"
                             autoComplete="new-password"
-                            onChange={e=>setPassword(e.target.value)}
+                            onChange={(e) => setPassword(e.target.value)}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -200,6 +233,18 @@ export default function Register() {
                             id="confirmpassword"
                             autoComplete="new-password"
                             onChange={onConfirmPassChange}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                          <TextField
+                            required
+                            fullWidth
+                            name="passcode"
+                            label="12 Digit Registration Passcode"
+                            type="password"
+                            id="passcode"
+                            autoComplete="123456789012"
+                            onChange={onPasscodeChange}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
