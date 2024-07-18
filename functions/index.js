@@ -21,53 +21,52 @@ const cors = require("cors")({origin: true});
 
 admin.initializeApp();
 
-const authenticate = async (req, res, next) => {
-  if (
-    !req.headers.authorization ||
-    !req.headers.authorization.startsWith("Bearer ")
-  ) {
-    res.status(403).send("Unauthorized");
-    return;
-  }
+// const authenticate = async (req, res, next) => {
+//   if (
+//     !req.headers.authorization ||
+//     !req.headers.authorization.startsWith("Bearer ")
+//   ) {
+//     res.status(403).send("Unauthorized");
+//     return;
+//   }
 
-  const idToken = req.headers.authorization.split("Bearer ")[1];
+//   const idToken = req.headers.authorization.split("Bearer ")[1];
 
-  try {
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    req.user = decodedToken;
-    next();
-  } catch (error) {
-    res.status(403).send("Unauthorized");
-  }
-};
+//   try {
+//     const decodedToken = await admin.auth().verifyIdToken(idToken);
+//     req.user = decodedToken;
+//     next();
+//   } catch (error) {
+//     res.status(403).send("Unauthorized");
+//   }
+// };
 
 exports.getAllUsers = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    authenticate(req, res, async () => {
-      if (req.method !== "GET") {
-        return res.status(405).send("Method Not Allowed");
-      }
-
-      try {
-        const listUsersResult = await admin.auth().listUsers();
-        const users = listUsersResult.users.map((user) => ({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          phoneNumber: user.phoneNumber,
-          photoURL: user.photoURL,
-          customClaims: user.customClaims,
-          disabled: user.disabled,
-          metadata: {
-            lastSignInTime: user.metadata.lastSignInTime,
-            creationTime: user.metadata.creationTime,
-          },
-        }));
-        res.status(200).json(users);
-      } catch (error) {
-        console.error("Error listing users:", error);
-        res.status(500).send("Internal Server Error");
-      }
-    });
+    // authenticate(req, res, async () => {
+    //   if (req.method !== "GET") {
+    //     return res.status(405).send("Method Not Allowed");
+    //   }
+    try {
+      const listUsersResult = await admin.auth().listUsers();
+      const users = listUsersResult.users.map((user) => ({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+        customClaims: user.customClaims,
+        disabled: user.disabled,
+        metadata: {
+          lastSignInTime: user.metadata.lastSignInTime,
+          creationTime: user.metadata.creationTime,
+        },
+      }));
+      res.status(200).json(users);
+    } catch (error) {
+      console.error("Error listing users:", error);
+      res.status(500).send("Internal Server Error");
+    }
+    // });
   });
 });

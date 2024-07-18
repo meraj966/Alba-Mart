@@ -1,16 +1,28 @@
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { USER_TYPE_WORKER } from "../authentication/utils";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const BASE_API_URL = `https://us-central1-albamart-9de65.cloudfunctions.net`;
 
-export async function getUserAccessData() {
+export async function getUserAccessData(uid) {
   const refUserInfo = collection(db, "UserInfo");
-  const uid = window.localStorage.getItem("userId");
   const manageAccess = await getDocs(refUserInfo);
   const userInfo = manageAccess?.docs?.find((doc) => doc.id == uid)?.data();
   return userInfo;
+}
+
+export async function updateUserAccessData(userData) {
+  await updateDoc(doc(db, "UserInfo", userData?.uid), userData).then(() => {
+    Swal.fire("Successful!", "Updated Access Settings", "success");
+  });
 }
 
 export async function getAccessKeyMappingData() {
@@ -30,7 +42,7 @@ export async function createLoggedInUserProfile(user) {
   if (!allUserInfoData.find((u) => u.uid == user.uid))
     await setDoc(doc(db, "UserInfo", user.uid), {
       uid: user.uid,
-      email: user.email,
+      email: user?.email,
       userType: USER_TYPE_WORKER,
       pageLevelAccess: ["100"],
       controlLevelAccess: [],
@@ -47,7 +59,6 @@ export async function getAllUsers() {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      console.log("User data:", response.data);
       return response.data;
     }
   } catch (e) {

@@ -3,6 +3,7 @@ import * as URLS from "../urls";
 export const PAGE_LEVEL = "PAGE_LEVEL";
 export const CONTROL_LEVEL = "CONTROL_LEVEL";
 export const USER_TYPE_ADMIN = "ADMIN";
+export const USER_TYPE_SUPER_USER = "SUPER_USER";
 export const USER_TYPE_WORKER = "WORKER";
 
 export const generalAccessURLS = [];
@@ -35,5 +36,5 @@ export const userHasViewAccessToRoute = (userInfo, keyMapping, route) => {
 };
 
 export const isAdminUser = (userInfo) => {
-  return userInfo?.userType == USER_TYPE_ADMIN;
+  return [USER_TYPE_ADMIN, USER_TYPE_SUPER_USER].includes(userInfo?.userType);
 };

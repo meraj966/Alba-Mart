@@ -12,7 +12,9 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleDataLoad = async () => {
-    const userInfo = await getUserAccessData();
+    const userInfo = await getUserAccessData(
+      window.localStorage.getItem("userId")
+    );
     const accessKeyMappingData = await getAccessKeyMappingData();
     setAccessKeyMapping(accessKeyMappingData);
     setUserInfo(userInfo);
