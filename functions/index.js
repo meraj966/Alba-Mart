@@ -49,19 +49,25 @@ exports.getAllUsers = functions.https.onRequest((req, res) => {
     //   }
     try {
       const listUsersResult = await admin.auth().listUsers();
-      const users = listUsersResult.users.map((user) => ({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        phoneNumber: user.phoneNumber,
-        photoURL: user.photoURL,
-        customClaims: user.customClaims,
-        disabled: user.disabled,
-        metadata: {
-          lastSignInTime: user.metadata.lastSignInTime,
-          creationTime: user.metadata.creationTime,
-        },
-      }));
+      const users = listUsersResult.users
+        .filter((user) =>
+          user.providerData.some(
+            (provider) => provider.providerId == "password"
+          )
+        )
+        .map((user) => ({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          customClaims: user.customClaims,
+          disabled: user.disabled,
+          metadata: {
+            lastSignInTime: user.metadata.lastSignInTime,
+            creationTime: user.metadata.creationTime,
+          },
+        }));
       res.status(200).json(users);
     } catch (error) {
       console.error("Error listing users:", error);

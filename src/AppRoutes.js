@@ -29,11 +29,16 @@ import OrderPreview from "./orders/OrderPreview"; // Import the OrderPreview com
 import Variant from "./varient";
 import VariantDetails from "./varient/components/VariantDetails";
 import Admin from "./pages/Admin";
+import { useContext } from "react";
+import { AppContext } from "./context";
 
 function AppRoutes() {
+  const { userInfo } = useContext(AppContext);
+
   const protectedElement = (element) => (
-    <ProtectedRoute>{element}</ProtectedRoute>
+    <ProtectedRoute userInfo={userInfo}>{element}</ProtectedRoute>
   );
+
   return (
     <BrowserRouter>
       <Routes>

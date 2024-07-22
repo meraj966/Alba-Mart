@@ -1,17 +1,14 @@
 import { Stack } from "@mui/system";
 import EditIcon from "@mui/icons-material/Edit";
-import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { map, sum } from "lodash";
 import { Link } from "react-router-dom";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 export const getProductDataGridColumns = (
-  open,
-  openProductPreview,
-  selectedProd,
   editData,
-  deleteProduct
+  deleteProduct,
+  hasEditAccess,
+  hasDeleteAccess
 ) => {
   return [
     {
@@ -83,7 +80,7 @@ export const getProductDataGridColumns = (
       headerName: "Quantity",
       minWidth: 100,
       flex: 1,
-      valueGetter: ({ row }) => `${row.quantity} ${row.measureUnit}`
+      valueGetter: ({ row }) => `${row.quantity} ${row.measureUnit}`,
     },
     {
       field: "barcode",
@@ -118,35 +115,32 @@ export const getProductDataGridColumns = (
       minWidth: 100,
       renderCell: ({ row }) => (
         <Stack direction={"row"} spacing={2}>
-          {/* <PreviewIcon
-            style={{
-              fontSize: "20px",
-              cursor: "pointer",
-              color: open && selectedProd.id === row.id ? "black" : "gray",
-            }}
-            onClick={() => openProductPreview(row)}
-          /> */}
-          <EditIcon
-            style={{
-              fontSize: "20px",
-              color: "#1976d2",
-              cursor: "pointer",
-            }}
-            className="cursor-pointer"
-            onClick={() => {
-              editData(row);
-            }}
-          />
-          <DeleteIcon
-            style={{
-              fontSize: "20px",
-              color: "darkred",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              deleteProduct(row);
-            }}
-          />
+          {!hasEditAccess && !hasDeleteAccess ? "-" : null}
+          {hasEditAccess ? (
+            <EditIcon
+              style={{
+                fontSize: "20px",
+                color: "#1976d2",
+                cursor: "pointer",
+              }}
+              className="cursor-pointer"
+              onClick={() => {
+                editData(row);
+              }}
+            />
+          ) : null}
+          {hasDeleteAccess ? (
+            <DeleteIcon
+              style={{
+                fontSize: "20px",
+                color: "darkred",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                deleteProduct(row);
+              }}
+            />
+          ) : null}
         </Stack>
       ),
     },
@@ -223,7 +217,7 @@ export const getOrdersGridColumns = (
             // Convert 24-hour format to 12-hour format
             const [hours, minutes] = hoursMinutes.split(":");
             const period = parseInt(hours, 10) >= 12 ? "PM" : "AM";
-            const formattedHours = (parseInt(hours, 10) % 12) || 12;
+            const formattedHours = parseInt(hours, 10) % 12 || 12;
 
             // Combine hours, minutes, and AM/PM
             const formattedTime = `${formattedHours}:${minutes} ${period}`;
@@ -254,33 +248,43 @@ export const getOrdersGridColumns = (
               params.row.orderStatus === "delivered"
                 ? "green"
                 : params.row.orderStatus === "canceled"
-                  ? "red"
-                  : params.row.orderStatus === "placed"
-                    ? "blue"
-                    : params.row.orderStatus === "processing"
-                      ? "orange"
-                      : "black",
+                ? "red"
+                : params.row.orderStatus === "placed"
+                ? "blue"
+                : params.row.orderStatus === "processing"
+                ? "orange"
+                : "black",
           }}
         >
-          {isEdit ? statusDropdown(params.id, params.row) : params.row?.orderStatus}
+          {isEdit
+            ? statusDropdown(params.id, params.row)
+            : params.row?.orderStatus}
         </div>
       ),
     },
     {
-      field: 'refunded',
-      headerName: 'Refund Status',
+      field: "refunded",
+      headerName: "Refund Status",
       flex: 1,
       renderCell: (params) => {
         const refunded = params.value;
-  
+
         const style = {
-          padding: '4px',
-          textAlign: 'center',
-          color: refunded ? 'green' : refunded === false ? 'red' : 'black',
-          border: refunded ? '1px solid green' : refunded === false ? '1px solid red' : 'none',
+          padding: "4px",
+          textAlign: "center",
+          color: refunded ? "green" : refunded === false ? "red" : "black",
+          border: refunded
+            ? "1px solid green"
+            : refunded === false
+            ? "1px solid red"
+            : "none",
         };
-  
-        return <div style={style}>{refunded ? 'Yes' : refunded === false ? 'No' : '-'}</div>;
+
+        return (
+          <div style={style}>
+            {refunded ? "Yes" : refunded === false ? "No" : "-"}
+          </div>
+        );
       },
     },
     {

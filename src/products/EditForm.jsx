@@ -371,10 +371,8 @@ export default function EditForm({ fid, closeEvent }) {
       //   );
       // }
     } else {
-      console.log(file, "fileeess")
       let urls = await uploadImages(file);
       let x = Promise.resolve(urls)
-      console.log(x, "xxxxx ")
       await saveDataWithUrl(urls)
     }
   };

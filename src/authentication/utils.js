@@ -12,6 +12,7 @@ export const pageToAccessKeyMapping = {
   [URLS.DASHBOARD_URL]: "VIEW_DASHBOARD",
   [URLS.USERS_URL]: "VIEW_USERS",
   [URLS.ORDERS_URL]: "VIEW_ORDERS",
+  [URLS.PRODUCTS_URL]: "VIEW_PRODUCTS",
   [URLS.PROMOCODE_URL]: "VIEW_PROMOCODE",
   [URLS.DELIVERY_SLOT_URL]: "VIEW_DELIVERY_SLOT",
   [URLS.DELIVERY_BOY_URL]: "VIEW_DELIVERY_BOY",
@@ -26,15 +27,44 @@ export const pageToAccessKeyMapping = {
   [URLS.ADMIN_URL]: "ADMIN",
 };
 
-export const userHasViewAccessToRoute = (userInfo, keyMapping, route) => {
-  if (!userInfo?.pageLevelAccess || !keyMapping?.pageLevel || !route)
-    return null;
-  const pageLevelAccessKeys = userInfo?.pageLevelAccess?.map(
-    (key) => keyMapping?.pageLevel[key]
-  );
-  return pageLevelAccessKeys.includes(pageToAccessKeyMapping[route]);
-};
+export const userHasAccessToKey = (userInfo, key) =>
+  userInfo?.controlLevelAccess?.includes(key);
+
+export const userHasViewAccessToRoute = (userInfo, route) =>
+  userInfo?.pageLevelAccess?.includes(pageToAccessKeyMapping[route]);
 
 export const isAdminUser = (userInfo) => {
   return [USER_TYPE_ADMIN, USER_TYPE_SUPER_USER].includes(userInfo?.userType);
 };
+
+// Control Level Access
+export const CONTROL_ADD_PRODUCT = "ADD_PRODUCT";
+export const CONTROL_EDIT_PRODUCT = "EDIT_PRODUCT";
+export const CONTROL_DELETE_PRODUCT = "DELETE_PRODUCT";
+export const CONTROL_UPDATE_DELIVERY_BOY = "UPDATE_DELIVERY_BOY";
+export const CONTROL_ADD_PROMOCODE = "ADD_PROMOCODE";
+export const CONTROL_EDIT_DELIVERY_SLOT = "EDIT_DELIVERY_SLOT";
+export const CONTROL_ADD_DELIVERY_SLOT = "ADD_DELIVERY_SLOT";
+export const CONTROL_DELETE_DELIVERY_SLOT = "DELETE_DELIVERY_SLOT";
+export const CONTROL_ADD_OFFER = "ADD_OFFER";
+export const CONTROL_EDIT_OFFER = "EDIT_OFFER";
+export const CONTROL_DELETE_OFFER = "DELETE_OFFER";
+export const CONTROL_ADD_DELIVERY_CHARGES = "ADD_DELIVERY_CHARGES";
+export const CONTROL_EDIT_DELIVERY_CHARGES = "EDIT_DELIVERY_CHARGES";
+export const CONTROL_DELETE_DELIVERY_CHARGES = "DELETE_DELIVERY_CHARGES";
+export const CONTROL_ADD_CATEGORY = "ADD_CATEGORY";
+export const CONTROL_EDIT_CATEGORY = "EDIT_CATEGORY";
+export const CONTROL_DELETE_CATEGORY = "DELETE_CATEGORY";
+export const CONTROL_ADD_SETTINGS = "ADD_SETTINGS";
+export const CONTROL_EDIT_TERMS_AND_CONDITIONS = "EDIT_TERMS_AND_CONDITIONS";
+export const CONTROL_DELETE_TERMS_AND_CONDITIONS =
+  "DELETE_TERMS_AND_CONDITIONS";
+export const CONTROL_ADD_FAQ = "ADD_FAQ";
+export const CONTROL_EDIT_FAQ = "EDIT_FAQ";
+export const CONTROL_DELETE_FAQ = "DELETE_FAQ";
+export const CONTROL_ADD_NOTIFICATIONS = "ADD_NOTIFICATIONS";
+export const CONTROL_ADD_PRIVACY_SETTINGS = "ADD_PRIVACY_SETTINGS";
+export const CONTROL_EDIT_PRIVACY_SETTINGS = "EDIT_PRIVACY_SETTINGS";
+export const CONTROL_DELETE_PRIVACY_SETTINGS = "DELETE_PRIVACY_SETTINGS";
+export const CONTROL_ADD_CONTACT_DETAILS = "ADD_CONTACT_DETAILS";
+export const CONTROL_ADD_VARIANT = "ADD_VARIANT";

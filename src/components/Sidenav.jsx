@@ -83,7 +83,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Sidenav() {
   const navigate = useNavigate();
-  const { userInfo, accessKeyMapping } = useContext(AppContext);
+  const { userInfo } = useContext(AppContext);
   const open = useAppStore((state) => state.dopen);
 
   const SideNavListItem = ({
@@ -129,81 +129,49 @@ export default function Sidenav() {
           label={"Dashboard"}
           Icon={<DashboardIcon />}
           navigationUrl={URLS.DASHBOARD_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.DASHBOARD_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.DASHBOARD_URL)}
         />
         <SideNavListItem
           label={"Products"}
           Icon={<ShoppingCartIcon />}
           navigationUrl={URLS.PRODUCTS_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.PRODUCTS_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.PRODUCTS_URL)}
         />
         <SideNavListItem
           label={"Variant"}
           Icon={<AutoAwesomeMotionIcon />}
           navigationUrl={URLS.VARIANT_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.VARIANT_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.VARIANT_URL)}
         />
         <SideNavListItem
           label={"Users"}
           Icon={<GroupIcon />}
           navigationUrl={URLS.USERS_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.PRODUCTS_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.PRODUCTS_URL)}
         />
         <SideNavListItem
           label={"Orders"}
           Icon={<ListAltIcon />}
           navigationUrl={URLS.ORDERS_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.ORDERS_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.ORDERS_URL)}
         />
         <SideNavListItem
           label={"Promo Code"}
           Icon={<BookOnlineOutlinedIcon />}
           navigationUrl={URLS.PROMOCODE_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.PROMOCODE_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.PROMOCODE_URL)}
         />
         <SideNavListItem
           label={"Delivery Slot"}
           Icon={<LocalShippingIcon />}
           navigationUrl={URLS.DELIVERY_SLOT_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.DELIVERY_SLOT_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.DELIVERY_SLOT_URL)}
         />
         <SideNavListItem
           label={"Delivery Boy"}
           Icon={<PersonAddIcon />}
           navigationUrl={URLS.DELIVERY_BOY_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.DELIVERY_BOY_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.DELIVERY_BOY_URL)}
         />
         <SideNavListItem
           label={"Offer Settings"}
@@ -211,7 +179,6 @@ export default function Sidenav() {
           navigationUrl={URLS.OFFER_SETTINGS_URL}
           hasAccess={userHasViewAccessToRoute(
             userInfo,
-            accessKeyMapping,
             URLS.OFFER_SETTINGS_URL
           )}
         />
@@ -221,7 +188,7 @@ export default function Sidenav() {
           navigationUrl={URLS.DELIVERY_CHARGE_URL}
           hasAccess={userHasViewAccessToRoute(
             userInfo,
-            accessKeyMapping,
+
             URLS.DELIVERY_CHARGE_URL
           )}
         />
@@ -229,11 +196,7 @@ export default function Sidenav() {
           label={"Category"}
           Icon={<CategoryIcon />}
           navigationUrl={URLS.CATEGORY_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.CATEGORY_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.CATEGORY_URL)}
         />
         <SideNavListItem
           label={"Admin"}
@@ -245,11 +208,7 @@ export default function Sidenav() {
           label={"Settings"}
           Icon={<Settings />}
           navigationUrl={URLS.SETTINGS_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.SETTINGS_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.SETTINGS_URL)}
         />
         <SideNavListItem
           label={"Terms & Conditions"}
@@ -257,7 +216,6 @@ export default function Sidenav() {
           navigationUrl={URLS.TERMS_AND_CONDITIONS_URL}
           hasAccess={userHasViewAccessToRoute(
             userInfo,
-            accessKeyMapping,
             URLS.TERMS_AND_CONDITIONS_URL
           )}
         />
@@ -265,11 +223,7 @@ export default function Sidenav() {
           label={"F & Q"}
           Icon={<QuestionAnswerIcon />}
           navigationUrl={URLS.FAQ_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.FAQ_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.FAQ_URL)}
         />
         <SideNavListItem
           label={"Send Notification"}
@@ -277,7 +231,6 @@ export default function Sidenav() {
           navigationUrl={URLS.PUSH_NOTIFICATION_URL}
           hasAccess={userHasViewAccessToRoute(
             userInfo,
-            accessKeyMapping,
             URLS.PUSH_NOTIFICATION_URL
           )}
         />
@@ -287,7 +240,6 @@ export default function Sidenav() {
           navigationUrl={URLS.PRIVACY_POLICY_URL}
           hasAccess={userHasViewAccessToRoute(
             userInfo,
-            accessKeyMapping,
             URLS.PRIVACY_POLICY_URL
           )}
         />
@@ -295,11 +247,7 @@ export default function Sidenav() {
           label={"Contact Us"}
           Icon={<ContactPhoneIcon />}
           navigationUrl={URLS.CONTACT_US_URL}
-          hasAccess={userHasViewAccessToRoute(
-            userInfo,
-            accessKeyMapping,
-            URLS.CONTACT_US_URL
-          )}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.CONTACT_US_URL)}
         />
         <SideNavListItem
           label={"Logout"}

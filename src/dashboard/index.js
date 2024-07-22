@@ -106,8 +106,7 @@ export default function Dashboard() {
 
     const todayDeliveredOrders = orderData.filter(
       (i) =>
-        new Date(i.deliveryDate).toDateString() ===
-        new Date().toDateString() &&
+        new Date(i.deliveryDate).toDateString() === new Date().toDateString() &&
         i.orderStatus === "delivered"
     );
 
@@ -206,7 +205,9 @@ export default function Dashboard() {
 
     // Generate Excel file
     workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -233,7 +234,7 @@ export default function Dashboard() {
         <Grid container spacing={2} style={{ marginTop: "5px" }}>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/Users"} style={{ textDecoration: "none" }}>
+              <RouterLink to={"/users"} style={{ textDecoration: "none" }}>
                 <DashboardCard header="Customers" value={customers} />
               </RouterLink>
             </Link>
@@ -241,7 +242,7 @@ export default function Dashboard() {
           <Grid item xs={3}>
             <Link underline="none">
               <RouterLink to={"/products"} style={{ textDecoration: "none" }}>
-                <DashboardCard header="Product" value={products.length} />
+                <DashboardCard header="Products" value={products?.length} />
               </RouterLink>
             </Link>
           </Grid>
@@ -318,15 +319,14 @@ export default function Dashboard() {
             >
               Export Products Out of Stock
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleExportLowStock}
-            >
+            <Button variant="contained" onClick={handleExportLowStock}>
               Export Products in Low Stock
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <Divider style={{ margin: "20px 0", backgroundColor: "darkgray" }} />
+            <Divider
+              style={{ margin: "20px 0", backgroundColor: "darkgray" }}
+            />
           </Grid>
           <Grid item xs={12}>
             <RevenueGraph orders={orders} />

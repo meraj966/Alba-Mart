@@ -10,14 +10,13 @@ import {
 import AccessDenied from "../components/reusable/AccessDenied";
 import { ADMIN_URL } from "../urls";
 
-const ProtectedRoute = ({ children }) => {
-  const { userInfo, accessKeyMapping } = useContext(AppContext);
+const ProtectedRoute = ({ children, userInfo }) => {
   const user = window.localStorage.getItem("token");
   let location = useLocation();
   const hasAccess = generalAccessURLS.includes(location.pathname)
     ? true
     : location.pathname != ADMIN_URL
-    ? userHasViewAccessToRoute(userInfo, accessKeyMapping, location.pathname)
+    ? userHasViewAccessToRoute(userInfo, location.pathname)
     : isAdminUser(userInfo);
   if (!user) {
     return <Navigate to="/" state={{ from: location }} replace />;

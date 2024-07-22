@@ -22,6 +22,22 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (
+      userInfo?.controlLevelAccess?.find((i) => Number(i)) ||
+      userInfo?.pageLevelAccess?.find((i) => Number(i))
+    ) {
+      let userDetails = { ...userInfo };
+      userDetails.controlLevelAccess = userDetails.controlLevelAccess.map(
+        (i) => accessKeyMapping.controlLevel[i]
+      );
+      userDetails.pageLevelAccess = userDetails.pageLevelAccess.map(
+        (i) => accessKeyMapping.pageLevel[i]
+      );
+      setUserInfo(userDetails);
+    }
+  }, [accessKeyMapping, userInfo]);
+
+  useEffect(() => {
     if (isLoading) handleDataLoad();
   }, []);
 

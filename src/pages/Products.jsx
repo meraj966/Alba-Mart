@@ -8,7 +8,15 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -20,8 +28,16 @@ import AddProducts from "../products/AddProducts";
 import EditForm from "../products/EditForm";
 import VariantPopup from "./VariantPopup";
 import ExcelJS from "exceljs";
+import { useContext } from "react";
+import { AppContext } from "../context";
+import {
+  CONTROL_ADD_PRODUCT,
+  CONTROL_ADD_VARIANT,
+  userHasAccessToKey,
+} from "../authentication/utils";
 
 export default function Products() {
+  const { userInfo } = useContext(AppContext);
   const [categories, setCategories] = useState([]);
   const [originalRows, setOriginalRows] = useState([]);
   const [rows, setRows] = useState([]);
@@ -40,7 +56,10 @@ export default function Products() {
 
   const getMenuData = async () => {
     const menuData = await getDocs(menuRef);
-    const rowsData = menuData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    const rowsData = menuData.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
     setOriginalRows(rowsData);
     setRows(rowsData);
   };
@@ -75,22 +94,28 @@ export default function Products() {
 
     // Subscribe to menu data changes
     const menuUnsubscribe = onSnapshot(menuRef, (snapshot) => {
-      const menuData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const menuData = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setOriginalRows(menuData);
       setRows(menuData);
     });
 
     // Subscribe to category data changes
-    const categoryUnsubscribe = onSnapshot(collection(db, "category"), (snapshot) => {
-      const categoryData = snapshot.docs.map((doc) => doc.data().name);
-      const uniqueCategories = [
-        ...new Set([
-          ...originalRows.flatMap((item) => item.category),
-          ...categoryData,
-        ]),
-      ];
-      setCategories(uniqueCategories);
-    });
+    const categoryUnsubscribe = onSnapshot(
+      collection(db, "category"),
+      (snapshot) => {
+        const categoryData = snapshot.docs.map((doc) => doc.data().name);
+        const uniqueCategories = [
+          ...new Set([
+            ...originalRows.flatMap((item) => item.category),
+            ...categoryData,
+          ]),
+        ];
+        setCategories(uniqueCategories);
+      }
+    );
 
     // Store the unsubscribe functions
     setUnsubscribeFunctions([menuUnsubscribe, categoryUnsubscribe]);
@@ -196,7 +221,7 @@ export default function Products() {
   const deleteApi = async (id) => {
     const userDoc = doc(db, "Menu", id);
     let productData = (await getDoc(userDoc)).data();
-    console.log(productData, "product data")
+    console.log(productData, "product data");
     if (productData.saleTag) {
       const offerDocRef = doc(db, "Offers", productData.saleTag);
       let offerData = (await getDoc(offerDocRef)).data();
@@ -253,7 +278,7 @@ export default function Products() {
         name: row.name,
         category: row.category,
         subCategory: row.subCategory,
-        quantity: row.quantity + ' ' + row.measureUnit,
+        quantity: row.quantity + " " + row.measureUnit,
         price: row.price,
         salePrice: row.salePrice,
         purchaseRate: row.purchaseRate,
@@ -265,7 +290,9 @@ export default function Products() {
 
     // Generate a blob for the workbook
     workbook.xlsx.writeBuffer().then((data) => {
-      const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const blob = new Blob([data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
       const url = URL.createObjectURL(blob);
 
       // Create a temporary anchor element to trigger the download
@@ -313,30 +340,33 @@ export default function Products() {
               size="small"
               sx={{ width: "250px" }}
             />
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={exportToExcel}
-            >
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            ></Typography>
+            <Button variant="contained" color="primary" onClick={exportToExcel}>
               Export to Excel
             </Button>
-            <Button
-              variant="contained"
-              endIcon={<AddCircleIcon />}
-              onClick={handleBulkOpen}
-            >
-              Add Product
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              endIcon={<AddCircleIcon />}
-              onClick={handleOpenVariantPopup}
-            >
-              Add Variant
-            </Button>
-
+            {userHasAccessToKey(userInfo, CONTROL_ADD_PRODUCT) ? (
+              <Button
+                variant="contained"
+                endIcon={<AddCircleIcon />}
+                onClick={handleBulkOpen}
+              >
+                Add Product
+              </Button>
+            ) : null}
+            {userHasAccessToKey(userInfo, CONTROL_ADD_VARIANT) ? (
+              <Button
+                variant="contained"
+                color="primary"
+                endIcon={<AddCircleIcon />}
+                onClick={handleOpenVariantPopup}
+              >
+                Add Variant
+              </Button>
+            ) : null}
             <VariantPopup
               open={variantPopupOpen}
               handleClose={handleCloseVariantPopup}

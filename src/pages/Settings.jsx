@@ -59,7 +59,6 @@ export default function Settings() {
 
   useEffect(() => {
     if (settings && settings.length > 0) {
-      console.log("SETTINGS=>", settings);
       const data = settings[0];
       setOnSale(data.onSale);
       setUnit(data.defaultUnit);
