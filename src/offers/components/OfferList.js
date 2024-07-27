@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -30,8 +30,15 @@ import {
 import { db } from "../../firebase-config";
 import Swal from "sweetalert2";
 import Typography from "@mui/material/Typography";
+import { AppContext } from "../../context";
+import {
+  CONTROL_DELETE_OFFER,
+  CONTROL_EDIT_OFFER,
+  userHasAccessToKey,
+} from "../../authentication/utils";
 
 function OfferList() {
+  const { userInfo } = useContext(AppContext);
   const [offerData, setOfferData] = useState([]);
   const [filterValue, setFilterValue] = useState("All"); // State for filter value
 
@@ -51,7 +58,10 @@ function OfferList() {
         const selectedDoc = doc(db, "Offers", id);
         await deleteDoc(selectedDoc);
         Swal.fire("Deleted!", "Selected offer has been deleted", "success");
-        const menuData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const menuData = data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
         menuData.forEach(async (data) => {
           if (data.saleTag === id)
             await updateDoc(doc(db, "Menu", data.id), { saleTag: "" });
@@ -130,7 +140,9 @@ function OfferList() {
           <TableBody>
             {offerData
               .filter((row) =>
-                filterValue === "All" ? true : row.isOfferLive === (filterValue === "Yes")
+                filterValue === "All"
+                  ? true
+                  : row.isOfferLive === (filterValue === "Yes")
               )
               .map((row) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
@@ -156,35 +168,39 @@ function OfferList() {
                   </TableCell>
                   <TableCell sx={{ paddingLeft: "5px" }}>
                     <Stack direction="row">
-                      <Tooltip title="Edit products in offer">
-                        <IconButton>
-                          <Link
-                            to={`/edit-offer/${row.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <EditIcon
+                      {userHasAccessToKey(userInfo, CONTROL_EDIT_OFFER) ? (
+                        <Tooltip title="Edit products in offer">
+                          <IconButton>
+                            <Link
+                              to={`/edit-offer/${row.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <EditIcon
+                                style={{
+                                  fontSize: "20px",
+                                  color: "blue",
+                                  cursor: "pointer",
+                                }}
+                                className="cursor-pointer"
+                              />
+                            </Link>
+                          </IconButton>
+                        </Tooltip>
+                      ) : null}
+                      {userHasAccessToKey(userInfo, CONTROL_DELETE_OFFER) ? (
+                        <Tooltip title="Delete Offer">
+                          <IconButton onClick={() => deleteOffer(row.id)}>
+                            <DeleteIcon
                               style={{
                                 fontSize: "20px",
-                                color: "blue",
+                                color: "darkred",
                                 cursor: "pointer",
                               }}
-                              className="cursor-pointer"
                             />
-                          </Link>
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete Offer">
-                        <IconButton onClick={() => deleteOffer(row.id)}>
-                          <DeleteIcon
-                            style={{
-                              fontSize: "20px",
-                              color: "darkred",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </IconButton>
-                      </Tooltip>
+                          </IconButton>
+                        </Tooltip>
+                      ) : null}
                     </Stack>
                   </TableCell>
                   <TableCell align="center">

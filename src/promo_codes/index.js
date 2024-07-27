@@ -1,14 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { Stack, Typography, Button, Box, Modal, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  Stack,
+  Typography,
+  Button,
+  Box,
+  Modal,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import AddNewPromoCode from "../promo_codes/components/AddNewPromoCode";
 import PromoCodeList from "../promo_codes/components/PromoCodeList";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
+import { AppContext } from "../context";
+import {
+  CONTROL_ADD_PROMOCODE,
+  userHasAccessToKey,
+} from "../authentication/utils";
 
 function PromoCodes() {
+  const { userInfo } = useContext(AppContext);
   const [addNewPromoCode, setAddNewPromoCode] = useState(false);
   const handleOpen = () => setAddNewPromoCode(true);
   const handleClose = () => setAddNewPromoCode(false);
@@ -67,9 +89,7 @@ function PromoCodes() {
         // Update the promoCodeData in state to reflect the change
         setPromoCodeData((prevData) =>
           prevData.map((item) =>
-            item.id === promoCode.id
-              ? { ...item, discountStatus: false }
-              : item
+            item.id === promoCode.id ? { ...item, discountStatus: false } : item
           )
         );
       }
@@ -84,10 +104,10 @@ function PromoCodes() {
   // Filter the table data based on the selected filter value
   const filteredPromoCodeData = filterValue
     ? promocodeData.filter(
-      (row) =>
-        (filterValue === "Active" && row.discountStatus === true) ||
-        (filterValue === "Deactive" && row.discountStatus === false)
-    )
+        (row) =>
+          (filterValue === "Active" && row.discountStatus === true) ||
+          (filterValue === "Deactive" && row.discountStatus === false)
+      )
     : promocodeData;
 
   const modal = () => (
@@ -126,16 +146,18 @@ function PromoCodes() {
           component="div"
           sx={{ flexGrow: 1 }}
         ></Typography>
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={() => {
-            handleOpen();
-            setOpenInEditMode(false);
-          }}
-        >
-          Add Promo Code
-        </Button>
+        {userHasAccessToKey(userInfo, CONTROL_ADD_PROMOCODE) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={() => {
+              handleOpen();
+              setOpenInEditMode(false);
+            }}
+          >
+            Add Promo Code
+          </Button>
+        ) : null}
       </Stack>
     </>
   );

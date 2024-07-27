@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -11,14 +11,26 @@ import {
   IconButton,
 } from "@mui/material";
 import { db } from "../../firebase-config";
-import { collection, getDocs, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../context";
+import {
+  CONTROL_DELETE_DELIVERY_BOY,
+  CONTROL_EDIT_DELIVERY_BOY,
+  userHasAccessToKey,
+} from "../../authentication/utils";
 
 function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
-
+  const { userInfo } = useContext(AppContext);
 
   return (
     <>
@@ -96,30 +108,41 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                   />
                 </TableCell>
                 <TableCell align="left">
-                  <TableCell align="left">{String(row.deliveryBoyReward)}</TableCell>
+                  <TableCell align="left">
+                    {String(row.deliveryBoyReward)}
+                  </TableCell>
                 </TableCell>
                 <TableCell align="left">
-                  <TableCell align="left">{String(row.totalRewardEarns)}</TableCell>
+                  <TableCell align="left">
+                    {String(row.totalRewardEarns)}
+                  </TableCell>
                 </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
-                    <EditIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "blue",
-                        cursor: "pointer",
-                      }}
-                      className="cursor-pointer"
-                      onClick={() => openModal(row)}
-                    />
-                    <DeleteIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "darkred",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(row.id)}
-                    />
+                    {userHasAccessToKey(userInfo, CONTROL_EDIT_DELIVERY_BOY) ? (
+                      <EditIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "blue",
+                          cursor: "pointer",
+                        }}
+                        className="cursor-pointer"
+                        onClick={() => openModal(row)}
+                      />
+                    ) : null}
+                    {userHasAccessToKey(
+                      userInfo,
+                      CONTROL_DELETE_DELIVERY_BOY
+                    ) ? (
+                      <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDelete(row.id)}
+                      />
+                    ) : null}
                   </Stack>
                 </TableCell>
                 <TableCell align="center">

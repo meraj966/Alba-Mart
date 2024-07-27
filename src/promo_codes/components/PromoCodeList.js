@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -12,10 +12,15 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { Link } from "react-router-dom";
+import { AppContext } from "../../context";
+import {
+  CONTROL_DELETE_PROMOCODE,
+  CONTROL_EDIT_PROMOCODE,
+  userHasAccessToKey,
+} from "../../authentication/utils";
 
 function PromoCodeList({ openModal, promocodeData, handleDelete }) {
+  const { userInfo } = useContext(AppContext);
   const sortedPromoCodes = promocodeData.slice().sort((a, b) => {
     // Sort by Start Date in descending order
     return new Date(b.startDate) - new Date(a.startDate);
@@ -53,9 +58,7 @@ function PromoCodeList({ openModal, promocodeData, handleDelete }) {
                 <TableCell align="left">{String(row.code)}</TableCell>
                 <TableCell align="left">{String(row.startDate)}</TableCell>
                 <TableCell align="left">{String(row.endDate)}</TableCell>
-                <TableCell align="left">
-                  {String(row.discount)}
-                </TableCell>
+                <TableCell align="left">{String(row.discount)}</TableCell>
                 <TableCell align="left">
                   <span
                     style={{
@@ -70,23 +73,27 @@ function PromoCodeList({ openModal, promocodeData, handleDelete }) {
                 </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
-                    <EditIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "blue",
-                        cursor: "pointer",
-                      }}
-                      className="cursor-pointer"
-                      onClick={() => openModal(row)}
-                    />
-                    <DeleteIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "darkred",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(row.id)}
-                    />
+                    {userHasAccessToKey(userInfo, CONTROL_EDIT_PROMOCODE) ? (
+                      <EditIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "blue",
+                          cursor: "pointer",
+                        }}
+                        className="cursor-pointer"
+                        onClick={() => openModal(row)}
+                      />
+                    ) : null}
+                    {userHasAccessToKey(userInfo, CONTROL_DELETE_PROMOCODE) ? (
+                      <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDelete(row.id)}
+                      />
+                    ) : null}
                   </Stack>
                 </TableCell>
               </TableRow>

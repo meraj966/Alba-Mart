@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -14,9 +14,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../context";
+import { CONTROL_EDIT_CATEGORY, userHasAccessToKey } from "../../authentication/utils";
 
 function CategoryList({ openModal, categoryData, handleDelete }) {
-
+  const {userInfo} = useContext(AppContext);
 
   return (
     <>
@@ -52,6 +54,7 @@ function CategoryList({ openModal, categoryData, handleDelete }) {
                   />
                 </TableCell>
                 <TableCell align="left">
+                {userHasAccessToKey(userInfo, CONTROL_EDIT_CATEGORY) ? 
                   <Stack spacing={2} direction="row">
                     <EditIcon
                       style={{
@@ -70,7 +73,7 @@ function CategoryList({ openModal, categoryData, handleDelete }) {
                       }}
                       onClick={() => handleDelete(row.id)}
                     />
-                  </Stack>
+                  </Stack>:null}
                 </TableCell>
                 <TableCell align="center">
                   <Link
