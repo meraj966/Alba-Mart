@@ -15,10 +15,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context";
-import { CONTROL_EDIT_CATEGORY, userHasAccessToKey } from "../../authentication/utils";
+import {
+  CONTROL_DELETE_CATEGORY,
+  CONTROL_EDIT_CATEGORY,
+  userHasAccessToKey,
+} from "../../authentication/utils";
+import { SUB_CATEGORY_URL } from "../../urls";
 
 function CategoryList({ openModal, categoryData, handleDelete }) {
-  const {userInfo} = useContext(AppContext);
+  const { userInfo } = useContext(AppContext);
 
   return (
     <>
@@ -54,30 +59,33 @@ function CategoryList({ openModal, categoryData, handleDelete }) {
                   />
                 </TableCell>
                 <TableCell align="left">
-                {userHasAccessToKey(userInfo, CONTROL_EDIT_CATEGORY) ? 
                   <Stack spacing={2} direction="row">
-                    <EditIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "blue",
-                        cursor: "pointer",
-                      }}
-                      className="cursor-pointer"
-                      onClick={() => openModal(row)}
-                    />
-                    <DeleteIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "darkred",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(row.id)}
-                    />
-                  </Stack>:null}
+                    {userHasAccessToKey(userInfo, CONTROL_EDIT_CATEGORY) ? (
+                      <EditIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "blue",
+                          cursor: "pointer",
+                        }}
+                        className="cursor-pointer"
+                        onClick={() => openModal(row)}
+                      />
+                    ) : null}
+                    {userHasAccessToKey(userInfo, CONTROL_DELETE_CATEGORY) ? (
+                      <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDelete(row.id)}
+                      />
+                    ) : null}
+                  </Stack>
                 </TableCell>
                 <TableCell align="center">
                   <Link
-                    to={`/subCategory/${row.id}`}
+                    to={`${SUB_CATEGORY_URL}/${row.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

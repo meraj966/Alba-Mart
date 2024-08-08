@@ -31,6 +31,7 @@ import VariantDetails from "./varient/components/VariantDetails";
 import Admin from "./pages/Admin";
 import { useContext } from "react";
 import { AppContext } from "./context";
+import * as URLS from "./urls";
 
 function AppRoutes() {
   const { userInfo } = useContext(AppContext);
@@ -42,119 +43,134 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" exact element={<Login />} />
-        <Route path="/register" exact element={<Register />} />
-        <Route path="/reset-password" exact element={<ForgotPassword />} />
+        <Route path={URLS.HOME_URL} exact element={<Login />} />
+        <Route path={URLS.REGISTER_URL} exact element={<Register />} />
         <Route
-          path="/promo-codes"
+          path={URLS.RESET_PASSWORD_URL}
+          exact
+          element={<ForgotPassword />}
+        />
+        <Route
+          path={URLS.PROMOCODE_URL}
           exact
           element={protectedElement(<PromoCodes />)}
         />
         <Route
-          path="/delivery_slot"
+          path={URLS.DELIVERY_SLOT_URL}
           exact
           element={protectedElement(<DeliverySlots />)}
         />
         <Route
-          path="/delivery_boy"
+          path={URLS.DELIVERY_BOY_URL}
           exact
           element={protectedElement(<DeliveryBoys />)}
         />
         <Route
-          path="/delivery_charge"
+          path={URLS.DELIVERY_CHARGE_URL}
           exact
           element={protectedElement(<DeliveryCharge />)}
         />
         <Route
-          path="/terms_and_conditions"
+          path={URLS.TERMS_AND_CONDITIONS_URL}
           exact
           element={protectedElement(<TermsAndConditions />)}
         />
-        <Route path="/f_and_q" exact element={protectedElement(<FAndQ />)} />
         <Route
-          path="/dashboard"
+          path={URLS.FAQ_URL}
+          exact
+          element={protectedElement(<FAndQ />)}
+        />
+        <Route
+          path={URLS.DASHBOARD_URL}
           exact
           element={protectedElement(<Dashboard />)}
         />
         <Route
-          path="/products"
+          path={URLS.PRODUCTS_URL}
           exact
           element={protectedElement(<Products />)}
         />
-        <Route path="/varient" exact element={protectedElement(<Variant />)} />
-        <Route path="/users" exact element={protectedElement(<Users />)} />
-        <Route path="/orders" exact element={protectedElement(<Orders />)} />
         <Route
-          path="/settings"
+          path={URLS.VARIANT_URL}
+          exact
+          element={protectedElement(<Variant />)}
+        />
+        <Route
+          path={URLS.USERS_URL}
+          exact
+          element={protectedElement(<Users />)}
+        />
+        <Route
+          path={URLS.ORDERS_URL}
+          exact
+          element={protectedElement(<Orders />)}
+        />
+        <Route
+          path={URLS.SETTINGS_URL}
           exact
           element={protectedElement(<Settings />)}
         />
         <Route
-          path="/push_notification"
+          path={URLS.PUSH_NOTIFICATION_URL}
           exact
           element={protectedElement(<PushNotification />)}
         />
         <Route
-          path="/privacy_and_policy"
+          path={URLS.PRIVACY_POLICY_URL}
           exact
           element={protectedElement(<PrivacyAndPolicy />)}
         />
         <Route
-          path="/contact_us"
+          path={URLS.CONTACT_US_URL}
           exact
           element={protectedElement(<ContactDetails />)}
         />
         <Route
-          path="/category"
+          path={URLS.CATEGORY_URL}
           exact
           element={protectedElement(<CategoryDetails />)}
         />
         <Route
-          path="/offer-settings"
+          path={URLS.OFFER_SETTINGS_URL}
           exact
           element={protectedElement(<OfferSettings />)}
         />
         <Route
-          path="/offer-details/:id"
+          path={`${URLS.OFFER_DETAILS_URL}/:id`}
           exact
           element={protectedElement(<OfferDetailView />)}
         />
         <Route
-          path="/order-details/:id"
+          path={`${URLS.ORDER_DETAILS_URL}/:id`}
           exact
           element={protectedElement(<OrderDetails />)}
         />
         <Route
-          path="/edit-offer/:id"
-          exact
-          element={protectedElement(<EditOffer />)}
-        />
-        <Route
-          path="/deliveryboy-details/:id"
+          path={`${URLS.DELIVERY_BOY_DETAILS_URL}/:id`}
           exact
           element={protectedElement(<DeliveryBoyDetails />)}
         />
         <Route
-          path="/variant-details/:id"
+          path={`${URLS.VARIANT_DETAILS_URL}/:id`}
           exact
           element={protectedElement(<VariantDetails />)}
         />
         <Route
-          path="/subCategory/:id"
+          path={`${URLS.SUB_CATEGORY_URL}/:id`}
           exact
           element={protectedElement(<SubCategoryDetails />)}
         />
         <Route
-          path="/edit-offer/:id"
+          path={`${URLS.EDIT_OFFER_DETAILS_URL}/:id`}
           exact
           element={protectedElement(<EditOffer />)}
         />
         <Route
-          path="/order-preview/:id"
+          path={`${URLS.ORDER_PREVIEW_URL}/:id`}
           element={protectedElement(<OrderPreview />)} // Add this route for OrderPreview
         />
         <Route
-          path="/admin"
+          path={URLS.ADMIN_URL}
           element={protectedElement(<Admin />)} // Add this route for OrderPreview
         />
       </Routes>

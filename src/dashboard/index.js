@@ -15,6 +15,7 @@ import Button from "@mui/material/Button";
 import { writeFile } from "exceljs";
 import ExcelJS from "exceljs";
 import RevenueGraph from "./reusable/RevenueGraph";
+import { ORDERS_URL, PRODUCTS_URL, USERS_URL } from "../urls";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -234,42 +235,42 @@ export default function Dashboard() {
         <Grid container spacing={2} style={{ marginTop: "5px" }}>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/users"} style={{ textDecoration: "none" }}>
+              <RouterLink to={USERS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard header="Customers" value={customers} />
               </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/products"} style={{ textDecoration: "none" }}>
+              <RouterLink to={PRODUCTS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard header="Products" value={products?.length} />
               </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+              <RouterLink to={ORDERS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard header="Orders" value={orders.length} />
               </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+              <RouterLink to={ORDERS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard header="Today earn" value={`Rs. ${todayEarn}`} />
               </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+              <RouterLink to={ORDERS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard header="Today order" value={todayOrderCount} />
               </RouterLink>
             </Link>
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+              <RouterLink to={ORDERS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard
                   header="Pending order"
                   value={pendingOrder.length}
@@ -279,7 +280,7 @@ export default function Dashboard() {
           </Grid>
           <Grid item xs={3}>
             <Link underline="none">
-              <RouterLink to={"/orders"} style={{ textDecoration: "none" }}>
+              <RouterLink to={ORDERS_URL} style={{ textDecoration: "none" }}>
                 <DashboardCard
                   header="Today Declined"
                   value={todayCanceledOrderCount}

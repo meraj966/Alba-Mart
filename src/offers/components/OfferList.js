@@ -36,6 +36,7 @@ import {
   CONTROL_EDIT_OFFER,
   userHasAccessToKey,
 } from "../../authentication/utils";
+import { EDIT_OFFER_DETAILS_URL } from "../../urls";
 
 function OfferList() {
   const { userInfo } = useContext(AppContext);
@@ -172,7 +173,7 @@ function OfferList() {
                         <Tooltip title="Edit products in offer">
                           <IconButton>
                             <Link
-                              to={`/edit-offer/${row.id}`}
+                              to={`${EDIT_OFFER_DETAILS_URL}/${row.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >

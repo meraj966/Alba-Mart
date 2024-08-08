@@ -22,6 +22,8 @@ export async function getUserAccessData(uid) {
 export async function updateUserAccessData(userData) {
   await updateDoc(doc(db, "UserInfo", userData?.uid), userData).then(() => {
     Swal.fire("Successful!", "Updated Access Settings", "success");
+    if (userData.email == window.localStorage.getItem("email"))
+      window.location.reload();
   });
 }
 

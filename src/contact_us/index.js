@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Stack, Typography, Button, Box, Modal } from "@mui/material";
 import AddContactDetails from "./components/AddContactDetails";
 import ContactDetailsList from "../contact_us/components/ContactDetailsList";
@@ -6,8 +6,11 @@ import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
+import { AppContext } from "../context";
+import { CONTROL_ADD_CONTACT_DETAILS, userHasAccessToKey } from "../authentication/utils";
 
 function ContactDetails() {
+  const {userInfo} = useContext(AppContext);
   const [addContactDetails, setContactdetails] = useState(false);
   const handleOpen = () => setContactdetails(true);
   const handleClose = () => setContactdetails(false);
@@ -53,6 +56,7 @@ function ContactDetails() {
           component="div"
           sx={{ flexGrow: 1 }}
         ></Typography>
+        {userHasAccessToKey(userInfo, CONTROL_ADD_CONTACT_DETAILS) ? 
         <Button
           variant="contained"
           endIcon={<AddCircleIcon />}
@@ -62,7 +66,7 @@ function ContactDetails() {
           }}
         >
           Add Contact Details
-        </Button>
+        </Button>:null}
       </Stack>
     </>
   );

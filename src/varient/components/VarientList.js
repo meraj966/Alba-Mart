@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -14,10 +14,16 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import {
+  CONTROL_DELETE_VARIANT,
+  CONTROL_EDIT_VARIANT,
+  userHasAccessToKey,
+} from "../../authentication/utils";
+import { AppContext } from "../../context";
+import { VARIANT_DETAILS_URL } from "../../urls";
 
 function VarientList({ openModal, varientData, handleDelete }) {
-
-
+  const {userInfo} = useContext(AppContext);
   return (
     <>
       <TableContainer>
@@ -42,7 +48,7 @@ function VarientList({ openModal, varientData, handleDelete }) {
                   <TableCell align="left">{String(row.variantName)}</TableCell>
                   <TableCell align="center">
                     <Link
-                      to={`/variant-details/${row.id}`}
+                      to={`${VARIANT_DETAILS_URL}/${row.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -51,27 +57,31 @@ function VarientList({ openModal, varientData, handleDelete }) {
                   </TableCell>
                   <TableCell align="left">
                     <Stack spacing={2} direction="row">
-                      <EditIcon
-                        style={{
-                          fontSize: "20px",
-                          color: "blue",
-                          cursor: "pointer",
-                        }}
-                        className="cursor-pointer"
-                        onClick={() => openModal(row)}
-                      />
-                      <DeleteIcon
-                        style={{
-                          fontSize: "20px",
-                          color: "darkred",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handleDelete(row.id)}
-                      />
+                      {userHasAccessToKey(userInfo, CONTROL_EDIT_VARIANT) ? (
+                        <EditIcon
+                          style={{
+                            fontSize: "20px",
+                            color: "blue",
+                            cursor: "pointer",
+                          }}
+                          className="cursor-pointer"
+                          onClick={() => openModal(row)}
+                        />
+                      ) : null}
+                      {userHasAccessToKey(userInfo, CONTROL_DELETE_VARIANT) ? (
+                        <DeleteIcon
+                          style={{
+                            fontSize: "20px",
+                            color: "darkred",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleDelete(row.id)}
+                        />
+                      ) : null}
                     </Stack>
                   </TableCell>
                 </TableRow>
-              )
+              );
             })}
           </TableBody>
         </Table>

@@ -5,6 +5,7 @@ import { useParams, Link } from "react-router-dom";
 import { doc, getDoc, updateDoc, arrayUnion } from "@firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
+import { ORDER_PREVIEW_URL } from "../urls";
 
 function OrderDetails() {
   const { id } = useParams();
@@ -164,7 +165,7 @@ function OrderDetails() {
       title={
         <>
           <span>Order Details</span>
-          <Link to={`/order-preview/${id}`}>
+          <Link to={`${ORDER_PREVIEW_URL}/${id}`}>
             <Button variant="contained" sx={{ marginLeft: "20px" }}>
               Preview
             </Button>

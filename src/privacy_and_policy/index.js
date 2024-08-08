@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Stack, Typography, Button, Box, Modal } from "@mui/material";
 import AddPrivacyAndPolicy from "./components/AddPrivacyAndPolicy";
 import PrivacyAndPolicyList from "../privacy_and_policy/components/PrivacyAndPolicyList";
@@ -7,12 +7,19 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
+import { AppContext } from "../context";
+import {
+  CONTROL_ADD_PRIVACY_SETTINGS,
+  userHasAccessToKey,
+} from "../authentication/utils";
 
 function PrivacyAndPolicy() {
+  const { userInfo } = useContext(AppContext);
   const [addPrivacyAndPolicy, setPrivacyAndPolicy] = useState(false);
   const handleOpen = () => setPrivacyAndPolicy(true);
   const handleClose = () => setPrivacyAndPolicy(false);
-  const [privacyAndPolicyModalData, setPrivacyAndPolicyModalData] = useState(null);
+  const [privacyAndPolicyModalData, setPrivacyAndPolicyModalData] =
+    useState(null);
   const [openInEditMode, setOpenInEditMode] = useState(false);
   const [privacyAndPolicyData, setPrivacyAndPolicyData] = useState([]);
   const ref = collection(db, "PrivacyAndPolicy");
@@ -23,7 +30,9 @@ function PrivacyAndPolicy() {
 
   const getPrivacyAndPolicyData = async () => {
     const data = await getDocs(ref);
-    setPrivacyAndPolicyData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setPrivacyAndPolicyData(
+      data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    );
   };
 
   const handleDelete = async (id) => {
@@ -41,13 +50,18 @@ function PrivacyAndPolicy() {
 
     if (result.isConfirmed) {
       await deleteDoc(doc(ref, id));
-      setPrivacyAndPolicyData(privacyAndPolicyData.filter((row) => row.id !== id));
+      setPrivacyAndPolicyData(
+        privacyAndPolicyData.filter((row) => row.id !== id)
+      );
       Swal.fire("Deleted!", "Your entry has been deleted.", "success");
     }
   };
 
   const modal = () => (
-    <Modal onClose={() => setPrivacyAndPolicy(false)} open={addPrivacyAndPolicy}>
+    <Modal
+      onClose={() => setPrivacyAndPolicy(false)}
+      open={addPrivacyAndPolicy}
+    >
       <Box sx={{ width: "50%", margin: "0 auto", top: "50%" }}>
         <AddPrivacyAndPolicy
           closeModal={() => setPrivacyAndPolicy(false)}
@@ -69,16 +83,18 @@ function PrivacyAndPolicy() {
           component="div"
           sx={{ flexGrow: 1 }}
         ></Typography>
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={() => {
-            handleOpen();
-            setOpenInEditMode(false);
-          }}
-        >
-          Add Privacy & Policy
-        </Button>
+        {userHasAccessToKey(userInfo, CONTROL_ADD_PRIVACY_SETTINGS) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={() => {
+              handleOpen();
+              setOpenInEditMode(false);
+            }}
+          >
+            Add Privacy & Policy
+          </Button>
+        ) : null}
       </Stack>
     </>
   );

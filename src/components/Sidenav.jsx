@@ -118,8 +118,17 @@ export default function Sidenav() {
 
   const handleLogout = async () => {
     window.localStorage.setItem("token", "");
+    window.localStorage.setItem("userId", "");
+    window.localStorage.setItem("email", "");
+    window.localStorage.setItem("loginDate", "");
+    window.location.reload();
     navigate("/");
   };
+
+  React.useEffect(() => {
+    if (window.localStorage.getItem("loginDate") < new Date().getDate())
+      handleLogout();
+  }, []);
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -147,7 +156,7 @@ export default function Sidenav() {
           label={"Users"}
           Icon={<GroupIcon />}
           navigationUrl={URLS.USERS_URL}
-          hasAccess={userHasViewAccessToRoute(userInfo, URLS.PRODUCTS_URL)}
+          hasAccess={userHasViewAccessToRoute(userInfo, URLS.USERS_URL)}
         />
         <SideNavListItem
           label={"Orders"}
@@ -199,12 +208,6 @@ export default function Sidenav() {
           hasAccess={userHasViewAccessToRoute(userInfo, URLS.CATEGORY_URL)}
         />
         <SideNavListItem
-          label={"Admin"}
-          Icon={<AdminPanelSettingsIcon />}
-          navigationUrl={URLS.ADMIN_URL}
-          hasAccess={isAdminUser(userInfo)}
-        />
-        <SideNavListItem
           label={"Settings"}
           Icon={<Settings />}
           navigationUrl={URLS.SETTINGS_URL}
@@ -248,6 +251,12 @@ export default function Sidenav() {
           Icon={<ContactPhoneIcon />}
           navigationUrl={URLS.CONTACT_US_URL}
           hasAccess={userHasViewAccessToRoute(userInfo, URLS.CONTACT_US_URL)}
+        />
+        <SideNavListItem
+          label={"Admin"}
+          Icon={<AdminPanelSettingsIcon />}
+          navigationUrl={URLS.ADMIN_URL}
+          hasAccess={isAdminUser(userInfo)}
         />
         <SideNavListItem
           label={"Logout"}

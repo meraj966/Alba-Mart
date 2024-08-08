@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Stack, Typography, Button, Box, Modal } from "@mui/material";
 import AddTermsAndConditions from "./components/AddTermsAndConditions";
 import TermsAndConditionsList from "../terms_and_conditions/components/TermsAndConditionsList";
@@ -7,12 +7,19 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
+import { AppContext } from "../context";
+import {
+  CONTROL_ADD_TERMS_AND_CONDITIONS,
+  userHasAccessToKey
+} from "../authentication/utils";
 
 function TermsAndConditions() {
+  const {userInfo} = useContext(AppContext);
   const [addTermsAndConditions, setAddTermsAndConditions] = useState(false);
   const handleOpen = () => setAddTermsAndConditions(true);
   const handleClose = () => setAddTermsAndConditions(false);
-  const [termsAndConditionsModalData, setTermsAndConditionsModalData] = useState(null);
+  const [termsAndConditionsModalData, setTermsAndConditionsModalData] =
+    useState(null);
   const [openInEditMode, setOpenInEditMode] = useState(false);
   const [termsAndConditionsData, setTermsAndConditionsData] = useState([]);
   const ref = collection(db, "TermsAndConditions");
@@ -23,7 +30,9 @@ function TermsAndConditions() {
 
   const getTermsAndConditionsData = async () => {
     const data = await getDocs(ref);
-    setTermsAndConditionsData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setTermsAndConditionsData(
+      data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    );
   };
 
   const handleDelete = async (id) => {
@@ -41,13 +50,18 @@ function TermsAndConditions() {
 
     if (result.isConfirmed) {
       await deleteDoc(doc(ref, id));
-      setTermsAndConditionsData(termsAndConditionsData.filter((row) => row.id !== id));
+      setTermsAndConditionsData(
+        termsAndConditionsData.filter((row) => row.id !== id)
+      );
       Swal.fire("Deleted!", "Your entry has been deleted.", "success");
     }
   };
 
   const modal = () => (
-    <Modal onClose={() => setAddTermsAndConditions(false)} open={addTermsAndConditions}>
+    <Modal
+      onClose={() => setAddTermsAndConditions(false)}
+      open={addTermsAndConditions}
+    >
       <Box sx={{ width: "50%", margin: "0 auto", top: "50%" }}>
         <AddTermsAndConditions
           closeModal={() => setAddTermsAndConditions(false)}
@@ -69,16 +83,18 @@ function TermsAndConditions() {
           component="div"
           sx={{ flexGrow: 1 }}
         ></Typography>
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={() => {
-            handleOpen();
-            setOpenInEditMode(false);
-          }}
-        >
-          Add Term & Condition
-        </Button>
+        {userHasAccessToKey(userInfo, CONTROL_ADD_TERMS_AND_CONDITIONS) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={() => {
+              handleOpen();
+              setOpenInEditMode(false);
+            }}
+          >
+            Add Term & Condition
+          </Button>
+        ) : null}
       </Stack>
     </>
   );
