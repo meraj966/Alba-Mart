@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Paper,
   Table,
@@ -22,8 +22,15 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import {
+  CONTROL_DELETE_DELIVERY_CHARGES,
+  CONTROL_EDIT_DELIVERY_CHARGES,
+  userHasAccessToKey,
+} from "../../authentication/utils";
+import { AppContext } from "../../context";
 
 function DeliveryChargeList({ openModal, deliveryChargeData, handleDelete }) {
+  const { userInfo } = useContext(AppContext);
   if (!deliveryChargeData) {
     return null; // Return null or a loading indicator if deliveryboyData is undefined
   }
@@ -64,27 +71,41 @@ function DeliveryChargeList({ openModal, deliveryChargeData, handleDelete }) {
                 <TableCell align="left">{String(row.maximumValue)}</TableCell>
                 <TableCell align="left">{String(row.minimumValue)}</TableCell>
                 <TableCell align="left">{String(row.charge)}</TableCell>
-                <TableCell align="left">{row.fastDelivery ? "Yes" : "No"}</TableCell>
-                <TableCell align="left">{row.activeNow ? "Yes" : "No"}</TableCell>
+                <TableCell align="left">
+                  {row.fastDelivery ? "Yes" : "No"}
+                </TableCell>
+                <TableCell align="left">
+                  {row.activeNow ? "Yes" : "No"}
+                </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
-                    <EditIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "blue",
-                        cursor: "pointer",
-                      }}
-                      className="cursor-pointer"
-                      onClick={() => openModal(row)}
-                    />
-                    <DeleteIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "darkred",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(row.id)}
-                    />
+                    {userHasAccessToKey(
+                      userInfo,
+                      CONTROL_EDIT_DELIVERY_CHARGES
+                    ) ? (
+                      <EditIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "blue",
+                          cursor: "pointer",
+                        }}
+                        className="cursor-pointer"
+                        onClick={() => openModal(row)}
+                      />
+                    ) : null}
+                    {userHasAccessToKey(
+                      userInfo,
+                      CONTROL_DELETE_DELIVERY_CHARGES
+                    ) ? (
+                      <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDelete(row.id)}
+                      />
+                    ) : null}
                   </Stack>
                 </TableCell>
               </TableRow>

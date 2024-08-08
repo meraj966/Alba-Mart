@@ -24,6 +24,8 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase-config";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { createLoggedInUserProfile } from "./api";
+import { DASHBOARD_URL, REGISTER_URL, RESET_PASSWORD_URL } from "./urls";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -67,7 +69,7 @@ export default function Login() {
   let location = useLocation();
   console.log("is User logged in =>", user);
   if (user) {
-    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+    return <Navigate to={DASHBOARD_URL} state={{ from: location }} replace />;
   }
 
   const handleSubmit = async (event) => {
@@ -79,7 +81,10 @@ export default function Login() {
         window.localStorage.setItem("token", user.accessToken);
         window.localStorage.setItem("userId", user.uid);
         window.localStorage.setItem("email", user.email);
-        navigate("/dashboard");
+        window.localStorage.setItem("loginDate", new Date().getDate())
+        createLoggedInUserProfile(user)
+        window.location.reload()
+        navigate(DASHBOARD_URL);
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -205,7 +210,7 @@ export default function Login() {
                               variant="body1"
                               component="span"
                               onClick={() => {
-                                navigate("/reset-password");
+                                navigate(RESET_PASSWORD_URL);
                               }}
                               style={{ marginTop: "10px", cursor: "pointer" }}
                             >
@@ -242,7 +247,7 @@ export default function Login() {
                               <span
                                 style={{ color: "#beb4fb", cursor: "pointer" }}
                                 onClick={() => {
-                                  navigate("/register");
+                                  navigate(REGISTER_URL);
                                 }}
                               >
                                 Create an Account

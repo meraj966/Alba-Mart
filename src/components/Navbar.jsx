@@ -148,7 +148,14 @@ export default function Navbar() {
             Alba Mart
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
+            Welcome <b>{window.localStorage.getItem("email")}</b>
+          </Typography>
       {renderMobileMenu}
       {renderMenu}
         </Toolbar>

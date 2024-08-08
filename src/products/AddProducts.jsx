@@ -35,7 +35,6 @@ function AddProducts({ closeEvent }) {
   const setData = useAppStore((state) => state.setRows);
 
   useEffect(() => {
-    console.log(saveDone, products, "SAVE DONE FOR PRODUCTS");
     if (Object.keys(products).length === 0 && saveDone.length > 0) {
       getUsers();
       Swal.fire("Submitted!", "Your data has been updated.", "success");
@@ -54,7 +53,6 @@ function AddProducts({ closeEvent }) {
 
   useEffect(() => {
     const files = map(products, "file");
-    console.log(Object.keys(payload), payload, files[0]);
   }, [payload]);
 
   const getUsers = async () => {
@@ -64,7 +62,6 @@ function AddProducts({ closeEvent }) {
 
   const handleUpload = () => {
     const files = Object.values(products).map((i) => i.files);
-    console.log(products, files, "productssssssssss");
 
     // Validate Name, Quantity, Price, Purchase Rate, and Stock Value fields for each product
     const invalidProducts = Object.values(products).filter(

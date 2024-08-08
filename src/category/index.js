@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Stack,
   Typography,
@@ -15,11 +15,25 @@ import CategoryList from "../category/components/CategoryList";
 import AddNewSubcategory from "../category/components/AddNewSubcategory"; // Import the AddNewSubcategory component
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
+import { AppContext } from "../context";
+import {
+  CONTROL_ADD_SUBCATEGORY,
+  CONTROL_EDIT_CATEGORY,
+  userHasAccessToKey,
+} from "../authentication/utils";
 
 function CategoryDetails() {
+  const { userInfo } = useContext(AppContext);
+
   const [addNewCategory, setAddNewCategory] = useState(false);
   const handleOpen = () => setAddNewCategory(true);
   const handleClose = () => setAddNewCategory(false);
@@ -76,7 +90,8 @@ function CategoryDetails() {
     </Modal>
   );
 
-  const subcategoryModal = () => ( // Step 3: Create the popup form component
+  const subcategoryModal = () => (
+    // Step 3: Create the popup form component
     <Modal onClose={handleCloseSubcategoryForm} open={addNewSubcategory}>
       <Box sx={{ width: "50%", margin: "0 auto", top: "50%" }}>
         {/* Pass any necessary props to the AddNewSubcategory component */}
@@ -88,35 +103,39 @@ function CategoryDetails() {
   const actionBar = () => (
     <>
       <Stack direction="row" spacing={2} className="my-2 mb-2">
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={() => {
-            handleOpen();
-            setOpenInEditMode(false);
-          }}
-        >
-          Add Category
-        </Button>
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={handleOpenSubcategoryForm} // Step 4: Open the popup form for adding a subcategory
-        >
-          Add Subcategory
-        </Button>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1 }}
+        ></Typography>
+        {userHasAccessToKey(userInfo, CONTROL_EDIT_CATEGORY) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={() => {
+              handleOpen();
+              setOpenInEditMode(false);
+            }}
+          >
+            Add Category
+          </Button>
+        ) : null}
+        {userHasAccessToKey(userInfo, CONTROL_ADD_SUBCATEGORY) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={handleOpenSubcategoryForm} // Step 4: Open the popup form for adding a subcategory
+          >
+            Add Subcategory
+          </Button>
+        ) : null}
       </Stack>
     </>
   );
 
   return (
     <>
-      <PageTemplate
-        modal={modal()}
-        actionBar={actionBar()}
-        title={"Category"}
-      >
+      <PageTemplate modal={modal()} actionBar={actionBar()} title={"Category"}>
         <CategoryList
           openModal={(row) => {
             setOpenInEditMode(true);
@@ -127,8 +146,8 @@ function CategoryDetails() {
           handleDelete={handleDelete}
         />
       </PageTemplate>
-
-      {subcategoryModal()} {/* Step 5: Render the popup form for adding a subcategory conditionally */}
+      {subcategoryModal()}{" "}
+      {/* Step 5: Render the popup form for adding a subcategory conditionally */}
     </>
   );
 }

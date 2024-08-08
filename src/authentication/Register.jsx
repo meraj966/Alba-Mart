@@ -20,6 +20,7 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { doc, setDoc } from "firebase/firestore";
+import { DASHBOARD_URL } from "../urls";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -62,14 +63,13 @@ export default function Register() {
   let location = useLocation();
   console.log("is User logged in =>", user);
   if (user) {
-    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+    return <Navigate to={DASHBOARD_URL} state={{ from: location }} replace />;
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     await createUserWithEmailAndPassword(auth, email, password).then(async cred=>{
       const user = cred.user
-      console.log(user)
       await setDoc(doc(db, "AdminUser", user.uid), {id: user.uid, email: user.email}).then(i=> navigate("/"))
     }).catch((error) => {
       const errorMessage = error.message;

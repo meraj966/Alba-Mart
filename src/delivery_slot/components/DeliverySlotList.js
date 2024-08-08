@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -11,15 +11,36 @@ import {
   IconButton,
 } from "@mui/material";
 import { db } from "../../firebase-config";
-import { collection, getDocs, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../context";
+import {
+  CONTROL_DELETE_DELIVERY_SLOT,
+  CONTROL_EDIT_DELIVERY_SLOT,
+  userHasAccessToKey,
+} from "../../authentication/utils";
 
 function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
+  const { userInfo } = useContext(AppContext);
   // Define the order of days
-  const orderedDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const orderedDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   // Sort the data based on the orderedDays array
   const sortedData = [...deliveryslotData].sort((a, b) => {
@@ -56,23 +77,33 @@ function DeliverySlotList({ openModal, deliveryslotData, handleDelete }) {
                 <TableCell align="left">{String(row.slot1)}</TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
-                    <EditIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "blue",
-                        cursor: "pointer",
-                      }}
-                      className="cursor-pointer"
-                      onClick={()=> openModal(row)}
-                    />
-                    <DeleteIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "darkred",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(row.id)}
-                    />
+                    {userHasAccessToKey(
+                      userInfo,
+                      CONTROL_EDIT_DELIVERY_SLOT
+                    ) ? (
+                      <EditIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "blue",
+                          cursor: "pointer",
+                        }}
+                        className="cursor-pointer"
+                        onClick={() => openModal(row)}
+                      />
+                    ) : null}
+                    {userHasAccessToKey(
+                      userInfo,
+                      CONTROL_DELETE_DELIVERY_SLOT
+                    ) ? (
+                      <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDelete(row.id)}
+                      />
+                    ) : null}
                   </Stack>
                 </TableCell>
               </TableRow>

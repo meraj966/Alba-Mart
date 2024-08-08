@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -8,17 +8,29 @@ import {
   TableHead,
   TableRow,
   Stack,
-  IconButton,
 } from "@mui/material";
-import { db } from "../../firebase-config";
-import { collection, getDocs, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../context";
+import {
+  CONTROL_DELETE_DELIVERY_BOY,
+  CONTROL_EDIT_DELIVERY_BOY,
+  userHasAccessToKey,
+} from "../../authentication/utils";
+import { DELIVERY_BOY_DETAILS_URL } from "../../urls";
 
 function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
+  const { userInfo } = useContext(AppContext);
 
+  function Cell({ name }) {
+    return (
+      <TableCell align="left" style={{ minWidth: "100px" }}>
+        <strong>{name}</strong>
+      </TableCell>
+    );
+  }
 
   return (
     <>
@@ -26,39 +38,16 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
         <Table aria-label="sticky table" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>Name</strong>
-              </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>Mobile</strong>
-              </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>DL Number</strong>
-              </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>Date Of Join</strong>
-              </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>DL Image(Front)</strong>
-              </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>DL Image(Back)</strong>
-              </TableCell>
-              <TableCell align="left" style={{ minWidth: "100px" }}>
-                <strong>Profile Pic</strong>
-              </TableCell>
-              <TableCell align="left" style={{ width: "100px" }}>
-                <strong>Reward</strong>
-              </TableCell>
-              <TableCell align="left" style={{ width: "100px" }}>
-                <strong>Total Earned Reward</strong>
-              </TableCell>
-              <TableCell align="left" style={{ width: "100px" }}>
-                <strong>Action</strong>
-              </TableCell>
-              <TableCell align="left" style={{ width: "100px" }}>
-                <strong>View Details</strong>
-              </TableCell>
+              <Cell name={"Mobile"} />
+              <Cell name={"DL Number"} />
+              <Cell name={"Date Of Join"} />
+              <Cell name={"DL Image(Front)"} />
+              <Cell name={"DL Image(Back)"} />
+              <Cell name="Profile Pic" />
+              <Cell name="Reward" />
+              <Cell name="Total Earned Reward" />
+              <Cell name="Action" />
+              <Cell name="View Details" />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -96,35 +85,46 @@ function DeliveryBoyList({ openModal, deliveryboyData, handleDelete }) {
                   />
                 </TableCell>
                 <TableCell align="left">
-                  <TableCell align="left">{String(row.deliveryBoyReward)}</TableCell>
+                  <TableCell align="left">
+                    {String(row.deliveryBoyReward)}
+                  </TableCell>
                 </TableCell>
                 <TableCell align="left">
-                  <TableCell align="left">{String(row.totalRewardEarns)}</TableCell>
+                  <TableCell align="left">
+                    {String(row.totalRewardEarns)}
+                  </TableCell>
                 </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
-                    <EditIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "blue",
-                        cursor: "pointer",
-                      }}
-                      className="cursor-pointer"
-                      onClick={() => openModal(row)}
-                    />
-                    <DeleteIcon
-                      style={{
-                        fontSize: "20px",
-                        color: "darkred",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(row.id)}
-                    />
+                    {userHasAccessToKey(userInfo, CONTROL_EDIT_DELIVERY_BOY) ? (
+                      <EditIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "blue",
+                          cursor: "pointer",
+                        }}
+                        className="cursor-pointer"
+                        onClick={() => openModal(row)}
+                      />
+                    ) : null}
+                    {userHasAccessToKey(
+                      userInfo,
+                      CONTROL_DELETE_DELIVERY_BOY
+                    ) ? (
+                      <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDelete(row.id)}
+                      />
+                    ) : null}
                   </Stack>
                 </TableCell>
                 <TableCell align="center">
                   <Link
-                    to={`/deliveryboy-details/${row.id}`}
+                    to={`${DELIVERY_BOY_DETAILS_URL}/${row.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

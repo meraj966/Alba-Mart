@@ -15,8 +15,8 @@ function Dropdown({ label, value, onChange, data, defaultValue, sx }) {
           defaultValue={defaultValue}
         >
           {data &&
-            data.map((i) => (
-              <MenuItem key={i.value} value={i.value}>
+            data.map((i, index) => (
+              <MenuItem key={i.value + index} value={i.value}>
                 {i.label}
               </MenuItem>
             ))}

@@ -41,7 +41,6 @@ function Product({
   amount,
   rate,
 }) {
-  console.log("measureUnit", measureUnit, data)
   const [selected, setSelected] = useState(isSelected);
   const [open, setOpen] = useState(false);
   let salePrice = onSale ? getDiscountedPrice(saleType, price, saleValue) : "-";

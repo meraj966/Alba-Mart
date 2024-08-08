@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Stack, Typography, Button, Box, Modal, TextField } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  Stack,
+  Typography,
+  Button,
+  Box,
+  Modal,
+  TextField,
+} from "@mui/material";
 import AddVariant from "./components/AddVarient";
 import PageTemplate from "../pages/reusable/PageTemplate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -7,8 +14,14 @@ import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import VarientList from "./components/VarientList";
 import Swal from "sweetalert2";
+import {
+  CONTROL_ADD_VARIANT,
+  userHasAccessToKey,
+} from "../authentication/utils";
+import { AppContext } from "../context";
 
 function Varient() {
+  const { userInfo } = useContext(AppContext);
   const [addVarient, setVarient] = useState(false);
   const handleOpen = () => setVarient(true);
   const handleClose = () => setVarient(false);
@@ -30,12 +43,12 @@ function Varient() {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this! Kindly remove products from variant before delete it !!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
       confirmButtonColor: "#1976d2",
       cancelButtonColor: "#ff5722",
     });
@@ -43,11 +56,7 @@ function Varient() {
     if (result.isConfirmed) {
       await deleteDoc(doc(ref, id));
       setVarientData(varientData.filter((row) => row.id !== id));
-      Swal.fire(
-        'Deleted!',
-        'Your variant has been deleted.',
-        'success'
-      );
+      Swal.fire("Deleted!", "Your variant has been deleted.", "success");
     }
   };
 
@@ -83,26 +92,24 @@ function Varient() {
           value={searchQuery}
           onChange={handleSearch}
         />
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={() => {
-            handleOpen();
-            setOpenInEditMode(false);
-          }}
-        >
-          Add Variant
-        </Button>
+        {userHasAccessToKey(userInfo, CONTROL_ADD_VARIANT) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={() => {
+              handleOpen();
+              setOpenInEditMode(false);
+            }}
+          >
+            Add Variant
+          </Button>
+        ) : null}
       </Stack>
     </>
   );
   return (
     <>
-      <PageTemplate
-        modal={modal()}
-        actionBar={actionBar()}
-        title={"Variant"}
-      >
+      <PageTemplate modal={modal()} actionBar={actionBar()} title={"Variant"}>
         <VarientList
           openModal={(row) => {
             setOpenInEditMode(true);

@@ -7,6 +7,7 @@ import { collection, getDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import { Stack } from "@mui/system";
 import EditIcon from "@mui/icons-material/Edit";
+import { EDIT_OFFER_DETAILS_URL } from "../../urls";
 
 function OfferDetailView(props) {
   const { id } = useParams();
@@ -41,7 +42,7 @@ function OfferDetailView(props) {
         spacing={2}
         className="my-2 mb-2"
       >
-        <Link to={`/edit-offer/${id}`} style={{textDecoration: 'none'}}>
+        <Link to={`${EDIT_OFFER_DETAILS_URL}/${id}`} style={{textDecoration: 'none'}}>
 
         <Button sx={{ marginTop: "5px" }} type="submit" variant="contained">
           <EditIcon sx={{marginRight: '8px', fontSize: '18px'}}/>  Edit Offer

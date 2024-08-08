@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Stack, Typography, Button, Box, Modal } from "@mui/material";
 import AddNewFAndQ from "./components/AddNewFAndQ";
 import FAndQList from "../f_and_q/components/FAndQList";
@@ -7,8 +7,11 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
 import Swal from "sweetalert2";
+import { AppContext } from "../context";
+import { CONTROL_ADD_FAQ, userHasAccessToKey } from "../authentication/utils";
 
 function FAndQ() {
+  const { userInfo } = useContext(AppContext);
   const [addNewFAndQ, setAddNewFAndQ] = useState(false);
   const handleOpen = () => setAddNewFAndQ(true);
   const handleClose = () => setAddNewFAndQ(false);
@@ -69,27 +72,25 @@ function FAndQ() {
           component="div"
           sx={{ flexGrow: 1 }}
         ></Typography>
-        <Button
-          variant="contained"
-          endIcon={<AddCircleIcon />}
-          onClick={() => {
-            handleOpen();
-            setOpenInEditMode(false);
-          }}
-        >
-          Add F & Q
-        </Button>
+        {userHasAccessToKey(userInfo, CONTROL_ADD_FAQ) ? (
+          <Button
+            variant="contained"
+            endIcon={<AddCircleIcon />}
+            onClick={() => {
+              handleOpen();
+              setOpenInEditMode(false);
+            }}
+          >
+            Add F & Q
+          </Button>
+        ) : null}
       </Stack>
     </>
   );
 
   return (
     <>
-      <PageTemplate
-        modal={modal()}
-        actionBar={actionBar()}
-        title={"F And Q"}
-      >
+      <PageTemplate modal={modal()} actionBar={actionBar()} title={"F And Q"}>
         <FAndQList
           openModal={(row) => {
             setOpenInEditMode(true);

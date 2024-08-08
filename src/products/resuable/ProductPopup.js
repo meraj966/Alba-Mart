@@ -82,7 +82,6 @@ function ProductPopup({
       ...data,
       date: new Date(),
     };
-    console.log("EDIT DATA", data);
     setFormid(newData);
     handleEditOpen();
   };

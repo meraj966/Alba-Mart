@@ -5,14 +5,30 @@ import OrdersList from "../orders/OrdersList";
 import PageTemplate from "./reusable/PageTemplate";
 import Dropdown from "../components/reusable/Dropdown";
 import { ORDER_TYPE_DROPDOWN_VALUES } from "../Constants";
-import { collection, getDocs, onSnapshot, query, where, doc, updateDoc, getDoc } from "@firebase/firestore";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+  doc,
+  updateDoc,
+  getDoc,
+} from "@firebase/firestore";
 import { db } from "../firebase-config";
 import UndoIcon from "@mui/icons-material/Undo";
 import { cloneDeep } from "lodash";
 import Swal from "sweetalert2";
 import ExcelJS from "exceljs/dist/exceljs.min.js";
+import { useContext } from "react";
+import { AppContext } from "../context";
+import {
+  CONTROL_UPDATE_DELIVERY_BOY,
+  userHasAccessToKey,
+} from "../authentication/utils";
 
 export default function Orders() {
+  const { userInfo } = useContext(AppContext);
   const [orderType, setOrderType] = useState("All Orders");
   const [orders, setOrders] = useState([]);
   const [filteredOrder, setFilteredOrders] = useState(null);
@@ -35,7 +51,10 @@ export default function Orders() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "Order"), (snapshot) => {
-      const updatedOrders = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const updatedOrders = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
     });
@@ -67,13 +86,15 @@ export default function Orders() {
     if (!deliveryBoyId) {
       return ""; // Return empty string if deliveryBoyId is not provided
     }
-  
+
     try {
       console.log("Fetching delivery boy name for ID:", deliveryBoyId);
-  
+
       // Fetch the delivery boy name based on the ID from the "DeliveryBoys" collection
-      const deliveryBoyDoc = await getDoc(doc(db, "DeliveryBoy", deliveryBoyId));
-      
+      const deliveryBoyDoc = await getDoc(
+        doc(db, "DeliveryBoy", deliveryBoyId)
+      );
+
       if (deliveryBoyDoc.exists()) {
         const deliveryBoyName = deliveryBoyDoc.data().name; // Assuming the name is a field in the "DeliveryBoys" collection
         console.log("Delivery boy name found:", deliveryBoyName);
@@ -86,7 +107,7 @@ export default function Orders() {
       console.error("Error fetching delivery boy name:", error);
       return ""; // Return empty string in case of an error
     }
-  }; 
+  };
 
   const exportToExcel = async () => {
     // Create a new Excel workbook and add a worksheet
@@ -134,7 +155,9 @@ export default function Orders() {
     }
     // Create a blob from the workbook
     workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
       const url = URL.createObjectURL(blob);
 
       // Create a link and trigger a click event to download the Excel file
@@ -215,47 +238,54 @@ export default function Orders() {
           Export
         </Button>
       </div>
-      <div style={{ float: "right" }}>
-        {isEdit ? (
-          <Button
-            onClick={() => setIsEdit(false)}
-            style={{
-              fontSize: "16px",
-              color: "white",
-              backgroundColor: "#1976d2",
-              padding: "5px 10px", // Adjust the padding for size
-              borderRadius: "5px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            Update Delivery Boy
-            <UndoIcon style={{ marginLeft: "5px", fontSize: "16px", color: "black" }} />
-          </Button>
-        ) : (
-          <Button
-            onClick={() => setIsEdit(!isEdit)}
-            style={{
-              fontSize: "16px",
-              color: "white",
-              backgroundColor: "#1976d2",
-              padding: "5px 10px", // Adjust the padding for size
-              borderRadius: "5px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            Update Delivery Boy
-            <EditIcon style={{ marginLeft: "5px", fontSize: "16px" }} />
-          </Button>
-        )}
-      </div>
+      {userHasAccessToKey(userInfo, CONTROL_UPDATE_DELIVERY_BOY) ? (
+        <div style={{ float: "right" }}>
+          {isEdit ? (
+            <Button
+              onClick={() => setIsEdit(false)}
+              style={{
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "#1976d2",
+                padding: "5px 10px", // Adjust the padding for size
+                borderRadius: "5px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Update Delivery Boy
+              <UndoIcon
+                style={{ marginLeft: "5px", fontSize: "16px", color: "black" }}
+              />
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setIsEdit(!isEdit)}
+              style={{
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "#1976d2",
+                padding: "5px 10px", // Adjust the padding for size
+                borderRadius: "5px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Update Delivery Boy
+              <EditIcon style={{ marginLeft: "5px", fontSize: "16px" }} />
+            </Button>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 
   const listenForRejectedOrders = () => {
     const ordersCollection = collection(db, "Order");
-    const q = query(ordersCollection, where("deliveryBoyResponse", "==", "reject"));
+    const q = query(
+      ordersCollection,
+      where("deliveryBoyResponse", "==", "reject")
+    );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       querySnapshot.forEach((doc) => {

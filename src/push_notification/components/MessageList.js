@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -22,8 +22,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import { CONTROL_DELETE_NOTIFICATIONS, CONTROL_EDIT_NOTIFICATIONS, userHasAccessToKey } from "../../authentication/utils";
+import { AppContext } from "../../context";
 
 function MessageList({ openModal, messageData, handleDelete }) {
+  const {userInfo} = useContext(AppContext);
+  
   return (
     <>
       <TableContainer>
@@ -64,6 +68,7 @@ function MessageList({ openModal, messageData, handleDelete }) {
                 </TableCell>
                 <TableCell align="left">
                   <Stack spacing={2} direction="row">
+                    {userHasAccessToKey(userInfo, CONTROL_EDIT_NOTIFICATIONS) ?
                     <EditIcon
                       style={{
                         fontSize: "20px",
@@ -72,7 +77,8 @@ function MessageList({ openModal, messageData, handleDelete }) {
                       }}
                       className="cursor-pointer"
                       onClick={() => openModal(row)}
-                    />
+                    /> :null}
+                    {userHasAccessToKey(userInfo, CONTROL_DELETE_NOTIFICATIONS) ? 
                     <DeleteIcon
                       style={{
                         fontSize: "20px",
@@ -80,7 +86,7 @@ function MessageList({ openModal, messageData, handleDelete }) {
                         cursor: "pointer",
                       }}
                       onClick={() => handleDelete(row.id)}
-                    />
+                    />:null}
                   </Stack>
                 </TableCell>
               </TableRow>
